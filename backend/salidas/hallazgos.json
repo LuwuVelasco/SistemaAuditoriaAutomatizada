@@ -1,0 +1,1449 @@
+{
+  "contexto": {
+    "nombre_entidad": "BANCO LUNA LLENA",
+    "periodo_evaluado": "2026",
+    "fecha_auditoria": "Marzo 2026",
+    "grupo_auditor": "Warden",
+    "integrantes": [
+      "Franz"
+    ],
+    "alcance": "Auditoría General de Sistemas"
+  },
+  "hallazgos": [
+    {
+      "codigo": "H1",
+      "dominio": "Planear y Organizar",
+      "procesos": [
+        "PO1",
+        "PO4"
+      ],
+      "objetivo_control": "Evaluar la existencia y efectividad de un marco formal de gobierno de TI alineado con los objetivos de negocio.",
+      "riesgos_asociados": [
+        "R1",
+        "R2",
+        "R3"
+      ],
+      "descripcion": "El Banco Luna Llena ha identificado en su Plan Estratégico de Tecnología de la Información (PETI) 2025-2030 que una de las brechas actuales es la existencia de 'Procesos de TI sin marco formal'. A pesar de esta identificación, la implementación de COBIT 2019 como marco de gobierno, aunque es una iniciativa clave con una meta de 'Nivel de madurez COBIT ≥ 3 al 2027', actualmente se encuentra en un 'Nivel 1' de madurez. Esto indica que, si bien se reconoce la necesidad, la formalización y adopción plena del marco aún no se ha logrado, lo que podría afectar la eficacia de la planificación y organización de TI.",
+      "recomendacion": "Acelerar la implementación de las iniciativas definidas en el PETI para alcanzar el Nivel de Madurez COBIT ≥ 3 al 2027, priorizando la definición, documentación y comunicación de los procesos de gobierno de TI, roles y métricas.",
+      "causa": "La implementación de un marco de gobierno de TI formal como COBIT 2019 se encuentra en sus etapas iniciales, con un nivel de madurez bajo (Nivel 1), lo que sugiere una falta de procesos definidos, documentados y comunicados para la gestión de TI.",
+      "efecto": "La ausencia de un marco de gobierno formal puede resultar en decisiones de TI inconsistentes, duplicidad de esfuerzos, uso ineficiente de recursos y una menor capacidad para demostrar el valor de TI al negocio.",
+      "probabilidad": 4,
+      "impacto": 4,
+      "nivel_riesgo": "Alto",
+      "conclusion": "El catalizador de 'Procesos y Estructuras Organizacionales' de COBIT 2019 no está completamente maduro, lo que impacta la capacidad de la organización para 'Alinear la TI con el Negocio' (APO01) y 'Gestionar la Estrategia' (APO02).",
+      "criterio": "COBIT 2019 (APO01, APO02); COSO 2013 (Componente 1: Ambiente de Control, Principio 3: Establece estructuras, asigna responsabilidades y autoridad).",
+      "citas_bibliograficas": [
+        {
+          "documento": "PLAN ESTRATÉGICO DE TECNOLOGÍA DE LA INFORMACIÓN (PETI) PETI 2025 – 2030",
+          "seccion": "3.2 Brechas Identificadas",
+          "pagina": "5",
+          "descripcion": "Situación Actual: Procesos de TI sin marco formal; Brecha / Oportunidad: Implementar COBIT 2019 como marco de gobierno."
+        },
+        {
+          "documento": "PLAN ESTRATÉGICO DE TECNOLOGÍA DE LA INFORMACIÓN (PETI) PETI 2025 – 2030",
+          "seccion": "4. Objetivos Estratégicos de TI",
+          "pagina": "7",
+          "descripcion": "Objetivo OTI2: Implementar gobierno de TI con COBIT 2019; KPI: Nivel de madurez COBIT ≥ 3 al 2027."
+        },
+        {
+          "documento": "PLAN ESTRATÉGICO DE TECNOLOGÍA DE LA INFORMACIÓN (PETI) PETI 2025 – 2030",
+          "seccion": "6. KPIs de TI",
+          "pagina": "8",
+          "descripcion": "Nivel de madurez COBIT: Línea Base: Nivel 1; Meta 2030: Nivel 3."
+        }
+      ],
+      "evidencias": [
+        {
+          "numero": 1,
+          "referencia": "PETI 2025 – 2030, Sección 3.2, Tabla 'Brechas Identificadas'",
+          "descripcion": "Identificación de 'Procesos de TI sin marco formal' como situación actual en Gobierno de TI."
+        },
+        {
+          "numero": 2,
+          "referencia": "PETI 2025 – 2030, Sección 6, Tabla 'KPIs de TI'",
+          "descripcion": "Registro del nivel de madurez COBIT actual en 'Nivel 1'."
+        }
+      ]
+    },
+    {
+      "codigo": "H2",
+      "dominio": "Planear y Organizar, Monitorear, Evaluar y Valorar",
+      "procesos": [
+        "PO4",
+        "ME2"
+      ],
+      "objetivo_control": "Evaluar la efectividad de la supervisión del Comité de TI sobre la implementación y madurez de los marcos de gobierno de TI.",
+      "riesgos_asociados": [
+        "R1",
+        "R2",
+        "R3"
+      ],
+      "descripcion": "El Comité de Tecnología de la Información (Comité de TI) del Banco Luna Llena tiene la responsabilidad de 'Establecer políticas, procedimientos y prioridades para la administración de información y gestión de recursos de TI' y 'Aprobar, revisar y hacer seguimiento al PETI alineado al PEI institucional', utilizando COBIT 2019 como marco de gobierno. Sin embargo, el Plan Estratégico de Tecnología de la Información (PETI) 2025-2030 indica que el nivel de madurez de COBIT actual es 'Nivel 1', con una meta de 'Nivel 3 al 2027'. Esta discrepancia sugiere que, a pesar de la existencia del comité y sus responsabilidades definidas, la supervisión sobre el progreso real en la madurez del gobierno de TI no está siendo lo suficientemente efectiva para acelerar la implementación del marco.",
+      "recomendacion": "El Comité de TI debe establecer y revisar periódicamente indicadores de desempeño específicos (KPIs) relacionados con la madurez de los procesos COBIT, y exigir planes de acción detallados con responsables y plazos para alcanzar la meta de Nivel 3 al 2027, asegurando un seguimiento riguroso en sus reuniones trimestrales.",
+      "causa": "Aunque el Comité de TI está formalmente establecido y tiene responsabilidades definidas, la evidencia sugiere una falta de mecanismos robustos o una ejecución insuficiente en el monitoreo y evaluación del progreso hacia los objetivos de madurez de COBIT 2019.",
+      "efecto": "La falta de una supervisión activa y efectiva por parte del Comité de TI sobre la madurez de COBIT puede llevar a una implementación lenta o ineficaz del marco, manteniendo los procesos de TI en un estado informal y reactivo, lo que a su vez afecta la capacidad de la organización para gestionar y controlar sus recursos tecnológicos de manera óptima.",
+      "probabilidad": 3,
+      "impacto": 3,
+      "nivel_riesgo": "Medio",
+      "conclusion": "El catalizador de 'Principios, Políticas y Marcos' de COBIT 2019 está definido, pero el catalizador de 'Cultura, Ética y Comportamiento' y 'Personas, Habilidades y Competencias' no están impulsando la madurez esperada, afectando la capacidad de 'Monitorear, Evaluar y Valorar el Rendimiento de TI' (MEA01).",
+      "criterio": "COBIT 2019 (APO01, APO02, MEA01); COSO 2013 (Componente 2: Evaluación de Riesgos, Principio 6: Especifica objetivos relevantes; Componente 5: Actividades de Monitoreo, Principio 16: Realiza evaluaciones continuas y/o separadas).",
+      "citas_bibliograficas": [
+        {
+          "documento": "Comité de Tecnología de la Información",
+          "seccion": "3. Marco Normativo",
+          "pagina": "4",
+          "descripcion": "COBIT 2019 – Marco de gobierno y gestión de TI."
+        },
+        {
+          "documento": "Comité de Tecnología de la Información",
+          "seccion": "5. Responsabilidades",
+          "pagina": "5",
+          "descripcion": "Tabla 'Ámbito: Gobierno de TI', Responsabilidad: Establecer políticas, procedimientos y prioridades para la administración de información y gestión de recursos de TI."
+        },
+        {
+          "documento": "Comité de Tecnología de la Información",
+          "seccion": "5. Responsabilidades",
+          "pagina": "5",
+          "descripcion": "Tabla 'Ámbito: Planificación estratégica', Responsabilidad: Aprobar, revisar y hacer seguimiento al PETI alineado al PEI institucional."
+        },
+        {
+          "documento": "PLAN ESTRATÉGICO DE TECNOLOGÍA DE LA INFORMACIÓN (PETI) PETI 2025 – 2030",
+          "seccion": "6. KPIs de TI",
+          "pagina": "8",
+          "descripcion": "Nivel de madurez COBIT: Línea Base: Nivel 1; Meta 2030: Nivel 3."
+        }
+      ],
+      "evidencias": [
+        {
+          "numero": 1,
+          "referencia": "Comité de Tecnología de la Información, Sección 5, Tabla 'Responsabilidades'",
+          "descripcion": "Documentación de las responsabilidades del Comité de TI en el gobierno y seguimiento del PETI."
+        },
+        {
+          "numero": 2,
+          "referencia": "PETI 2025 – 2030, Sección 6, Tabla 'KPIs de TI'",
+          "descripcion": "Registro del nivel de madurez COBIT actual en 'Nivel 1', a pesar de la existencia del Comité."
+        }
+      ]
+    },
+    {
+      "codigo": "H3",
+      "dominio": "Monitorear, Evaluar y Valorar",
+      "procesos": [
+        "ME2"
+      ],
+      "objetivo_control": "Evaluar la capacidad de monitoreo proactivo de sistemas y la madurez de la gestión de incidentes de seguridad.",
+      "riesgos_asociados": [
+        "R1",
+        "R2",
+        "R3"
+      ],
+      "descripcion": "El Plan Estratégico de Tecnología de la Información (PETI) 2025-2030 identifica como una brecha actual la existencia de un 'Monitoreo reactivo de sistemas' y la necesidad de 'Implementar monitoreo proactivo 24/7 con SIEM'. Complementariamente, el Plan Estratégico de Seguridad de la Información (PESI) 2025-2030, en su diagnóstico de seguridad actual para 'Gestión de Incidentes', señala 'Procedimientos básicos, sin SIEM activo' con una prioridad 'ALTA' y un nivel de madurez '2'. Aunque la 'Infraestructura de TI' documenta la existencia de un SIEM IBM QRadar con 12 fuentes de log y 85 reglas de correlación, y las 'Normas de Auditoría de Sistemas' incluyen auditorías de su efectividad, la persistencia de la brecha de 'monitoreo reactivo' y 'procedimientos básicos' en la gestión de incidentes sugiere que el SIEM no está siendo plenamente aprovechado para un monitoreo proactivo 24/7 y una gestión avanzada de incidentes.",
+      "recomendacion": "Implementar un plan de mejora para el SIEM IBM QRadar, que incluya la optimización de reglas de correlación, la integración de más fuentes de log críticas, la capacitación del personal en monitoreo proactivo y la formalización de procedimientos de respuesta a incidentes basados en alertas del SIEM, con el objetivo de lograr un monitoreo 24/7 y reducir el tiempo de detección y respuesta.",
+      "causa": "A pesar de contar con una herramienta SIEM, la integración y optimización de sus capacidades para un monitoreo proactivo 24/7 y la madurez de los procedimientos de gestión de incidentes son insuficientes, lo que lleva a un enfoque predominantemente reactivo.",
+      "efecto": "La respuesta a incidentes puede ser tardía, aumentando el tiempo de inactividad, la pérdida de datos y el daño reputacional. Además, la falta de un monitoreo proactivo dificulta la identificación temprana de amenazas y vulnerabilidades, comprometiendo la postura de seguridad general del banco.",
+      "probabilidad": 4,
+      "impacto": 4,
+      "nivel_riesgo": "Alto",
+      "conclusion": "El catalizador de 'Procesos y Estructuras Organizacionales' (para gestión de incidentes) y 'Información y Tecnología' (para el SIEM) de COBIT 2019 no están operando a un nivel de madurez óptimo, afectando la capacidad de 'Monitorear, Evaluar y Valorar el Rendimiento de TI' (MEA01) y 'Gestionar Incidentes' (DSS02).",
+      "criterio": "COBIT 2019 (MEA01, DSS02); COSO 2013 (Componente 4: Información y Comunicación, Principio 13: Comunica información relevante sobre control interno; Componente 5: Actividades de Monitoreo, Principio 16: Realiza evaluaciones continuas y/o separadas).",
+      "citas_bibliograficas": [
+        {
+          "documento": "PLAN ESTRATÉGICO DE TECNOLOGÍA DE LA INFORMACIÓN (PETI) PETI 2025 – 2030",
+          "seccion": "3.2 Brechas Identificadas",
+          "pagina": "5",
+          "descripcion": "Situación Actual: Monitoreo reactivo de sistemas; Brecha / Oportunidad: Implementar monitoreo proactivo 24/7 con SIEM."
+        },
+        {
+          "documento": "PLAN ESTRATÉGICO DE SEGURIDAD DE LA INFORMACIÓN (PESI) PESI 2025 – 2030",
+          "seccion": "3. Diagnóstico de Seguridad Actual",
+          "pagina": "5",
+          "descripcion": "Dominio ISO 27001: Gestión de Incidentes, Situación Actual: Procedimientos básicos, sin SIEM activo, Nivel (1-5): 2, Prioridad: ALTA."
+        },
+        {
+          "documento": "Infraestructura de TI",
+          "seccion": "Datos de Rendimiento",
+          "pagina": "6",
+          "descripcion": "Software de Seguridad: SIEM: IBM QRadar SIEM 7.5 con 12 fuentes de log y 85 reglas de correlación."
+        },
+        {
+          "documento": "Normas de Auditoría de Sistemas",
+          "seccion": "15.6 Gestión de Incidentes",
+          "pagina": "17",
+          "descripcion": "Norma NAS-INC-01: Verificar que los incidentes P1 sean atendidos en menos de 15 minutos conforme a la clasificación institucional. Revisar los registros de Jira Service Management (promedio 42 incidentes/mes)."
+        }
+      ],
+      "evidencias": [
+        {
+          "numero": 1,
+          "referencia": "PETI 2025 – 2030, Sección 3.2, Tabla 'Brechas Identificadas'",
+          "descripcion": "Identificación de 'Monitoreo reactivo de sistemas' como situación actual."
+        },
+        {
+          "numero": 2,
+          "referencia": "PESI 2025 – 2030, Sección 3, Tabla 'Diagnóstico de Seguridad Actual'",
+          "descripcion": "Diagnóstico de 'Procedimientos básicos, sin SIEM activo' con prioridad ALTA."
+        },
+        {
+          "numero": 3,
+          "referencia": "Infraestructura de TI, Sección 'Datos de Rendimiento', Tabla 'Software de Seguridad'",
+          "descripcion": "Existencia de SIEM IBM QRadar con configuración de reglas y fuentes de log."
+        }
+      ]
+    },
+    {
+      "codigo": "H4",
+      "dominio": "PO3 (Gestionar la arquitectura empresarial)",
+      "procesos": [
+        "PO3.1",
+        "PO3.2",
+        "PO3.3",
+        "PO3.4"
+      ],
+      "objetivo_control": "Evaluar la implementación y madurez del marco de gobierno de TI para la dirección tecnológica.",
+      "riesgos_asociados": [
+        "R1: Desalineación de las iniciativas de TI con los objetivos estratégicos del negocio.",
+        "R2: Ineficiencia en la toma de decisiones sobre inversiones tecnológicas.",
+        "R3: Dificultad para medir y mejorar el rendimiento de TI.",
+        "R4: Incumplimiento de requisitos regulatorios relacionados con la gobernanza de TI."
+      ],
+      "descripcion": "El Plan Estratégico de Tecnología de la Información (PETI) 2025-2030 identifica que la situación actual del Banco Luna Llena en 'Gobierno de TI' es de 'Procesos de TI sin marco formal', con una 'Línea Base (2025)' de 'Nivel de madurez COBIT Nivel 1'. A pesar de que el PETI establece como iniciativa clave la 'Implementación de COBIT 2019' con un 'Año Fin 2026' y una 'Meta 2028' de 'Nivel de madurez COBIT ≥ 3', la ausencia de un marco formal y la baja madurez actual indican una deficiencia en la dirección y control de las actividades de TI.",
+      "recomendacion": "Implementar de manera prioritaria y acelerada el marco de gobierno COBIT 2019, definiendo los procesos, roles y métricas de TI necesarios para alcanzar el nivel de madurez objetivo (Nivel 3) antes de la fecha establecida en el PETI. Se debe establecer un plan de acción detallado con hitos y responsables claros para la adopción de COBIT 2019.",
+      "causa": "La falta de una estrategia formal y estructurada para la adopción e implementación de un marco de gobierno de TI reconocido como COBIT 2019, a pesar de su identificación como una brecha y una iniciativa clave en el PETI.",
+      "efecto": "La ausencia de un marco de gobierno formal dificulta la optimización de los recursos de TI, la alineación estratégica con los objetivos del negocio y la gestión efectiva de los riesgos tecnológicos, lo que puede resultar en inversiones ineficientes y una menor capacidad de respuesta a los cambios del entorno.",
+      "probabilidad": 4,
+      "impacto": 4,
+      "nivel_riesgo": "Alto",
+      "conclusion": "El catalizador de 'Principios, políticas y marcos' de COBIT 2019 no está siendo aplicado eficazmente, lo que impacta negativamente la capacidad de la organización para 'Gestionar la arquitectura empresarial' (PO3) y asegurar que las inversiones en TI generen valor.",
+      "criterio": "COBIT 2019 – PO3 (Gestionar la arquitectura empresarial); PLAN ESTRATÉGICO DE TECNOLOGÍA DE LA INFORMACIÓN (PETI) 2025 – 2030, Sección 3.2, 5 y 6.",
+      "citas_bibliograficas": [
+        {
+          "documento": "PLAN ESTRATÉGICO DE TECNOLOGÍA DE LA INFORMACIÓN (PETI) 2025 – 2030 BANCO LUNA LLENA",
+          "seccion": "3.2 Brechas Identificadas",
+          "pagina": null,
+          "descripcion": "Identifica 'Procesos de TI sin marco formal' como situación actual en Gobierno de TI."
+        },
+        {
+          "documento": "PLAN ESTRATÉGICO DE TECNOLOGÍA DE LA INFORMACIÓN (PETI) 2025 – 2030 BANCO LUNA LLENA",
+          "seccion": "6. KPIs de TI",
+          "pagina": null,
+          "descripcion": "Establece 'Nivel de madurez COBIT Nivel 1' como línea base y 'Nivel 3 al 2027' como meta."
+        },
+        {
+          "documento": "PLAN ESTRATÉGICO DE TECNOLOGÍA DE LA INFORMACIÓN (PETI) 2025 – 2030 BANCO LUNA LLENA",
+          "seccion": "5. Iniciativas y Proyectos de TI",
+          "pagina": null,
+          "descripcion": "Detalla la iniciativa 'Implementación de COBIT 2019' con año de inicio 2025 y fin 2026."
+        }
+      ],
+      "evidencias": [
+        {
+          "numero": 1,
+          "referencia": "PETI 2025 – 2030, Página 5, Tabla '3.2 Brechas Identificadas', Fila 'Gobierno de TI'",
+          "descripcion": "La tabla muestra 'Procesos de TI sin marco formal' como situación actual y 'Implementar COBIT 2019 como marco de gobierno' como brecha/oportunidad."
+        },
+        {
+          "numero": 2,
+          "referencia": "PETI 2025 – 2030, Página 8, Tabla '6. KPIs de TI', Fila 'Nivel de madurez COBIT'",
+          "descripcion": "El KPI 'Nivel de madurez COBIT' tiene una 'Línea Base' de 'Nivel 1' y una 'Meta 2030' de 'Nivel 3'."
+        }
+      ]
+    },
+    {
+      "codigo": "H5",
+      "dominio": "ME2 (Monitorizar, evaluar y revisar el rendimiento y la conformidad)",
+      "procesos": [
+        "ME2.1",
+        "ME2.2"
+      ],
+      "objetivo_control": "Evaluar la efectividad de los controles de acceso y la gestión de identidades, particularmente la implementación de MFA para sistemas críticos.",
+      "riesgos_asociados": [
+        "R1: Acceso no autorizado a sistemas críticos.",
+        "R2: Incremento del riesgo de fraude y robo de identidad.",
+        "R3: Incumplimiento de normativas de seguridad (PCI DSS, ASFI) que exigen controles de acceso robustos.",
+        "R4: Pérdida de confianza de los clientes debido a brechas de seguridad."
+      ],
+      "descripcion": "El 'PLAN ESTRATÉGICO DE SEGURIDAD DE LA INFORMACIÓN (PESI) 2025-2030' en su 'Diagnóstico de Seguridad Actual' reporta 'Contraseñas simples, sin MFA en todos los sistemas' con una prioridad ALTA. Esto se corrobora con el KPI de 'Usuarios con MFA activo' que muestra una 'Línea Base' del 20% en el 'PESI 2025-2030'. A pesar de que la 'Políticas de Seguridad de la Información (PSI)' establece que 'La autenticación multifactor (MFA) es obligatoria para todos los accesos a sistemas críticos del banco, conforme al objetivo OS3 del PESI', y el 'Manual de Procedimientos' indica que el MFA es obligatorio al crear un usuario, la implementación actual es deficiente.",
+      "recomendacion": "Priorizar y acelerar la implementación de MFA para el 100% de los usuarios con acceso a sistemas críticos, según la meta establecida en el PESI para 2026. Se debe revisar el 'Procedimiento N° 3: Gestión de Accesos (Alta, Baja y Modificación)' para asegurar que la habilitación de MFA sea un paso ineludible y verificado en el proceso de alta de usuarios, y realizar campañas de concientización y soporte para los usuarios existentes.",
+      "causa": "La falta de un plan de implementación y seguimiento efectivo para la obligatoriedad del MFA, a pesar de estar definida en las políticas y procedimientos, y reconocida como una brecha de seguridad de alta prioridad.",
+      "efecto": "La exposición de los sistemas críticos a ataques de fuerza bruta, phishing y robo de credenciales, aumentando significativamente el riesgo de acceso no autorizado y potenciales brechas de seguridad que comprometan la confidencialidad e integridad de la información.",
+      "probabilidad": 5,
+      "impacto": 5,
+      "nivel_riesgo": "Extremo",
+      "conclusion": "La falta de una implementación completa de MFA demuestra una debilidad en el catalizador de 'Controles de seguridad' de COBIT 2019, afectando directamente la capacidad de 'Monitorizar, evaluar y revisar el rendimiento y la conformidad' (ME2) de los controles de acceso.",
+      "criterio": "COBIT 2019 – ME2 (Monitorizar, evaluar y revisar el rendimiento y la conformidad); PESI 2025 – 2030, Sección 3 y 6; Políticas de Seguridad de la Información, Sección 7.4; Manual de Procedimientos, Sección 6.3; Normas de Auditoría de Sistemas, NAS-SI-03.",
+      "citas_bibliograficas": [
+        {
+          "documento": "PLAN ESTRATÉGICO DE SEGURIDAD DE LA INFORMACIÓN (PESI) 2025 – 2030 BANCO LUNA LLENA",
+          "seccion": "3. Diagnóstico de Seguridad Actual",
+          "pagina": null,
+          "descripcion": "Reporta 'Contraseñas simples, sin MFA en todos los sistemas' con prioridad ALTA."
+        },
+        {
+          "documento": "PLAN ESTRATÉGICO DE SEGURIDAD DE LA INFORMACIÓN (PESI) 2025 – 2030 BANCO LUNA LLENA",
+          "seccion": "6. KPIs de Seguridad de la Información",
+          "pagina": null,
+          "descripcion": "Indica que solo el 20% de los 'Usuarios con MFA activo' es la línea base."
+        },
+        {
+          "documento": "Políticas de Seguridad de la Información BANCO LUNA LLENA",
+          "seccion": "7.4 Políticas de administración de usuarios y accesos",
+          "pagina": null,
+          "descripcion": "Establece que 'La autenticación multifactor (MFA) es obligatoria para todos los accesos a sistemas críticos del banco'."
+        },
+        {
+          "documento": "Manual de Procedimientos BANCO LUNA LLENA",
+          "seccion": "6.3. Procedimiento N° 3: Gestión de Accesos (Alta, Baja y Modificación)",
+          "pagina": null,
+          "descripcion": "La acción 3 'Crear usuario' incluye 'habilita el MFA obligatorio'."
+        }
+      ],
+      "evidencias": [
+        {
+          "numero": 1,
+          "referencia": "PESI 2025 – 2030, Página 5, Tabla '3. Diagnóstico de Seguridad Actual', Fila 'Control de Acceso'",
+          "descripcion": "La tabla muestra 'Contraseñas simples, sin MFA en todos los sistemas' con Nivel 2 y Prioridad ALTA."
+        },
+        {
+          "numero": 2,
+          "referencia": "PESI 2025 – 2030, Página 7, Tabla '6. KPIs de Seguridad de la Información', Fila 'Usuarios con MFA activo'",
+          "descripcion": "El KPI 'Usuarios con MFA activo' tiene una 'Línea Base' del '20%'."
+        },
+        {
+          "numero": 3,
+          "referencia": "Políticas de Seguridad de la Información, Página 8, Sección '7.4 Políticas de administración de usuarios y accesos'",
+          "descripcion": "El texto indica la obligatoriedad del MFA para sistemas críticos."
+        }
+      ]
+    },
+    {
+      "codigo": "H6",
+      "dominio": "ME2 (Monitorizar, evaluar y revisar el rendimiento y la conformidad)",
+      "procesos": [
+        "ME2.1",
+        "ME2.2"
+      ],
+      "objetivo_control": "Evaluar la efectividad de los controles de detección y respuesta a incidentes, incluyendo la funcionalidad del SIEM y el SOC.",
+      "riesgos_asociados": [
+        "R1: Retraso significativo en la detección de incidentes de seguridad.",
+        "R2: Mayor probabilidad de impacto y propagación de ciberataques.",
+        "R3: Incumplimiento de objetivos de seguridad (MTTD) y normativas regulatorias.",
+        "R4: Pérdida de datos sensibles y reputación institucional."
+      ],
+      "descripcion": "El 'PLAN ESTRATÉGICO DE SEGURIDAD DE LA INFORMACIÓN (PESI) 2025-2030' en su 'Diagnóstico de Seguridad Actual' reporta 'Procedimientos básicos, sin SIEM activo' para la 'Gestión de Incidentes' con una prioridad ALTA. Esta afirmación contradice la información del documento 'Infraestructura de TI', que detalla la existencia de un 'SIEM: IBM QRadar SIEM 7.5 con 12 fuentes de log y 85 reglas de correlación'. Adicionalmente, el 'PESI 2025-2030' muestra un 'Tiempo de detección de incidentes (MTTD)' de '72 horas' como línea base, muy por encima de la meta de '< 1 hora' para 2030, lo que sugiere una ineficacia en la detección, independientemente de la presencia del SIEM.",
+      "recomendacion": "Investigar y resolver la discrepancia en la documentación sobre el estado del SIEM. Si el SIEM no está activo o es ineficaz, se debe implementar y configurar adecuadamente el SIEM IBM QRadar, asegurando la integración de todas las fuentes de log relevantes y la optimización de las reglas de correlación. Se debe establecer un SOC funcional y operativo 24/7, con personal capacitado y procedimientos claros para la monitorización y respuesta a alertas, con el fin de reducir el MTTD a los umbrales definidos.",
+      "causa": "Inconsistencia en la documentación interna sobre el estado de los sistemas de seguridad, y una posible falta de configuración, optimización o personalización adecuada del SIEM existente, lo que impide una detección temprana y efectiva de incidentes.",
+      "efecto": "La incapacidad de detectar y responder a incidentes de seguridad de manera oportuna, lo que aumenta la ventana de exposición a amenazas, el potencial daño a los activos de información y la dificultad para cumplir con los objetivos de seguridad y las expectativas regulatorias.",
+      "probabilidad": 5,
+      "impacto": 5,
+      "nivel_riesgo": "Extremo",
+      "conclusion": "La inconsistencia en la información y el elevado MTTD indican una deficiencia crítica en el catalizador de 'Infraestructura, servicios y aplicaciones' y 'Controles de seguridad' de COBIT 2019, impactando negativamente la capacidad de 'Monitorizar, evaluar y revisar el rendimiento y la conformidad' (ME2) de la gestión de incidentes.",
+      "criterio": "COBIT 2019 – ME2 (Monitorizar, evaluar y revisar el rendimiento y la conformidad); PESI 2025 – 2030, Sección 3 y 6; Infraestructura de TI, 'Software de Seguridad'; Normas de Auditoría de Sistemas, NAS-SI-02; Políticas de Seguridad de la Información, Sección 7.7.",
+      "citas_bibliograficas": [
+        {
+          "documento": "PLAN ESTRATÉGICO DE SEGURIDAD DE LA INFORMACIÓN (PESI) 2025 – 2030 BANCO LUNA LLENA",
+          "seccion": "3. Diagnóstico de Seguridad Actual",
+          "pagina": null,
+          "descripcion": "Reporta 'Procedimientos básicos, sin SIEM activo' para Gestión de Incidentes con prioridad ALTA."
+        },
+        {
+          "documento": "Infraestructura de TI BANCO LUNA LLENA",
+          "seccion": "Software de Seguridad",
+          "pagina": null,
+          "descripcion": "Detalla la existencia de 'SIEM: IBM QRadar SIEM 7.5 con 12 fuentes de log y 85 reglas de correlación'."
+        },
+        {
+          "documento": "PLAN ESTRATÉGICO DE SEGURIDAD DE LA INFORMACIÓN (PESI) 2025 – 2030 BANCO LUNA LLENA",
+          "seccion": "6. KPIs de Seguridad de la Información",
+          "pagina": null,
+          "descripcion": "Establece 'Tiempo de detección de incidentes (MTTD)' en '72 horas' como línea base."
+        }
+      ],
+      "evidencias": [
+        {
+          "numero": 1,
+          "referencia": "PESI 2025 – 2030, Página 5, Tabla '3. Diagnóstico de Seguridad Actual', Fila 'Gestión de Incidentes'",
+          "descripcion": "La tabla muestra 'Procedimientos básicos, sin SIEM activo' con Nivel 2 y Prioridad ALTA."
+        },
+        {
+          "numero": 2,
+          "referencia": "Infraestructura de TI, Página 6, Sección 'Software de Seguridad'",
+          "descripcion": "El documento describe el SIEM IBM QRadar 7.5 con sus características."
+        },
+        {
+          "numero": 3,
+          "referencia": "PESI 2025 – 2030, Página 7, Tabla '6. KPIs de Seguridad de la Información', Fila 'Tiempo de detección de incidentes (MTTD)'",
+          "descripcion": "El KPI 'Tiempo de detección de incidentes (MTTD)' tiene una 'Línea Base' de '72 horas'."
+        }
+      ]
+    },
+    {
+      "codigo": "H7",
+      "dominio": "PO3 (Gestionar la arquitectura empresarial), ME2 (Monitorizar, evaluar y revisar el rendimiento y la conformidad)",
+      "procesos": [
+        "PO3.3",
+        "ME2.2"
+      ],
+      "objetivo_control": "Evaluar la coherencia y el estado de implementación de la arquitectura de seguridad de red, incluyendo la segmentación por VLAN y la arquitectura Zero Trust.",
+      "riesgos_asociados": [
+        "R1: Inconsistencia en la aplicación de controles de seguridad de red.",
+        "R2: Mayor superficie de ataque debido a una segmentación incompleta o mal documentada.",
+        "R3: Dificultad para auditar y verificar la conformidad de la seguridad de red.",
+        "R4: Posible incumplimiento de requisitos regulatorios (PCI DSS, ASFI) relacionados con la segmentación de red."
+      ],
+      "descripcion": "El 'PLAN ESTRATÉGICO DE SEGURIDAD DE LA INFORMACIÓN (PESI) 2025-2030' en su 'Diagnóstico de Seguridad Actual' reporta 'Firewall activo, sin segmentación completa por VLAN' para la 'Seguridad en Redes' con una prioridad MEDIA. Sin embargo, el documento 'Infraestructura de TI' describe una 'segmentación Zero Trust implementada con Cisco ISE' y detalla '3 VLANs diferenciadas: VLAN 10 (cajeros ATM), VLAN 20 (banca móvil/web), VLAN 30 (administrativa)'. Esta contradicción en la documentación interna genera incertidumbre sobre el estado real de la segmentación de red y la implementación de Zero Trust.",
+      "recomendacion": "Realizar una revisión exhaustiva y una auditoría técnica de la infraestructura de red para verificar el estado actual de la segmentación por VLAN y la implementación de la arquitectura Zero Trust con Cisco ISE. Actualizar el 'Diagnóstico de Seguridad Actual' en el PESI para reflejar con precisión la situación real y asegurar la coherencia en toda la documentación interna. Si la segmentación es incompleta, desarrollar e implementar un plan para completarla según los estándares definidos.",
+      "causa": "Falta de un proceso formal y periódico de actualización y validación cruzada de la documentación estratégica (PESI) con la documentación técnica de infraestructura, o una implementación parcial que no ha sido completamente reflejada en el diagnóstico de seguridad.",
+      "efecto": "La inconsistencia en la información dificulta la toma de decisiones estratégicas y operativas, impide una evaluación precisa de la postura de seguridad de la red y puede llevar a una falsa sensación de seguridad o a la asignación inadecuada de recursos para mitigar riesgos.",
+      "probabilidad": 4,
+      "impacto": 4,
+      "nivel_riesgo": "Alto",
+      "conclusion": "La discrepancia en la documentación impacta la efectividad del catalizador de 'Información' y 'Controles de seguridad' de COBIT 2019, comprometiendo la capacidad de 'Gestionar la arquitectura empresarial' (PO3) en el ámbito tecnológico y de 'Monitorizar, evaluar y revisar el rendimiento y la conformidad' (ME2) de los controles de seguridad de red.",
+      "criterio": "COBIT 2019 – PO3 (Gestionar la arquitectura empresarial), ME2 (Monitorizar, evaluar y revisar el rendimiento y la conformidad); PESI 2025 – 2030, Sección 3; Infraestructura de TI, 'Configuración de Infraestructura', 'Seguridad de Red'; Normas de Auditoría de Sistemas, NAS-INF-01.",
+      "citas_bibliograficas": [
+        {
+          "documento": "PLAN ESTRATÉGICO DE SEGURIDAD DE LA INFORMACIÓN (PESI) 2025 – 2030 BANCO LUNA LLENA",
+          "seccion": "3. Diagnóstico de Seguridad Actual",
+          "pagina": null,
+          "descripcion": "Reporta 'Firewall activo, sin segmentación completa por VLAN' para Seguridad en Redes con prioridad MEDIA."
+        },
+        {
+          "documento": "Infraestructura de TI BANCO LUNA LLENA",
+          "seccion": "Configuración de Infraestructura",
+          "pagina": null,
+          "descripcion": "Detalla 'segmentación Zero Trust implementada con Cisco ISE' y '3 VLANs diferenciadas'."
+        }
+      ],
+      "evidencias": [
+        {
+          "numero": 1,
+          "referencia": "PESI 2025 – 2030, Página 5, Tabla '3. Diagnóstico de Seguridad Actual', Fila 'Seguridad en Redes'",
+          "descripcion": "La tabla muestra 'Firewall activo, sin segmentación completa por VLAN' con Nivel 3 y Prioridad MEDIA."
+        },
+        {
+          "numero": 2,
+          "referencia": "Infraestructura de TI, Página 4, Sección 'Configuración de Infraestructura', Elemento 'Seguridad de Red'",
+          "descripcion": "El documento describe la implementación de Zero Trust y las VLANs diferenciadas."
+        }
+      ]
+    },
+    {
+      "codigo": "H8",
+      "dominio": "ME2 (Monitorizar, evaluar y revisar el rendimiento y la conformidad)",
+      "procesos": [
+        "ME2.1",
+        "ME2.2"
+      ],
+      "objetivo_control": "Evaluar la coherencia y la efectividad de los planes de continuidad del negocio y recuperación ante desastres, incluyendo la realización de pruebas periódicas.",
+      "riesgos_asociados": [
+        "R1: Incertidumbre sobre la capacidad real de recuperación ante un desastre.",
+        "R2: Incumplimiento de los objetivos de RTO y RPO en caso de un incidente crítico.",
+        "R3: Pérdida de datos o interrupción prolongada de servicios críticos.",
+        "R4: Incumplimiento de requisitos regulatorios (ASFI) sobre continuidad del negocio."
+      ],
+      "descripcion": "El 'PLAN ESTRATÉGICO DE SEGURIDAD DE LA INFORMACIÓN (PESI) 2025-2030' en su 'Diagnóstico de Seguridad Actual' reporta 'BCP documentado, sin pruebas regulares' para la 'Continuidad del Negocio' con una prioridad ALTA. Sin embargo, el documento 'Infraestructura de TI' afirma que el 'DRP probado semestralmente' y menciona una 'última prueba de failover: enero 2026 (exitosa en 3.2 h)'. Esta contradicción entre el diagnóstico estratégico y la información de infraestructura y auditoría genera dudas sobre la veracidad de las pruebas de DRP o la actualización del diagnóstico.",
+      "recomendacion": "Establecer un proceso robusto de revisión y actualización periódica del 'Diagnóstico de Seguridad Actual' del PESI, asegurando que refleje con precisión el estado real de las pruebas de DRP y BCP. Implementar un mecanismo de validación cruzada entre los informes de pruebas de DRP y los documentos estratégicos. Si las pruebas no son regulares, se debe establecer y ejecutar un cronograma de pruebas semestrales, documentando los resultados y las lecciones aprendidas para la mejora continua del DRP.",
+      "causa": "Falta de un proceso formal para la sincronización y validación de la información entre los documentos estratégicos (PESI) y los registros operativos/de auditoría (Infraestructura de TI, Normas de Auditoría de Sistemas), o una ejecución inconsistente de las pruebas de DRP que no se refleja en el diagnóstico.",
+      "efecto": "La inconsistencia en la información puede llevar a una percepción errónea de la preparación ante desastres, dificultando la asignación de recursos para mejorar la continuidad del negocio y exponiendo al banco a riesgos significativos de interrupción de servicios y pérdida de datos en caso de un evento catastrófico.",
+      "probabilidad": 4,
+      "impacto": 5,
+      "nivel_riesgo": "Extremo",
+      "conclusion": "La discrepancia en la documentación sobre las pruebas de DRP afecta la fiabilidad del catalizador de 'Información' y 'Controles de seguridad' de COBIT 2019, comprometiendo la capacidad de 'Monitorizar, evaluar y revisar el rendimiento y la conformidad' (ME2) de los planes de continuidad del negocio.",
+      "criterio": "COBIT 2019 – ME2 (Monitorizar, evaluar y revisar el rendimiento y la conformidad); PESI 2025 – 2030, Sección 3; Infraestructura de TI, 'Continuidad del Negocio'; Políticas de Seguridad de la Información, Sección 7.8; Normas de Auditoría de Sistemas, NAS-DRP-01.",
+      "citas_bibliograficas": [
+        {
+          "documento": "PLAN ESTRATÉGICO DE SEGURIDAD DE LA INFORMACIÓN (PESI) 2025 – 2030 BANCO LUNA LLENA",
+          "seccion": "3. Diagnóstico de Seguridad Actual",
+          "pagina": null,
+          "descripcion": "Reporta 'BCP documentado, sin pruebas regulares' para Continuidad del Negocio con prioridad ALTA."
+        },
+        {
+          "documento": "Infraestructura de TI BANCO LUNA LLENA",
+          "seccion": "Continuidad del Negocio",
+          "pagina": null,
+          "descripcion": "Afirma que el 'DRP probado semestralmente' y menciona la 'última prueba de failover: enero 2026 (exitosa en 3.2 h)'."
+        },
+        {
+          "documento": "Políticas de Seguridad de la Información BANCO LUNA LLENA",
+          "seccion": "7.8 Políticas de continuidad del negocio y recuperación ante desastres",
+          "pagina": null,
+          "descripcion": "Establece que el DRP 'será documentado, mantenido, actualizado y probado regularmente'."
+        }
+      ],
+      "evidencias": [
+        {
+          "numero": 1,
+          "referencia": "PESI 2025 – 2030, Página 5, Tabla '3. Diagnóstico de Seguridad Actual', Fila 'Continuidad del Negocio'",
+          "descripcion": "La tabla muestra 'BCP documentado, sin pruebas regulares' con Nivel 2 y Prioridad ALTA."
+        },
+        {
+          "numero": 2,
+          "referencia": "Infraestructura de TI, Página 7, Sección 'Continuidad del Negocio'",
+          "descripcion": "El documento indica que el DRP es probado semestralmente y detalla la última prueba exitosa."
+        }
+      ]
+    },
+    {
+      "codigo": "H9",
+      "dominio": "Dominio APO – Alinear, Planificar y Organizar",
+      "procesos": [
+        "APO07"
+      ],
+      "objetivo_control": "Evaluar la existencia y madurez de los procesos de gestión de recursos humanos para el área de TI.",
+      "riesgos_asociados": [
+        "R1",
+        "R2",
+        "R3",
+        "R4"
+      ],
+      "descripcion": "Se observa que el Banco Luna Llena cuenta con una estructura organizacional definida para el Área de Tecnologías de Información, incluyendo la distribución de personal y responsabilidades, y la existencia de manuales de funciones por cargo. Sin embargo, no se ha identificado un proceso formal y documentado que abarque la gestión integral de los recursos humanos de TI, incluyendo aspectos como la planificación de personal, reclutamiento, selección, evaluación de desempeño, desarrollo de carrera y planes de sucesión específicos para el personal de TI. La ausencia de un marco formal para la gestión de TI es reconocida como una brecha en el PETI.",
+      "recomendacion": "Desarrollar e implementar un proceso formal de gestión de recursos humanos de TI, alineado con el marco COBIT 2019 (APO07), que incluya la planificación de personal, reclutamiento, selección, evaluación de desempeño, desarrollo de carrera y planes de sucesión. Este proceso debe ser documentado y comunicado a todo el personal de TI.",
+      "causa": "Ausencia de un enfoque estructurado y formalizado para la gestión de recursos humanos dentro del área de TI, más allá de la definición de roles y responsabilidades básicas.",
+      "efecto": "Potencial escasez de personal calificado, baja moral del equipo, dificultades para la ejecución de iniciativas estratégicas de TI, y un incremento en los riesgos operativos y de seguridad debido a la falta de competencias adecuadas o la sobrecarga de trabajo.",
+      "probabilidad": 4,
+      "impacto": 4,
+      "nivel_riesgo": "Alto",
+      "conclusion": "La situación actual indica una madurez incipiente en la gestión de recursos humanos de TI, lo cual es un catalizador de gobierno y gestión (APO07) que requiere atención para asegurar la disponibilidad de personal competente y motivado para alcanzar los objetivos estratégicos del banco.",
+      "criterio": "COBIT 2019 – APO07 Gestionar los recursos humanos.",
+      "citas_bibliograficas": [
+        {
+          "documento": "Descripción de la Entidad Financiera Banco Luna Llena",
+          "seccion": "2.2 Subgerencias",
+          "pagina": "4",
+          "descripcion": "Detalla la conformación del área de TI por 13 personas y su distribución."
+        },
+        {
+          "documento": "Descripción de la Entidad Financiera Banco Luna Llena",
+          "seccion": "6. Objetivos Específicos",
+          "pagina": "6",
+          "descripcion": "Menciona 'Analizar la estructura funcional del Área de Tecnologías de Información, especificando su nivel directivo, subgerencias, distribución de personal y responsabilidades.'"
+        },
+        {
+          "documento": "Manual de Procedimientos Banco Luna Llena",
+          "seccion": "4. Documentos internos relacionados",
+          "pagina": "4",
+          "descripcion": "Lista 'Manuales de Funciones por Cargo (13 cargos) MF-001 AL 013'."
+        },
+        {
+          "documento": "Plan Estratégico de Tecnología de la Información (PETI) 2025-2030 Banco Luna Llena",
+          "seccion": "3.2 Brechas Identificadas",
+          "pagina": "5",
+          "descripcion": "Identifica 'Procesos de TI sin marco formal' como una situación actual en el dominio de 'Gobierno de TI', con la brecha/oportunidad de 'Implementar COBIT 2019 como marco de gobierno'."
+        }
+      ],
+      "evidencias": [
+        {
+          "numero": 1,
+          "referencia": "Descripción de la Entidad Financiera Banco Luna Llena, 2.2 Subgerencias",
+          "descripcion": "Detalle de la conformación del área de TI por 13 personas."
+        },
+        {
+          "numero": 2,
+          "referencia": "Manual de Procedimientos Banco Luna Llena, 4. Documentos internos relacionados",
+          "descripcion": "Mención de la existencia de 'Manuales de Funciones por Cargo (13 cargos) MF-001 AL 013'."
+        },
+        {
+          "numero": 3,
+          "referencia": "Plan Estratégico de Tecnología de la Información (PETI) 2025-2030 Banco Luna Llena, 3.2 Brechas Identificadas",
+          "descripcion": "Identificación de 'Procesos de TI sin marco formal' como brecha en Gobierno de TI."
+        }
+      ]
+    },
+    {
+      "codigo": "H10",
+      "dominio": "Dominio APO – Alinear, Planificar y Organizar; Dominio MEA – Monitorear, Evaluar y Valorar",
+      "procesos": [
+        "APO07",
+        "MEA02"
+      ],
+      "objetivo_control": "Evaluar la efectividad y alcance del programa de capacitación y desarrollo profesional para el personal de TI.",
+      "riesgos_asociados": [
+        "R1",
+        "R2",
+        "R3",
+        "R4"
+      ],
+      "descripcion": "El Banco Luna Llena ha establecido el objetivo estratégico institucional OE5 'Desarrollar el talento humano y la cultura organizacional', con una iniciativa clave de 'Programa de capacitación continua en TI y atención al cliente' y una meta de 90% de personal capacitado anualmente para 2030. Sin embargo, la línea base actual de personal capacitado en TI es del 60% (2025). De manera similar, para ciberseguridad, la línea base es del 40% con una meta del 95% para 2030. Esto indica que, si bien existe un compromiso y una planificación para la capacitación, el programa se encuentra en una fase inicial de implementación y no ha alcanzado aún los niveles de cobertura deseados.",
+      "recomendacion": "Acelerar la implementación del 'Programa de capacitación continua en TI y atención al cliente' y la 'Capacitación en ciberseguridad para todo el personal', estableciendo métricas de progreso intermedias y mecanismos de seguimiento más robustos para asegurar el cumplimiento de las metas anuales y la cobertura del personal. Considerar la creación de un plan de desarrollo profesional individualizado para roles clave de TI.",
+      "causa": "El programa de capacitación y desarrollo profesional para el personal de TI se encuentra en una fase temprana de implementación, con una línea base de cobertura que aún no satisface las metas estratégicas establecidas.",
+      "efecto": "El personal de TI podría carecer de las habilidades y conocimientos necesarios para gestionar eficazmente la infraestructura, desarrollar software seguro y responder a las amenazas de ciberseguridad, lo que impacta negativamente la disponibilidad, integridad y confidencialidad de la información, y el logro de los objetivos de transformación digital.",
+      "probabilidad": 3,
+      "impacto": 4,
+      "nivel_riesgo": "Alto",
+      "conclusion": "La baja línea base de capacitación en TI y ciberseguridad, a pesar de los objetivos definidos, indica una debilidad en el catalizador de recursos humanos (APO07) y en el monitoreo del desempeño (MEA02), lo que podría obstaculizar la consecución de las metas estratégicas del banco.",
+      "criterio": "COBIT 2019 – APO07 Gestionar los recursos humanos; MEA02 Monitorear, evaluar y revisar el desempeño y la conformidad.",
+      "citas_bibliograficas": [
+        {
+          "documento": "Plan Estratégico Institucional PEI 2025-2030 Banco Luna Llena",
+          "seccion": "4. Objetivos Estratégicos Institucionales",
+          "pagina": "5",
+          "descripcion": "Detalla el Objetivo Estratégico Institucional OE5 'Desarrollar el talento humano y la cultura organizacional' con la Iniciativa Clave 'Programa de capacitación continua en TI y atención al cliente' y la Meta al 2030 '90% de personal capacitado anualmente'."
+        },
+        {
+          "documento": "Plan Estratégico Institucional PEI 2025-2030 Banco Luna Llena",
+          "seccion": "5. Indicadores Clave de Desempeño (KPIs)",
+          "pagina": "6",
+          "descripcion": "Establece el KPI 'Personal capacitado en TI' con una 'Línea Base (2025)' del '60%' y una 'Meta (2030)' del '90%'."
+        },
+        {
+          "documento": "Plan Estratégico de Seguridad de la Información (PESI) 2025-2030 Banco Luna Llena",
+          "seccion": "5. Iniciativas de Seguridad",
+          "pagina": "6",
+          "descripcion": "Incluye la iniciativa 'Capacitación en ciberseguridad para todo el personal' con un 'Año Inicio' en '2025' y 'Año Fin' en '2030'."
+        },
+        {
+          "documento": "Plan Estratégico de Seguridad de la Información (PESI) 2025-2030 Banco Luna Llena",
+          "seccion": "6. KPIs de Seguridad de la Información",
+          "pagina": "7",
+          "descripcion": "Muestra el KPI 'Personal capacitado en ciberseguridad' con una 'Línea Base' del '40%' y una 'Meta 2030' del '95%'."
+        },
+        {
+          "documento": "Normas Banco Luna Llena",
+          "seccion": "10.2 Competencia Profesional",
+          "pagina": "8",
+          "descripcion": "Establece la norma 'N-ORG-05: El personal auditor participará en el programa de capacitación continua institucional (OE5 del PEI), con un mínimo de 40 horas de formación anual en temas de auditoría, ciberseguridad y tecnología financiera.'"
+        }
+      ],
+      "evidencias": [
+        {
+          "numero": 1,
+          "referencia": "Plan Estratégico Institucional PEI 2025-2030 Banco Luna Llena, 4. Objetivos Estratégicos Institucionales",
+          "descripcion": "Objetivo OE5 y su iniciativa de capacitación."
+        },
+        {
+          "numero": 2,
+          "referencia": "Plan Estratégico Institucional PEI 2025-2030 Banco Luna Llena, 5. Indicadores Clave de Desempeño (KPIs)",
+          "descripcion": "KPI 'Personal capacitado en TI' con línea base del 60%."
+        },
+        {
+          "numero": 3,
+          "referencia": "Plan Estratégico de Seguridad de la Información (PESI) 2025-2030 Banco Luna Llena, 6. KPIs de Seguridad de la Información",
+          "descripcion": "KPI 'Personal capacitado en ciberseguridad' con línea base del 40%."
+        }
+      ]
+    },
+    {
+      "codigo": "H11",
+      "dominio": "Dominio APO – Alinear, Planificar y Organizar",
+      "procesos": [
+        "APO07"
+      ],
+      "objetivo_control": "Evaluar la existencia y aplicación de un proceso formal para la evaluación del desempeño del personal de TI.",
+      "riesgos_asociados": [
+        "R1",
+        "R2",
+        "R3",
+        "R4"
+      ],
+      "descripcion": "Aunque el 'Código de Ética' establece normas de conducta y 'Políticas de Seguridad de la Información' indica que las responsabilidades de seguridad están incorporadas en los manuales de funciones de los 13 cargos del Área de TI, no se ha encontrado evidencia de un proceso formal y periódico de evaluación de desempeño para el personal de TI. La ausencia de este proceso impide medir el cumplimiento de las responsabilidades asignadas, identificar brechas de habilidades de manera sistemática y vincular el desempeño individual con los objetivos estratégicos de TI y del banco.",
+      "recomendacion": "Diseñar e implementar un proceso formal de evaluación de desempeño para todo el personal de TI, que incluya la definición de objetivos claros, criterios de evaluación basados en las funciones y competencias, retroalimentación periódica y planes de mejora. Este proceso debe integrarse con los planes de capacitación y desarrollo profesional.",
+      "causa": "Inexistencia de un proceso formal y sistemático para evaluar el desempeño del personal de TI, lo que resulta en una gestión reactiva en lugar de proactiva del talento.",
+      "efecto": "La falta de un proceso de evaluación de desempeño puede llevar a la no identificación oportuna de brechas de habilidades, bajo rendimiento, desmotivación del personal y una gestión ineficaz del talento, lo que a su vez puede impactar la capacidad del área de TI para cumplir con sus objetivos y mantener un alto nivel de servicio.",
+      "probabilidad": 4,
+      "impacto": 3,
+      "nivel_riesgo": "Alto",
+      "conclusion": "La ausencia de un proceso formal de evaluación de desempeño representa una debilidad en el catalizador de recursos humanos (APO07), limitando la capacidad del banco para optimizar el rendimiento del personal de TI y asegurar su alineación con las metas estratégicas.",
+      "criterio": "COBIT 2019 – APO07 Gestionar los recursos humanos.",
+      "citas_bibliograficas": [
+        {
+          "documento": "Código de Ética Banco Luna Llena",
+          "seccion": "3. Normas de Conducta",
+          "pagina": "5",
+          "descripcion": "Detalla las normas de conducta esperadas del personal, incluyendo 'Cumplir con responsabilidad y puntualidad las funciones asignadas' y 'Desempeñar las funciones con diligencia, ética y competencia técnica'."
+        },
+        {
+          "documento": "Políticas de Seguridad de la Información Banco Luna Llena",
+          "seccion": "7.1 Políticas de gestión de seguridad de información",
+          "pagina": "7",
+          "descripcion": "Afirma que 'Las responsabilidades sobre seguridad de información están incorporadas en los Manuales de Funciones de los 13 cargos del Área de TI.'"
+        },
+        {
+          "documento": "Manual de Procedimientos Banco Luna Llena",
+          "seccion": "4. Documentos internos relacionados",
+          "pagina": "4",
+          "descripcion": "Lista 'Manuales de Funciones por Cargo (13 cargos) MF-001 AL 013'."
+        },
+        {
+          "documento": "Plan Estratégico de Tecnología de la Información (PETI) 2025-2030 Banco Luna Llena",
+          "seccion": "3.2 Brechas Identificadas",
+          "pagina": "5",
+          "descripcion": "Identifica 'Procesos de TI sin marco formal' como una situación actual en el dominio de 'Gobierno de TI'."
+        }
+      ],
+      "evidencias": [
+        {
+          "numero": 1,
+          "referencia": "Código de Ética Banco Luna Llena, 3. Normas de Conducta",
+          "descripcion": "Establece normas de conducta pero no un proceso de evaluación."
+        },
+        {
+          "numero": 2,
+          "referencia": "Políticas de Seguridad de la Información Banco Luna Llena, 7.1 Políticas de gestión de seguridad de información",
+          "descripcion": "Menciona responsabilidades en manuales de funciones, pero no cómo se evalúa su cumplimiento."
+        },
+        {
+          "numero": 3,
+          "referencia": "Plan Estratégico de Tecnología de la Información (PETI) 2025-2030 Banco Luna Llena, 3.2 Brechas Identificadas",
+          "descripcion": "Identificación de 'Procesos de TI sin marco formal' como brecha en Gobierno de TI."
+        }
+      ]
+    },
+    {
+      "codigo": "H12",
+      "dominio": "Dominio APO – Alinear, Planificar y Organizar",
+      "procesos": [
+        "APO07"
+      ],
+      "objetivo_control": "Evaluar la existencia de mecanismos formales para la transferencia de conocimiento dentro del área de TI.",
+      "riesgos_asociados": [
+        "R1",
+        "R2",
+        "R3",
+        "R4"
+      ],
+      "descripcion": "Si bien el 'Manual de Procedimientos' detalla actividades y responsables para diversas operaciones de TI, y existen 'Manuales de Funciones por Cargo', no se ha identificado un proceso formal o iniciativas específicas para la transferencia de conocimiento crítico entre el personal de TI, especialmente en casos de rotación, jubilación o cambios organizacionales. La dependencia de 'procesos de TI sin marco formal' (PETI) sugiere que la transferencia de conocimiento podría ser ad-hoc y no sistemática.",
+      "recomendacion": "Implementar un programa formal de gestión del conocimiento y transferencia de conocimiento para el área de TI, que incluya mentorías, documentación estructurada de procesos y configuraciones, bases de conocimiento accesibles y sesiones de intercambio de experiencias. Este programa debe ser parte del proceso de gestión de recursos humanos de TI.",
+      "causa": "Falta de un proceso formal y sistemático para la captura, retención y transferencia de conocimiento tácito y explícito dentro del equipo de TI.",
+      "efecto": "La dependencia de conocimientos individuales y la ausencia de mecanismos de transferencia formal pueden resultar en la pérdida de información crítica, retrasos en la resolución de problemas, ineficiencias operativas y un aumento del riesgo de interrupción del servicio ante la salida de personal clave.",
+      "probabilidad": 3,
+      "impacto": 4,
+      "nivel_riesgo": "Alto",
+      "conclusion": "La falta de mecanismos explícitos para la transferencia de conocimiento en TI representa una debilidad en el catalizador de recursos humanos (APO07), lo que podría comprometer la resiliencia operativa y la capacidad de adaptación del banco a largo plazo.",
+      "criterio": "COBIT 2019 – APO07 Gestionar los recursos humanos.",
+      "citas_bibliograficas": [
+        {
+          "documento": "Manual de Procedimientos Banco Luna Llena",
+          "seccion": "6. Descripción de actividades",
+          "pagina": "5-12",
+          "descripcion": "Detalla diversos procedimientos operativos con acciones y responsables, lo que implica conocimiento tácito y explícito."
+        },
+        {
+          "documento": "Manual de Procedimientos Banco Luna Llena",
+          "seccion": "4. Documentos internos relacionados",
+          "pagina": "4",
+          "descripcion": "Lista 'Manuales de Funciones por Cargo (13 cargos) MF-001 AL 013'."
+        },
+        {
+          "documento": "Plan Estratégico de Tecnología de la Información (PETI) 2025-2030 Banco Luna Llena",
+          "seccion": "3.2 Brechas Identificadas",
+          "pagina": "5",
+          "descripcion": "Identifica 'Procesos de TI sin marco formal' como una situación actual en el dominio de 'Gobierno de TI'."
+        },
+        {
+          "documento": "Descripción de la Entidad Financiera Banco Luna Llena",
+          "seccion": "2. División de la organización",
+          "pagina": "4",
+          "descripcion": "Menciona que el área de TI está conformada por 13 personas, lo que hace crítica la retención y transferencia de conocimiento."
+        }
+      ],
+      "evidencias": [
+        {
+          "numero": 1,
+          "referencia": "Manual de Procedimientos Banco Luna Llena, 6. Descripción de actividades",
+          "descripcion": "Procedimientos operativos que implican conocimiento."
+        },
+        {
+          "numero": 2,
+          "referencia": "Plan Estratégico de Tecnología de la Información (PETI) 2025-2030 Banco Luna Llena, 3.2 Brechas Identificadas",
+          "descripcion": "Identificación de 'Procesos de TI sin marco formal' como brecha en Gobierno de TI."
+        },
+        {
+          "numero": 3,
+          "referencia": "Descripción de la Entidad Financiera Banco Luna Llena, 2. División de la organización",
+          "descripcion": "Detalle de la conformación del área de TI por 13 personas."
+        }
+      ]
+    },
+    {
+      "codigo": "H13",
+      "dominio": "Dominio APO – Alinear, Planificar y Organizar; Dominio EDM – Evaluar, Dirigir y Monitorear",
+      "procesos": [
+        "APO07",
+        "EDM01"
+      ],
+      "objetivo_control": "Evaluar la aplicabilidad y especificidad del Código de Ética para el personal de TI, considerando los desafíos éticos inherentes a la tecnología.",
+      "riesgos_asociados": [
+        "R1",
+        "R2",
+        "R3",
+        "R4"
+      ],
+      "descripcion": "El Banco Luna Llena cuenta con un 'Código de Ética' que es de cumplimiento obligatorio para todo el personal y establece principios y normas de conducta generales como integridad, respeto, equidad, compromiso, transparencia y responsabilidad profesional. Además, las 'Políticas de Seguridad de la Información' mencionan que las responsabilidades de seguridad están incorporadas en los manuales de funciones. Sin embargo, el Código de Ética no incluye directrices específicas o ejemplos de dilemas éticos relacionados con el uso de la tecnología, la privacidad de datos, la ciberseguridad, el desarrollo de software o la gestión de sistemas, que son particulares al ámbito de TI.",
+      "recomendacion": "Complementar el Código de Ética existente con un anexo o guía específica para el personal de TI, que aborde los desafíos éticos y de conducta inherentes a su función, incluyendo ejemplos prácticos relacionados con la privacidad de datos, el uso de recursos tecnológicos, la gestión de la información confidencial y la ciberseguridad. Implementar capacitaciones periódicas sobre este anexo.",
+      "causa": "El Código de Ética institucional es de naturaleza general y no ha sido complementado con directrices específicas que aborden los dilemas y responsabilidades éticas particulares del personal de TI.",
+      "efecto": "La falta de claridad en la aplicación de los principios éticos a situaciones tecnológicas específicas puede llevar a decisiones inconsistentes, aumentar el riesgo de comportamientos no éticos (ej. acceso indebido a información, uso inapropiado de recursos), y dificultar la gestión de incidentes éticos en el ámbito de TI, afectando la confianza y la reputación del banco.",
+      "probabilidad": 3,
+      "impacto": 4,
+      "nivel_riesgo": "Alto",
+      "conclusion": "La generalidad del Código de Ética para el personal de TI representa una oportunidad de mejora en el catalizador de recursos humanos (APO07) y en el marco de gobierno (EDM01), siendo crucial para fomentar una cultura ética robusta en un entorno tecnológico complejo.",
+      "criterio": "COBIT 2019 – APO07 Gestionar los recursos humanos; EDM01 Asegurar el establecimiento y mantenimiento del marco de gobierno.",
+      "citas_bibliograficas": [
+        {
+          "documento": "Código de Ética Banco Luna Llena",
+          "seccion": "1. Introducción",
+          "pagina": "4",
+          "descripcion": "Establece que el documento es de 'cumplimiento obligatorio para todo el personal, independientemente de su cargo o modalidad de contratación' y busca 'asegurar una actuación íntegra, transparente, responsable y alineada con las mejores prácticas del sector financiero.'"
+        },
+        {
+          "documento": "Código de Ética Banco Luna Llena",
+          "seccion": "3. Normas de Conducta",
+          "pagina": "5",
+          "descripcion": "Detalla normas de conducta generales para integridad, respeto, equidad, compromiso, transparencia y responsabilidad profesional."
+        },
+        {
+          "documento": "Políticas de Seguridad de la Información Banco Luna Llena",
+          "seccion": "7.1 Políticas de gestión de seguridad de información",
+          "pagina": "7",
+          "descripcion": "Afirma que 'Las responsabilidades sobre seguridad de información están incorporadas en los Manuales de Funciones de los 13 cargos del Área de TI.'"
+        },
+        {
+          "documento": "Normas Banco Luna Llena",
+          "seccion": "16. Incumplimientos y Sanciones",
+          "pagina": "18",
+          "descripcion": "Describe las consecuencias por incumplimientos, referenciando el Reglamento Interno de Trabajo."
+        }
+      ],
+      "evidencias": [
+        {
+          "numero": 1,
+          "referencia": "Código de Ética Banco Luna Llena, 3. Normas de Conducta",
+          "descripcion": "Contenido general de las normas de conducta."
+        },
+        {
+          "numero": 2,
+          "referencia": "Políticas de Seguridad de la Información Banco Luna Llena, 7.1 Políticas de gestión de seguridad de información",
+          "descripcion": "Mención de responsabilidades de seguridad en manuales de funciones, sin detallar el componente ético."
+        },
+        {
+          "numero": 3,
+          "referencia": "Plan Estratégico de Tecnología de la Información (PETI) 2025-2030 Banco Luna Llena, 3.2 Brechas Identificadas",
+          "descripcion": "Identificación de 'Procesos de TI sin marco formal' como brecha en Gobierno de TI, lo que podría incluir la falta de especificidad en políticas éticas para TI."
+        }
+      ]
+    },
+    {
+      "codigo": "H14",
+      "dominio": "PO – Planear y Organizar",
+      "procesos": [
+        "PO1",
+        "PO2"
+      ],
+      "objetivo_control": "Evaluar la existencia y aplicación de un marco formal y una metodología integral para la gestión de riesgos tecnológicos a nivel institucional.",
+      "riesgos_asociados": [
+        "R1: Exposición a riesgos tecnológicos no identificados o subestimados",
+        "R2: Toma de decisiones de TI inconsistente y desalineada con los objetivos de negocio",
+        "R3: Incumplimiento potencial de futuras regulaciones que exijan una gestión de riesgos integral."
+      ],
+      "descripcion": "El Plan Estratégico de Tecnología de la Información (PETI) 2025-2030 identifica explícitamente como una 'Brecha / Oportunidad' la necesidad de 'Implementar COBIT 2019 como marco de gobierno' debido a la situación actual de 'Procesos de TI sin marco formal'. Aunque se menciona la aplicación de ISO 31000 para la gestión de riesgos de seguridad de la información en el PESI y una gestión de riesgos específica para la migración a la nube en el PETI, no se evidencia un marco formal y una metodología unificada para la gestión de todos los riesgos tecnológicos a nivel institucional, más allá de la seguridad o proyectos específicos.",
+      "recomendacion": "Establecer y documentar formalmente una metodología integral de gestión de riesgos tecnológicos, basada en COBIT 2019 (APO12 - Manage Risk) e ISO 31000, que abarque la identificación, análisis, evaluación, tratamiento, monitoreo y comunicación de todos los riesgos de TI. Dicha metodología debe ser aplicada de manera consistente en toda la organización y no solo en áreas o proyectos específicos.",
+      "causa": "La institución se encuentra en una fase de transición hacia la adopción de un marco de gobierno de TI formal (COBIT 2019), lo que ha resultado en la ausencia de una metodología integral y estandarizada para la identificación, evaluación, tratamiento y monitoreo de todos los riesgos tecnológicos.",
+      "efecto": "La falta de un marco integral de gestión de riesgos tecnológicos puede llevar a una identificación incompleta de amenazas y vulnerabilidades, una evaluación inconsistente de su impacto y probabilidad, y la implementación de controles reactivos en lugar de proactivos. Esto incrementa la exposición del Banco Luna Llena a riesgos operativos, financieros y reputacionales no gestionados adecuadamente, afectando la consecución de los objetivos estratégicos de TI y del negocio.",
+      "probabilidad": 4,
+      "impacto": 5,
+      "nivel_riesgo": "Extremo",
+      "conclusion": "La situación actual de 'Procesos de TI sin marco formal' (PETI, 3.2 Brechas Identificadas, Página 5) y el 'Nivel de madurez COBIT' de 1 (PETI, 6. KPIs de TI, Página 8) indican una inmadurez en el catalizador de 'Principios, Políticas y Marcos' de COBIT 2019, específicamente en el proceso PO1 (APO01) - Manage IT Management Framework, lo que limita la capacidad de la organización para gestionar proactivamente sus riesgos tecnológicos.",
+      "criterio": "COBIT 2019 – APO01 (Manage IT Management Framework), APO02 (Manage Strategy); COSO 2013 – Componente 2 (Evaluación de Riesgos)",
+      "citas_bibliograficas": [
+        {
+          "documento": "Plan Estratégico de Tecnología de la Información (PETI) 2025 – 2030",
+          "seccion": "3.2 Brechas Identificadas",
+          "pagina": "5",
+          "descripcion": "La tabla 'Brechas Identificadas' en la sección 'Gobierno de TI' indica 'Procesos de TI sin marco formal' como situación actual y 'Implementar COBIT 2019 como marco de gobierno' como brecha/oportunidad."
+        },
+        {
+          "documento": "Plan Estratégico de Seguridad de la Información (PESI) 2025 – 2030",
+          "seccion": "2.2 Criterios Secundarios",
+          "pagina": "4",
+          "descripcion": "Se menciona la aplicación de ISO 31000 para el análisis y tratamiento de riesgos dentro del SGSI."
+        },
+        {
+          "documento": "Plan Estratégico de Tecnología de la Información (PETI) 2025 – 2030",
+          "seccion": "Gestión de riesgos de la migración",
+          "pagina": "6",
+          "descripcion": "Tabla que detalla riesgos, probabilidad, impacto y mitigación para la migración a la nube, indicando una gestión de riesgos específica para este proyecto."
+        }
+      ],
+      "evidencias": [
+        {
+          "numero": 1,
+          "referencia": "PETI 2025 – 2030, 3.2 Brechas Identificadas, Página 5",
+          "descripcion": "Identificación de 'Procesos de TI sin marco formal' y la necesidad de 'Implementar COBIT 2019 como marco de gobierno'."
+        },
+        {
+          "numero": 2,
+          "referencia": "PETI 2025 – 2030, 6. KPIs de TI, Página 8",
+          "descripcion": "Indicador de 'Nivel de madurez COBIT' en Nivel 1."
+        },
+        {
+          "numero": 3,
+          "referencia": "PESI 2025 – 2030, 2.2 Criterios Secundarios, Página 4",
+          "descripcion": "Mención de ISO 31000 solo para riesgos de seguridad de la información."
+        }
+      ]
+    },
+    {
+      "codigo": "H15",
+      "dominio": "ME – Monitorear, Evaluar y Valorar",
+      "procesos": [
+        "ME2",
+        "PO1"
+      ],
+      "objetivo_control": "Evaluar la existencia y efectividad de auditorías internas formales de seguridad para monitorear el sistema de control interno de TI.",
+      "riesgos_asociados": [
+        "R4: Vulnerabilidades de seguridad no detectadas y explotadas",
+        "R5: Incumplimiento de normativas de seguridad (ISO 27001, PCI DSS, ASFI)",
+        "R6: Pérdida de confianza de los clientes y reputación institucional."
+      ],
+      "descripcion": "El Plan Estratégico de Seguridad de la Información (PESI) 2025-2030, en su 'Diagnóstico de Seguridad Actual', identifica la situación de 'Cumplimiento y Auditoría' como 'Sin auditorías internas formales de seguridad', asignándole un nivel de madurez 1 (el más bajo) y una 'Prioridad ALTA'. Aunque las 'Normas de Auditoría de Sistemas' establecen los procedimientos para la ejecución de auditorías, la declaración en el PESI sugiere una deficiencia en la implementación o formalización de las auditorías internas específicamente en el ámbito de la seguridad de la información.",
+      "recomendacion": "Desarrollar e implementar un programa anual de auditorías internas de seguridad formal, con alcance definido, cronograma, recursos asignados y criterios de auditoría claros, en línea con las 'Normas de Auditoría de Sistemas' y los objetivos del PESI. Los resultados deben ser comunicados y gestionados para asegurar la mejora continua.",
+      "causa": "La falta de un programa de auditorías internas de seguridad formalmente establecido y ejecutado de manera regular, a pesar de la existencia de normas generales de auditoría, indica una brecha en la aplicación práctica de los controles de monitoreo y evaluación.",
+      "efecto": "La ausencia de auditorías internas formales de seguridad impide la detección temprana de vulnerabilidades, deficiencias en los controles de seguridad y posibles incumplimientos normativos. Esto aumenta el riesgo de incidentes de seguridad no identificados, sanciones regulatorias y una disminución en la confianza de los clientes, comprometiendo el objetivo estratégico de fortalecer la seguridad y gestión de riesgos tecnológicos (OS3 del PESI).",
+      "probabilidad": 4,
+      "impacto": 5,
+      "nivel_riesgo": "Extremo",
+      "conclusion": "La identificación de 'Sin auditorías internas formales de seguridad' con Prioridad ALTA (PESI, 3. Diagnóstico de Seguridad Actual, Página 5) demuestra una deficiencia en el catalizador de 'Información y Datos' y 'Personas, Habilidades y Competencias' de COBIT 2019, impactando directamente el proceso ME2 (MEA02) - Monitor, Evaluate and Assess the Internal Control System, al no asegurar una evaluación independiente y periódica de los controles de seguridad.",
+      "criterio": "COBIT 2019 – MEA02 (Monitor, Evaluate and Assess the Internal Control System), APO01 (Manage IT Management Framework); COSO 2013 – Componente 5 (Actividades de Monitoreo)",
+      "citas_bibliograficas": [
+        {
+          "documento": "Plan Estratégico de Seguridad de la Información (PESI) 2025 – 2030",
+          "seccion": "3. Diagnóstico de Seguridad Actual",
+          "pagina": "5",
+          "descripcion": "La tabla 'Diagnóstico de Seguridad Actual' en el dominio 'Cumplimiento y Auditoría' indica 'Sin auditorías internas formales de seguridad' con Nivel 1 y Prioridad ALTA."
+        },
+        {
+          "documento": "Normas Banco Luna Llena (Normas de Auditoría de Sistemas)",
+          "seccion": "11. Normas de Planificación de la Auditoría",
+          "pagina": "9",
+          "descripcion": "Se establecen normas para la planificación de auditorías, incluyendo la evaluación de riesgos y la elaboración de un plan anual, pero el PESI indica una brecha en la ejecución de auditorías internas de seguridad."
+        }
+      ],
+      "evidencias": [
+        {
+          "numero": 1,
+          "referencia": "PESI 2025 – 2030, 3. Diagnóstico de Seguridad Actual, Página 5",
+          "descripcion": "La tabla 'Diagnóstico de Seguridad Actual' indica 'Sin auditorías internas formales de seguridad' con Nivel 1 y Prioridad ALTA."
+        },
+        {
+          "numero": 2,
+          "referencia": "Normas Banco Luna Llena (Normas de Auditoría de Sistemas), 11. Normas de Planificación de la Auditoría, Página 9",
+          "descripcion": "Existencia de normas para la planificación de auditorías, pero el PESI indica una brecha en la ejecución de auditorías internas de seguridad."
+        }
+      ]
+    },
+    {
+      "codigo": "H16",
+      "dominio": "ME – Monitorear, Evaluar y Valorar",
+      "procesos": [
+        "ME2"
+      ],
+      "objetivo_control": "Evaluar la madurez y efectividad del registro y seguimiento periódico de hallazgos de auditoría y riesgos tecnológicos.",
+      "riesgos_asociados": [
+        "R7: Retraso en la mitigación de riesgos y hallazgos críticos",
+        "R8: Recurrencia de problemas y deficiencias de control",
+        "R9: Dificultad para demostrar la efectividad de los controles y el cumplimiento normativo."
+      ],
+      "descripcion": "Las 'Normas de Auditoría de Sistemas' establecen que la GSI mantendrá una 'Matriz de Hallazgos institucional actualizada' y que esta se revisará 'mensualmente por la GSI y se presentará trimestralmente al Comité de TI'. Sin embargo, el 'Plan Estratégico de Tecnología de la Información (PETI) 2025-2030' identifica que el 'Nivel de madurez COBIT' actual es 'Nivel 1' con una meta de 'Nivel 3 al 2027' para el objetivo de 'Implementar gobierno de TI con COBIT 2019'. Un nivel de madurez 1 en COBIT sugiere que los procesos son ad hoc y desorganizados, lo que contrasta con la formalidad descrita en las normas de auditoría para el seguimiento de hallazgos. Esto indica una posible brecha entre la política documentada y la práctica real o la madurez del proceso.",
+      "recomendacion": "Fortalecer la implementación y madurez del proceso de registro y seguimiento de hallazgos y riesgos, asegurando que la 'Matriz de Hallazgos institucional' se mantenga actualizada, completa y sea utilizada activamente para la toma de decisiones. Esto incluye la definición clara de responsables, plazos y mecanismos de escalamiento, y la integración de las lecciones aprendidas en la mejora continua.",
+      "causa": "La baja madurez en el gobierno de TI, reflejada en el nivel 1 de COBIT, sugiere que, a pesar de la existencia de normas documentadas para el seguimiento de hallazgos, la implementación y ejecución de estos procesos pueden ser inconsistentes, reactivas o carecer de la estructura y formalidad necesarias para un seguimiento efectivo y proactivo de los riesgos.",
+      "efecto": "Un registro y seguimiento inmaduro de hallazgos y riesgos puede resultar en la no resolución oportuna de deficiencias, la recurrencia de problemas, la acumulación de riesgos no mitigados y la dificultad para demostrar el cumplimiento normativo. Esto impacta negativamente la mejora continua del SGSI, el PETI y los controles institucionales, y puede llevar a la escalada de hallazgos críticos sin una gestión efectiva.",
+      "probabilidad": 3,
+      "impacto": 4,
+      "nivel_riesgo": "Alto",
+      "conclusion": "El contraste entre las 'Normas de Seguimiento' (Normas de Auditoría de Sistemas, 14, Página 13) y el 'Nivel de madurez COBIT' de 1 (PETI, 6. KPIs de TI, Página 8) sugiere una debilidad en el catalizador de 'Procesos' y 'Cultura, Ética y Comportamiento' de COBIT 2019, afectando la efectividad del proceso ME2 (MEA02) - Monitor, Evaluate and Assess the Internal Control System, al no garantizar un seguimiento robusto y maduro de los hallazgos y riesgos.",
+      "criterio": "COBIT 2019 – MEA02 (Monitor, Evaluate and Assess the Internal Control System); COSO 2013 – Componente 5 (Actividades de Monitoreo)",
+      "citas_bibliograficas": [
+        {
+          "documento": "Normas Banco Luna Llena (Normas de Auditoría de Sistemas)",
+          "seccion": "14. Normas de Seguimiento",
+          "pagina": "13",
+          "descripcion": "Se establece que la GSI mantendrá una Matriz de Hallazgos institucional actualizada y que esta se revisará mensualmente por la GSI y se presentará trimestralmente al Comité de TI."
+        },
+        {
+          "documento": "Plan Estratégico de Tecnología de la Información (PETI) 2025 – 2030",
+          "seccion": "6. KPIs de TI",
+          "pagina": "8",
+          "descripcion": "La tabla 'KPIs de TI' muestra un 'Nivel de madurez COBIT' actual de 'Nivel 1' con una meta de 'Nivel 3 al 2027'."
+        }
+      ],
+      "evidencias": [
+        {
+          "numero": 1,
+          "referencia": "Normas Banco Luna Llena (Normas de Auditoría de Sistemas), 14. Normas de Seguimiento, Página 13",
+          "descripcion": "Descripción de la 'Matriz de Hallazgos institucional' y su revisión mensual/trimestral."
+        },
+        {
+          "numero": 2,
+          "referencia": "Plan Estratégico de Tecnología de la Información (PETI) 2025 – 2030, 6. KPIs de TI, Página 8",
+          "descripcion": "Indicador de 'Nivel de madurez COBIT' en Nivel 1."
+        }
+      ]
+    },
+    {
+      "codigo": "H17",
+      "dominio": "PO – Planear y Organizar, ME – Monitorear, Evaluar y Valorar",
+      "procesos": [
+        "APO03",
+        "APO04",
+        "MEA02"
+      ],
+      "objetivo_control": "Evaluar la existencia y efectividad de un marco formal para la gestión de cambios tecnológicos que asegure la alineación con los objetivos estratégicos y la minimización de riesgos.",
+      "riesgos_asociados": [
+        "R1",
+        "R2",
+        "R3",
+        "R4"
+      ],
+      "descripcion": "Se ha identificado que el Banco Luna Llena carece de un marco formal y unificado para la gestión de cambios tecnológicos que abarque todos los tipos de modificaciones en la infraestructura, sistemas y servicios de TI. Si bien existen procedimientos específicos para la gestión de accesos (Manual de Procedimientos, 6.3), el control de calidad y pase a producción de software (Manual de Procedimientos, 6.5), y la evaluación de proveedores (Manual de Procedimientos, 6.9), no se evidencia un procedimiento general que defina el ciclo de vida completo de un cambio (solicitud, evaluación, planificación, aprobación, implementación, verificación y cierre) para todas las áreas de TI. Esta situación se alinea con la brecha identificada en el Plan Estratégico de Tecnología de la Información (PETI) que señala 'Procesos de TI sin marco formal' y la iniciativa de 'Implementar COBIT 2019 como marco de gobierno'.",
+      "recomendacion": "Elaborar e implementar un procedimiento integral de gestión de cambios tecnológicos, basado en las directrices de COBIT 2019, que defina roles, responsabilidades, etapas del ciclo de vida del cambio, criterios de evaluación de impacto, procesos de aprobación (incluyendo un Comité Asesor de Cambios - CAB) y mecanismos de monitoreo post-implementación para todos los activos de TI. Este procedimiento debe ser comunicado y aplicado de manera transversal en toda la organización.",
+      "causa": "La ausencia de una implementación completa y madura de un marco de gobierno de TI como COBIT 2019, a pesar de haber sido identificado como una iniciativa clave en el PETI, ha resultado en la falta de un proceso estandarizado y centralizado para la gestión de cambios tecnológicos en toda la organización.",
+      "efecto": "La gestión de cambios ad-hoc o fragmentada por áreas incrementa la probabilidad de errores, conflictos de configuración, vulnerabilidades de seguridad no detectadas y fallas operativas. Esto puede resultar en interrupciones del servicio, degradación del rendimiento, incumplimiento de los objetivos de disponibilidad (como el 99.9% para sistemas críticos) y dificultades para demostrar la diligencia debida ante los reguladores.",
+      "probabilidad": 4,
+      "impacto": 4,
+      "nivel_riesgo": "Alto",
+      "conclusion": "La falta de un marco formal de gestión de cambios tecnológicos representa una debilidad significativa en el control interno del Banco Luna Llena, afectando la capacidad de la organización para gestionar eficazmente los riesgos asociados a la evolución de su entorno de TI. Esto impacta directamente los procesos de gobierno y gestión de TI, particularmente en los dominios de APO03 (Manage Enterprise Architecture) y MEA02 (Monitor, Evaluate and Assess the Internal Control System), al no asegurar que los cambios se realicen de manera controlada y que los controles existentes mantengan su efectividad. La iniciativa de implementar COBIT 2019, como se menciona en el PETI, es un catalizador clave para abordar esta brecha.",
+      "criterio": "COBIT 2019 – APO03 (Manage Enterprise Architecture), APO04 (Manage Innovation), MEA02 (Monitor, Evaluate and Assess the Internal Control System); COSO 2013 – Componente 2 (Evaluación de Riesgos) y Componente 3 (Actividades de Control).",
+      "citas_bibliograficas": [
+        {
+          "documento": "Plan Estratégico de Tecnología de la Información (PETI) 2025 – 2030",
+          "seccion": "3.2 Brechas Identificadas",
+          "pagina": "5",
+          "descripcion": "Identifica 'Procesos de TI sin marco formal' como una brecha y 'Implementar COBIT 2019 como marco de gobierno' como una oportunidad/iniciativa."
+        },
+        {
+          "documento": "Plan Estratégico de Tecnología de la Información (PETI) 2025 – 2030",
+          "seccion": "5. Iniciativas y Proyectos de TI",
+          "pagina": "7",
+          "descripcion": "Detalla la iniciativa 'Implementación de COBIT 2019' con Año Inicio 2025 y Año Fin 2026."
+        },
+        {
+          "documento": "Manual de Procedimientos",
+          "seccion": "6.3. Procedimiento N° 3: Gestión de Accesos (Alta, Baja y Modificación)",
+          "pagina": "7",
+          "descripcion": "Describe un procedimiento específico para la gestión de cambios de accesos, sin un marco general."
+        },
+        {
+          "documento": "Manual de Procedimientos",
+          "seccion": "6.5. Procedimiento N° 5: Control de Calidad y Pase a Producción",
+          "pagina": "8",
+          "descripcion": "Describe un procedimiento específico para la gestión de cambios en el desarrollo de software, sin un marco general."
+        }
+      ],
+      "evidencias": [
+        {
+          "numero": 1,
+          "referencia": "PETI 2025 – 2030, Sección 3.2 Brechas Identificadas",
+          "descripcion": "Documento que reconoce explícitamente la brecha de 'Procesos de TI sin marco formal'."
+        },
+        {
+          "numero": 2,
+          "referencia": "PETI 2025 – 2030, Sección 5. Iniciativas y Proyectos de TI",
+          "descripcion": "Plan de proyecto para la 'Implementación de COBIT 2019' con fecha de finalización en 2026, indicando que aún no está completamente implementado."
+        },
+        {
+          "numero": 3,
+          "referencia": "Manual de Procedimientos, Secciones 6.3, 6.5, 6.9",
+          "descripcion": "Existencia de procedimientos de cambio específicos para áreas o tipos de cambios (accesos, software, proveedores) pero ausencia de un procedimiento maestro de gestión de cambios."
+        }
+      ]
+    },
+    {
+      "codigo": "H18",
+      "dominio": "ME – Monitorear, Evaluar y Valorar, PO – Planear y Organizar",
+      "procesos": [
+        "MEA02",
+        "APO03",
+        "APO04"
+      ],
+      "objetivo_control": "Evaluar la existencia y aplicación de un proceso formal para el análisis de impacto de los cambios tecnológicos en los controles de seguridad y operativos existentes, así como la consideración de cambios regulatorios externos.",
+      "riesgos_asociados": [
+        "R1",
+        "R2",
+        "R3",
+        "R4"
+      ],
+      "descripcion": "Aunque el Banco Luna Llena realiza evaluaciones de riesgo anuales y ante eventos significativos que incluyen 'cambios regulatorios, incorporación de nuevos sistemas o proveedores cloud' (Normas de Auditoría de Sistemas, N-PLAN-02), y existen pruebas de seguridad en el ciclo de desarrollo (Manual de Procedimientos, 6.5. Procedimiento N° 5), no se detalla un procedimiento formal y transversal que asegure un análisis de impacto exhaustivo de todos los cambios tecnológicos propuestos sobre el conjunto de controles de seguridad y operativos existentes. La documentación no especifica cómo se evalúa sistemáticamente el impacto de un cambio en la matriz de controles, en la segregación de funciones, o en la conformidad con los marcos de referencia adoptados (ISO 27001, PCI DSS, NIST CSF, CIS Controls). Además, si bien se menciona la necesidad de obtener la no objeción de ASFI para servicios cloud que involucren procesos core (PETI, Anexo A), no se describe un proceso proactivo y continuo para monitorear y adaptar los cambios tecnológicos a la evolución de la normativa ASFI y otros marcos regulatorios.",
+      "recomendacion": "Establecer y documentar un proceso formal de análisis de impacto para todos los cambios tecnológicos, que incluya la evaluación de su efecto en los controles de seguridad y operativos, la segregación de funciones, y el cumplimiento normativo (ASFI, ISO 27001, PCI DSS). Este proceso debe integrarse en el ciclo de vida de la gestión de cambios y ser revisado periódicamente. Adicionalmente, implementar un mecanismo proactivo para el monitoreo de cambios regulatorios y su impacto en la infraestructura y sistemas de TI.",
+      "causa": "La ausencia de un marco de gobierno de TI maduro (como se reconoce en el PETI) y la falta de un procedimiento de gestión de cambios unificado contribuyen a que el análisis de impacto sobre los controles y la consideración de cambios regulatorios sean realizados de manera inconsistente o reactiva, en lugar de ser un paso formal e integral en cada ciclo de cambio.",
+      "efecto": "Los cambios tecnológicos pueden introducir nuevas vulnerabilidades o anular la efectividad de controles existentes sin que esto sea detectado y mitigado a tiempo. Esto puede llevar a brechas de seguridad, fallas en la disponibilidad de sistemas críticos (cuyo SLA es del 99.9%), y sanciones por incumplimiento regulatorio, especialmente en un entorno financiero con regulaciones estrictas como ASFI.",
+      "probabilidad": 3,
+      "impacto": 4,
+      "nivel_riesgo": "Alto",
+      "conclusion": "La gestión del análisis de impacto de los cambios tecnológicos sobre los controles existentes y la adaptación a los cambios regulatorios externos presenta una oportunidad de mejora significativa. Un proceso de gestión de cambios más robusto, alineado con COBIT 2019, fortalecería el monitoreo y la evaluación del sistema de control interno (MEA02) y aseguraría que la arquitectura empresarial (APO03) y las innovaciones (APO04) se gestionen con una visión integral de los riesgos y el cumplimiento.",
+      "criterio": "COBIT 2019 – MEA02 (Monitor, Evaluate and Assess the Internal Control System), APO03 (Manage Enterprise Architecture), APO04 (Manage Innovation); COSO 2013 – Componente 2 (Evaluación de Riesgos), Componente 3 (Actividades de Control); Normativa ASFI (Circular ASFI N° 088/2020).",
+      "citas_bibliograficas": [
+        {
+          "documento": "Normas de Auditoría de Sistemas",
+          "seccion": "11.1 Evaluación de Riesgos, N-PLAN-02",
+          "pagina": "9",
+          "descripcion": "Establece que la evaluación de riesgos se actualizará anualmente y ante eventos significativos (incidentes P1, cambios regulatorios, incorporación de nuevos sistemas o proveedores cloud)."
+        },
+        {
+          "documento": "Manual de Procedimientos",
+          "seccion": "6.5. Procedimiento N° 5: Control de Calidad y Pase a Producción, Acción 2 y PR-5 Acción 1",
+          "pagina": "8",
+          "descripcion": "Menciona la realización de pruebas de seguridad y la revisión de informes de pruebas para confirmar la ausencia de riesgos críticos u operativos antes del pase a producción de software."
+        },
+        {
+          "documento": "Plan Estratégico de Tecnología de la Información (PETI) 2025 – 2030",
+          "seccion": "Anexo A – Roadmap de Migración a Infraestructura Cloud Híbrida",
+          "pagina": "8",
+          "descripcion": "Indica que la ejecución del roadmap está sujeta a la obtención de la no objeción de ASFI para servicios cloud que involucren procesos core."
+        },
+        {
+          "documento": "Plan Estratégico de Seguridad de la Información (PESI) 2025 – 2030",
+          "seccion": "2.2 Criterios Secundarios, Cumplimiento",
+          "pagina": "4",
+          "descripcion": "Describe la aplicación de ISO/IEC 27001 y PCI DSS v4.0, incluyendo la necesidad de auditorías anuales y escaneos trimestrales de vulnerabilidades, lo que implica la necesidad de gestionar cambios para mantener el cumplimiento."
+        }
+      ],
+      "evidencias": [
+        {
+          "numero": 1,
+          "referencia": "Normas de Auditoría de Sistemas, N-PLAN-02",
+          "descripcion": "Documento que describe la actualización de la evaluación de riesgos, pero no un procedimiento detallado de análisis de impacto de cambios sobre controles."
+        },
+        {
+          "numero": 2,
+          "referencia": "Manual de Procedimientos, Sección 6.5",
+          "descripcion": "Procedimiento de desarrollo de software que incluye pruebas de seguridad, pero no un análisis de impacto formal y documentado de cada cambio en el conjunto de controles de seguridad y operativos."
+        },
+        {
+          "numero": 3,
+          "referencia": "PETI 2025 – 2030, Anexo A",
+          "descripcion": "Requisito de no objeción de ASFI para la migración a la nube, lo que indica la existencia de requisitos regulatorios externos que deben ser gestionados proactivamente en los cambios tecnológicos."
+        }
+      ]
+    },
+    {
+      "codigo": "H19",
+      "dominio": "APO (Align, Plan, Organise), MEA (Monitor, Evaluate, Assess)",
+      "procesos": [
+        "APO01",
+        "MEA02"
+      ],
+      "objetivo_control": "Evaluar la efectividad del monitoreo de sistemas y la gestión de incidentes de seguridad.",
+      "riesgos_asociados": [
+        "R1: Detección tardía de incidentes de seguridad",
+        "R2: Mayor tiempo de respuesta y recuperación ante ciberataques",
+        "R3: Incumplimiento de objetivos de seguridad y disponibilidad"
+      ],
+      "descripcion": "El Banco Luna Llena opera con un monitoreo de sistemas predominantemente reactivo, evidenciado por la ausencia de un Sistema de Gestión de Eventos e Información de Seguridad (SIEM) activo y un Centro de Operaciones de Seguridad (SOC) funcional. Esta situación ha sido identificada como una brecha en el Plan Estratégico de Tecnología de la Información (PETI) y en el Diagnóstico de Seguridad Actual del Plan Estratégico de Seguridad de la Información (PESI). Aunque existe una iniciativa para implementar un SIEM y SOC funcional con una meta de operación 24/7 para 2027, la situación actual representa una debilidad significativa en la capacidad de monitoreo proactivo.",
+      "recomendacion": "Acelerar la implementación del SIEM y SOC funcional, priorizando la integración de todas las fuentes de log relevantes y el desarrollo de reglas de correlación efectivas para transicionar de un monitoreo reactivo a uno proactivo 24/7.",
+      "causa": "La falta de una inversión prioritaria y una hoja de ruta acelerada para la implementación de herramientas de monitoreo proactivo como SIEM y SOC, a pesar de su identificación como brecha estratégica.",
+      "efecto": "Incremento del riesgo de no detectar y responder a tiempo a incidentes de seguridad críticos, lo que podría resultar en mayores pérdidas financieras, afectación a la reputación y posibles sanciones regulatorias. La capacidad de evaluar el desempeño de TI en términos de seguridad se ve limitada por la falta de visibilidad en tiempo real.",
+      "probabilidad": 4,
+      "impacto": 5,
+      "nivel_riesgo": "Extremo",
+      "conclusion": "La situación actual de monitoreo reactivo y la ausencia de un SIEM/SOC operativo reflejan una debilidad en el catalizador de 'Procesos' (MEA02) y 'Estructura Organizacional' (APO01) de COBIT 2019, impidiendo una gestión efectiva del desempeño de la seguridad de la información.",
+      "criterio": "COBIT 2019 (MEA02, APO01), NIST CSF 2.0 (Detect, Respond), ISO/IEC 27001.",
+      "citas_bibliograficas": [
+        {
+          "documento": "PLAN ESTRATÉGICO DE TECNOLOGÍA DE LA INFORMACIÓN (PETI) 2025 – 2030",
+          "seccion": "3.2 Brechas Identificadas",
+          "pagina": "5",
+          "descripcion": "Situación Actual: Monitoreo reactivo de sistemas. Brecha / Oportunidad: Implementar monitoreo proactivo 24/7 con SIEM."
+        },
+        {
+          "documento": "PLAN ESTRATÉGICO DE SEGURIDAD DE LA INFORMACIÓN (PESI) 2025 – 2030",
+          "seccion": "3. Diagnóstico de Seguridad Actual",
+          "pagina": "5",
+          "descripcion": "Gestión de Incidentes: Situación Actual: Procedimientos básicos, sin SIEM activo. Nivel (1-5): 2. Prioridad: ALTA."
+        },
+        {
+          "documento": "PLAN ESTRATÉGICO DE SEGURIDAD DE LA INFORMACIÓN (PESI) 2025 – 2030",
+          "seccion": "4. Objetivos Estratégicos de Seguridad",
+          "pagina": "6",
+          "descripcion": "OS4: Establecer un centro de operaciones de seguridad. Iniciativa Clave: Implementación de SIEM y SOC funcional. Meta al 2030: SOC operativo con monitoreo 24/7 al 2027."
+        }
+      ],
+      "evidencias": [
+        {
+          "numero": 1,
+          "referencia": "PETI 2025-2030, Sección 3.2",
+          "descripcion": "Documento que identifica el monitoreo reactivo como brecha."
+        },
+        {
+          "numero": 2,
+          "referencia": "PESI 2025-2030, Sección 3",
+          "descripcion": "Diagnóstico de seguridad actual que señala la ausencia de SIEM activo."
+        }
+      ]
+    },
+    {
+      "codigo": "H20",
+      "dominio": "APO (Align, Plan, Organise), MEA (Monitor, Evaluate, Assess)",
+      "procesos": [
+        "APO01",
+        "MEA02"
+      ],
+      "objetivo_control": "Evaluar el nivel de madurez en la implementación del marco de gobierno y gestión de TI.",
+      "riesgos_asociados": [
+        "R1: Ineficiencia en la toma de decisiones de TI",
+        "R2: Desalineación de TI con los objetivos de negocio",
+        "R3: Dificultad para medir y mejorar el desempeño de TI"
+      ],
+      "descripcion": "El Banco Luna Llena presenta un nivel de madurez COBIT de Nivel 1, lo que indica que los procesos de gobierno y gestión de TI son iniciales o ad-hoc. Aunque se ha establecido la implementación de COBIT 2019 como una iniciativa clave con una meta de alcanzar el Nivel 3 para 2027, la situación actual sugiere una falta de formalización y optimización en los procesos de TI, incluyendo aquellos relacionados con el monitoreo del desempeño.",
+      "recomendacion": "Fortalecer la iniciativa de implementación de COBIT 2019, priorizando la definición y formalización de procesos, roles y métricas de TI, especialmente en las áreas de monitoreo y evaluación del desempeño, para asegurar una transición efectiva hacia un nivel de madurez superior.",
+      "causa": "La etapa inicial de adopción del marco COBIT 2019, lo que implica que muchos procesos de TI aún no están formalmente definidos, medidos o gestionados de manera proactiva.",
+      "efecto": "La baja madurez en el gobierno de TI puede llevar a una gestión ineficaz de los recursos tecnológicos, decisiones estratégicas subóptimas, y una capacidad limitada para identificar, medir y reportar el desempeño de TI de manera consistente y confiable, afectando la capacidad de la organización para alcanzar sus objetivos estratégicos.",
+      "probabilidad": 3,
+      "impacto": 4,
+      "nivel_riesgo": "Alto",
+      "conclusion": "El Nivel de Madurez COBIT 1 es un catalizador de 'Principios, Políticas y Marcos' (APO01) y 'Procesos' (MEA02) que requiere atención para asegurar que el monitoreo del desempeño de TI se realice de manera estructurada y contribuya efectivamente al gobierno de TI.",
+      "criterio": "COBIT 2019 (APO01, MEA02), 'PLAN ESTRATÉGICO DE TECNOLOGÍA DE LA INFORMACIÓN (PETI) 2025 – 2030'.",
+      "citas_bibliograficas": [
+        {
+          "documento": "PLAN ESTRATÉGICO DE TECNOLOGÍA DE LA INFORMACIÓN (PETI) 2025 – 2030",
+          "seccion": "6. KPIs de TI",
+          "pagina": "8",
+          "descripcion": "Nivel de madurez COBIT: Nivel 1 -> Nivel 3 (Anual)."
+        },
+        {
+          "documento": "PLAN ESTRATÉGICO DE TECNOLOGÍA DE LA INFORMACIÓN (PETI) 2025 – 2030",
+          "seccion": "3.2 Brechas Identificadas",
+          "pagina": "5",
+          "descripcion": "Procesos de TI sin marco formal. Brecha / Oportunidad: Implementar COBIT 2019 como marco de gobierno."
+        },
+        {
+          "documento": "Comité de Tecnología de la Información",
+          "seccion": "3. Marco Normativo",
+          "pagina": "4",
+          "descripcion": "El Comité TI se rige por los siguientes instrumentos: ... COBIT 2019 – Marco de gobierno y gestión de TI."
+        }
+      ],
+      "evidencias": [
+        {
+          "numero": 1,
+          "referencia": "PETI 2025-2030, Sección 6",
+          "descripcion": "KPI que indica el nivel de madurez COBIT actual y meta."
+        },
+        {
+          "numero": 2,
+          "referencia": "PETI 2025-2030, Sección 3.2",
+          "descripcion": "Identificación de la brecha de procesos de TI sin marco formal."
+        }
+      ]
+    },
+    {
+      "codigo": "H21",
+      "dominio": "APO (Align, Plan, Organise), MEA (Monitor, Evaluate, Assess)",
+      "procesos": [
+        "APO01",
+        "MEA02"
+      ],
+      "objetivo_control": "Evaluar la disponibilidad y uso de herramientas de Business Intelligence y dashboards para el monitoreo del desempeño de TI y negocio.",
+      "riesgos_asociados": [
+        "R1: Toma de decisiones gerenciales sin información completa",
+        "R2: Dificultad para identificar tendencias y anomalías operativas",
+        "R3: Desalineación entre las operaciones de TI y las necesidades del negocio"
+      ],
+      "descripcion": "El Banco Luna Llena ha identificado la necesidad de 'Desarrollar capacidades de analítica de datos' mediante una 'Plataforma de Business Intelligence y Data Warehouse' con la meta de tener 'Dashboards operativos para el 100% de gerencias'. Esta iniciativa, programada para iniciar en 2026 y finalizar en 2028, sugiere que actualmente no todos los niveles gerenciales disponen de dashboards operativos completos y centralizados para el monitoreo del desempeño, lo que limita la visibilidad y la capacidad de análisis de datos en tiempo real.",
+      "recomendacion": "Priorizar el desarrollo e implementación de la plataforma de Business Intelligence y los dashboards operativos, asegurando que cubran los KPIs críticos de TI y negocio, y que sean accesibles y comprensibles para todas las gerencias relevantes, conforme a la meta establecida en el PETI.",
+      "causa": "La iniciativa de desarrollar capacidades de analítica de datos y dashboards operativos se encuentra en fase de planificación/ejecución, lo que implica que la cobertura actual es parcial o inexistente para algunas gerencias.",
+      "efecto": "La ausencia de dashboards operativos para el 100% de las gerencias puede obstaculizar la toma de decisiones informadas, la identificación proactiva de problemas y oportunidades, y la evaluación efectiva del desempeño de TI en relación con los objetivos de negocio. Esto puede llevar a una gestión reactiva y a una menor agilidad organizacional.",
+      "probabilidad": 3,
+      "impacto": 4,
+      "nivel_riesgo": "Alto",
+      "conclusion": "La falta de dashboards operativos para todas las gerencias impacta negativamente el catalizador de 'Información' y 'Cultura, Ética y Comportamiento' (MEA02) de COBIT 2019, limitando la capacidad de la organización para monitorear y evaluar el desempeño de TI de manera integral y transparente.",
+      "criterio": "COBIT 2019 (MEA02, APO01), 'PLAN ESTRATÉGICO DE TECNOLOGÍA DE LA INFORMACIÓN (PETI) 2025 – 2030'.",
+      "citas_bibliograficas": [
+        {
+          "documento": "PLAN ESTRATÉGICO DE TECNOLOGÍA DE LA INFORMACIÓN (PETI) 2025 – 2030",
+          "seccion": "5. Iniciativas y Proyectos de TI",
+          "pagina": "7",
+          "descripcion": "O Desarrollar capacidades de analítica de datos. Plataforma de Business Intelligence y Data Warehouse. Dashboards operativos para el 100% de gerencias."
+        }
+      ],
+      "evidencias": [
+        {
+          "numero": 1,
+          "referencia": "PETI 2025-2030, Sección 5",
+          "descripcion": "Iniciativa de TI que establece la meta de dashboards operativos para el 100% de gerencias, indicando una situación actual de no cumplimiento total."
+        }
+      ]
+    },
+    {
+      "codigo": "H22",
+      "dominio": "MEA (Monitor, Evaluate, Assess), APO (Align, Plan, Organise)",
+      "procesos": [
+        "MEA02",
+        "APO01"
+      ],
+      "objetivo_control": "Evaluar la frecuencia y exhaustividad de los reportes de hallazgos de auditoría a las instancias de gobierno de TI.",
+      "riesgos_asociados": [
+        "R1: Retraso en la toma de decisiones sobre hallazgos no críticos",
+        "R2: Acumulación de hallazgos de bajo impacto que pueden escalar",
+        "R3: Menor visibilidad del Comité de TI sobre el estado general de los controles"
+      ],
+      "descripcion": "La 'Matriz de Hallazgos' institucional, que registra todos los hallazgos de auditoría, se revisa mensualmente por la Gerencia de Seguridad de la Información (GSI) pero se presenta al Comité de TI de forma trimestral. Aunque los hallazgos críticos (P1) se escalan de inmediato, la frecuencia trimestral para la matriz completa podría limitar la visibilidad oportuna del Comité de TI sobre el progreso y la gestión de hallazgos no críticos o de menor prioridad, los cuales podrían acumularse o escalar si no se abordan con suficiente prontitud.",
+      "recomendacion": "Evaluar la posibilidad de incrementar la frecuencia de presentación de la Matriz de Hallazgos al Comité de TI, al menos para un resumen ejecutivo o los hallazgos de mayor impacto (P2 y P3), a una base mensual, para mejorar la supervisión y la toma de decisiones proactiva.",
+      "causa": "La política interna establece una revisión mensual por la GSI pero una presentación trimestral al Comité de TI, posiblemente para optimizar el tiempo de las reuniones del comité o debido a la carga de trabajo.",
+      "efecto": "Una frecuencia de reporte trimestral para la matriz completa puede generar un retraso en la identificación de patrones de debilidades recurrentes, la asignación de recursos para la remediación de hallazgos no críticos, y la supervisión general del estado de los controles de TI por parte del Comité, lo que podría afectar la mejora continua del SGSI y el PETI.",
+      "probabilidad": 3,
+      "impacto": 3,
+      "nivel_riesgo": "Medio",
+      "conclusion": "La frecuencia de reporte de la Matriz de Hallazgos al Comité de TI, aunque cumple con la política interna, podría optimizarse para mejorar el catalizador de 'Información' y 'Procesos' (MEA02) de COBIT 2019, permitiendo una evaluación más ágil y efectiva del desempeño de TI.",
+      "criterio": "COBIT 2019 (MEA02), 'Normas de Auditoría de Sistemas', 'Comité de Tecnología de la Información'.",
+      "citas_bibliograficas": [
+        {
+          "documento": "Normas de Auditoría de Sistemas",
+          "seccion": "14. Normas de Seguimiento",
+          "pagina": "13",
+          "descripcion": "N-SEG-06: La Matriz de Hallazgos se revisará mensualmente por la GSI y se presentará trimestralmente al Comité de TI. Los hallazgos clasificados P1 que superen el plazo comprometido sin cierre serán escalados de inmediato al Gerente General y comunicados a ASFI si corresponde."
+        },
+        {
+          "documento": "Comité de Tecnología de la Información",
+          "seccion": "6. Funcionamiento",
+          "pagina": "5",
+          "descripcion": "Frecuencia ordinaria: Reuniones trimestrales, como mínimo, o con mayor frecuencia según las necesidades del banco."
+        }
+      ],
+      "evidencias": [
+        {
+          "numero": 1,
+          "referencia": "Normas de Auditoría de Sistemas, N-SEG-06",
+          "descripcion": "Establece la frecuencia de revisión y presentación de la Matriz de Hallazgos."
+        },
+        {
+          "numero": 2,
+          "referencia": "Comité de Tecnología de la Información, Sección 6",
+          "descripcion": "Define la frecuencia de las reuniones ordinarias del Comité de TI."
+        }
+      ]
+    }
+  ],
+  "componentes_coso": [
+    {
+      "numero": 1,
+      "nombre": "AMBIENTE DE CONTROL",
+      "lineamientos": [
+        {
+          "numero": 1,
+          "descripcion": "La Entidad demuestra el compromiso con la integridad y los valores éticos.",
+          "cantidad_deficiencias": 0,
+          "observaciones": "Lin.1 - Sin deficiencia: El Banco Luna Llena demuestra un claro compromiso con la integridad y los valores éticos, evidenciado por la 'DESCRIPCIÓN DE LA ENTIDAD FINANCIERA' (Sección 7: Principios y Valores Éticos) y el 'CÓDIGO DE ÉTICA' (Secciones 2 y 3), que es de cumplimiento obligatorio para todo el personal (H13)."
+        },
+        {
+          "numero": 2,
+          "descripcion": "El Consejo de Administración demuestra independencia de la Dirección y ejerce la supervisión del desarrollo y el rendimiento del control interno.",
+          "cantidad_deficiencias": 0,
+          "observaciones": "Lin.2 - Sin deficiencia: El Comité de Tecnología de la Información (Comité de TI) incluye un 'Miembro del Directorio' como Presidente, lo que asegura la independencia y la supervisión del control interno relacionado con TI. Este comité tiene responsabilidades clave como establecer políticas, aprobar planes estratégicos y evaluar riesgos tecnológicos (H2), lo que demuestra una supervisión activa."
+        },
+        {
+          "numero": 3,
+          "descripcion": "La Dirección establece, con la supervisión del Consejo, las estructuras, las líneas de reporte y los niveles adecuados de autoridad y responsabilidad para la consecución de los objetivos.",
+          "cantidad_deficiencias": 0,
+          "observaciones": "Lin.3 - Sin deficiencia: El Banco Luna Llena cuenta con una estructura organizacional definida para el Área de TI (H9), y ha establecido planes estratégicos (PEI, PETI, PESI) con objetivos claros y KPIs. El Comité de TI, con supervisión del Directorio, es responsable de establecer políticas y prioridades, lo que indica una adecuada definición de estructuras y responsabilidades."
+        },
+        {
+          "numero": 4,
+          "descripcion": "La Entidad demuestra el compromiso de atraer, desarrollar y retener a profesionales competentes, en línea con sus objetivos.",
+          "cantidad_deficiencias": 0,
+          "observaciones": "Lin.4 - Sin deficiencia: El Banco Luna Llena ha establecido el objetivo estratégico institucional OE5 'Desarrollar el talento humano y la cultura organizacional', con una iniciativa clave de 'Programa de capacitación continua en TI y atención al cliente' y un KPI de '90% de personal capacitado anualmente' (H10). Además, las 'Normas de Auditoría de Sistemas' exigen competencia profesional y capacitación continua para el equipo auditor."
+        },
+        {
+          "numero": 5,
+          "descripcion": "La Entidad exige a las personas que asuman la responsabilidad de sus funciones de control interno para la consecución de los objetivos.",
+          "cantidad_deficiencias": 2,
+          "observaciones": "Lin.5 - Deficiencia: Aunque el 'Código de Ética' establece normas de conducta y las 'Políticas de Seguridad de la Información' indican que las responsabilidades de seguridad están incorporadas en los 'Manuales de Funciones por Cargo', no se detalla explícitamente la efectividad de los mecanismos para exigir la rendición de cuentas sobre las responsabilidades específicas de control interno, más allá de la conducta ética general (H11). Lin.5 - Deficiencia: Si bien el 'Manual de Procedimientos' detalla actividades y responsables para diversas operaciones de TI, y existen 'Manuales de Funciones por Cargo', la formalización y comunicación de responsabilidades específicas de control interno, más allá de las descripciones generales de puestos, podría mejorarse para asegurar que cada individuo comprenda y asuma plenamente su rol en el SCI (H12)."
+        }
+      ]
+    },
+    {
+      "numero": 2,
+      "nombre": "EVALUACIÓN DE RIESGOS",
+      "lineamientos": [
+        {
+          "numero": 6,
+          "descripcion": "La Entidad define los objetivos con suficiente claridad para permitir la identificación y evaluación de los riesgos relacionados con los objetivos.",
+          "cantidad_deficiencias": 0,
+          "observaciones": "Lin.6 - Sin deficiencia: El Banco Luna Llena ha definido claramente sus objetivos estratégicos a nivel institucional (PEI), de TI (PETI) y de seguridad de la información (PESI), con KPIs asociados que permiten una base sólida para la identificación y evaluación de riesgos."
+        },
+        {
+          "numero": 7,
+          "descripcion": "La Entidad identifica los riesgos para la consecución de sus objetivos en toda la Entidad y los analiza como base para determinar cómo se deben gestionar.",
+          "cantidad_deficiencias": 0,
+          "observaciones": "Lin.7 - Sin deficiencia: El Banco Luna Llena realiza evaluaciones de riesgos de TI anualmente y ante eventos significativos, considerando la criticidad de los activos, resultados de auditorías anteriores e incidentes de seguridad (N-PLAN-01, N-PLAN-02). El PESI también menciona el análisis y tratamiento de riesgos según ISO 31000."
+        },
+        {
+          "numero": 8,
+          "descripcion": "La Entidad tiene en cuenta la posibilidad de fraude al evaluar los riesgos para la consecución de los objetivos.",
+          "cantidad_deficiencias": 0,
+          "observaciones": "Lin.8 - Sin deficiencia: El PEI identifica explícitamente el 'Riesgo de fraude digital y robo de identidad' como una amenaza. El 'CÓDIGO DE ÉTICA' prohíbe el fraude. Los procesos de evaluación de riesgos de TI y gestión de incidentes considerarían estos riesgos."
+        },
+        {
+          "numero": 9,
+          "descripcion": "La Entidad identifica y evalúa los cambios que podrían afectar de forma significativa al sistema de control interno.",
+          "cantidad_deficiencias": 2,
+          "observaciones": "Lin.9 - Deficiencia: Se ha identificado que el Banco Luna Llena carece de un marco formal y unificado para la gestión de cambios tecnológicos que abarque todos los tipos de cambios (infraestructura, aplicaciones, procesos) y su impacto en el sistema de control interno, más allá de las actualizaciones de procedimientos operativos (H17). Lin.9 - Deficiencia: Aunque el Banco Luna Llena realiza evaluaciones de riesgo anuales y ante eventos significativos que incluyen 'cambios regulatorios, incorporación de nuevos sistemas o proveedores cloud' (H18), no se evidencia un proceso formal y sistemático para identificar y evaluar *todos* los tipos de cambios significativos (internos y externos) que podrían impactar el sistema de control interno en su totalidad, no solo los riesgos de TI."
+        }
+      ]
+    },
+    {
+      "numero": 3,
+      "nombre": "ACTIVIDADES DE CONTROL",
+      "lineamientos": [
+        {
+          "numero": 10,
+          "descripcion": "La Entidad selecciona y desarrolla actividades de control que contribuyen a la mitigación de los riesgos para la consecución de los objetivos hasta niveles aceptables.",
+          "cantidad_deficiencias": 4,
+          "observaciones": "Lin.10 - Deficiencia: El PESI reporta 'Contraseñas simples, sin MFA en todos los sistemas' con un nivel de madurez 2 y prioridad ALTA (H5), lo que indica que las actividades de control de acceso no son suficientes para mitigar el riesgo a un nivel aceptable. Lin.10 - Deficiencia: El PESI reporta 'Procedimientos básicos, sin SIEM activo' en la gestión de incidentes con un nivel de madurez 2 y prioridad ALTA (H6), lo que sugiere que las actividades de control para la detección y respuesta a incidentes son insuficientes. Lin.10 - Deficiencia: El PESI reporta 'Firewall activo, sin segmentación completa por VLAN' en seguridad de redes con un nivel de madurez 3 y prioridad MEDIA (H7), lo que indica una debilidad en las actividades de control de segmentación de red. Lin.10 - Deficiencia: El PESI reporta 'BCP documentado, sin pruebas regulares' en continuidad del negocio con un nivel de madurez 2 y prioridad ALTA (H8), lo que significa que las actividades de control para la continuidad del negocio no son probadas regularmente para asegurar su efectividad."
+        },
+        {
+          "numero": 11,
+          "descripcion": "La Entidad selecciona y desarrolla actividades de control generales sobre la tecnología para apoyar la consecución de los objetivos.",
+          "cantidad_deficiencias": 10,
+          "observaciones": "Lin.11 - Deficiencia: El PETI identifica la existencia de 'Sistemas legacy en algunas áreas' como una debilidad (H1), lo que implica controles generales de TI desactualizados o ineficientes en esas áreas. Lin.11 - Deficiencia: El PETI identifica un 'Monitoreo reactivo de sistemas' como una brecha actual (H3), lo que indica una debilidad en los controles de monitoreo proactivo de la infraestructura tecnológica. Lin.11 - Deficiencia: El PETI señala que los 'Procesos de TI sin marco formal' en Gobierno de TI son una brecha (H4), lo que denota una falta de controles generales de TI estructurados y maduros. Lin.11 - Deficiencia: El PESI reporta 'Contraseñas simples, sin MFA en todos los sistemas' (H5), lo que evidencia una deficiencia en los controles de autenticación y acceso. Lin.11 - Deficiencia: El PESI reporta 'Procedimientos básicos, sin SIEM activo' en la gestión de incidentes (H6), lo que indica una debilidad en los controles de detección y gestión de eventos de seguridad. Lin.11 - Deficiencia: El PESI reporta 'Firewall activo, sin segmentación completa por VLAN' en seguridad de redes (H7), lo que muestra una deficiencia en los controles de seguridad de red. Lin.11 - Deficiencia: El PESI reporta 'BCP documentado, sin pruebas regulares' en continuidad del negocio (H8), lo que implica una debilidad en los controles de recuperación ante desastres. Lin.11 - Deficiencia: El PETI identifica la necesidad de 'Implementar plataforma de Business Intelligence' (H14), lo que sugiere una deficiencia en los controles de gestión y análisis de datos para la toma de decisiones. Lin.11 - Deficiencia: El Banco Luna Llena opera con un monitoreo de sistemas predominantemente reactivo, evidenciado por la ausencia de un Sistema de Gestión de Eventos e Información de Seguridad (SIEM) activo (H19), lo que representa una deficiencia en los controles de monitoreo continuo y proactivo. Lin.11 - Deficiencia: El Banco Luna Llena presenta un nivel de madurez COBIT de Nivel 1 (H20), lo que indica que los procesos de gobierno y gestión de TI, y por ende los controles generales de TI, son iniciales o ad-hoc y carecen de formalización y optimización."
+        },
+        {
+          "numero": 12,
+          "descripcion": "La Entidad implementa las actividades de control a través de políticas que establecen lo que se espera y procedimientos que ponen dichas políticas en acción.",
+          "cantidad_deficiencias": 1,
+          "observaciones": "Lin.12 - Deficiencia: Si bien el 'Manual de Procedimientos' detalla actividades y responsables para diversas operaciones de TI, y existen 'Manuales de Funciones por Cargo', la formalización y comunicación de responsabilidades específicas de control interno, más allá de las descripciones generales de puestos, podría mejorarse para asegurar que cada individuo comprenda y asuma plenamente su rol en el SCI (H12). Esto sugiere que la implementación de políticas a través de procedimientos no siempre se traduce en una clara asignación de responsabilidades de control interno."
+        }
+      ]
+    },
+    {
+      "numero": 4,
+      "nombre": "INFORMACIÓN Y COMUNICACIÓN",
+      "lineamientos": [
+        {
+          "numero": 13,
+          "descripcion": "La Entidad obtiene o genera y utiliza información relevante y de calidad para apoyar el funcionamiento del control interno.",
+          "cantidad_deficiencias": 2,
+          "observaciones": "Lin.13 - Deficiencia: El PETI identifica la necesidad de 'Desarrollar capacidades de analítica de datos' mediante una 'Plataforma de Business Intelligence y Data Warehouse' (H21), lo que sugiere que la entidad actualmente no obtiene o genera suficiente información relevante y de calidad para apoyar plenamente la toma de decisiones y el funcionamiento del control interno en este ámbito. Lin.13 - Deficiencia: El PETI identifica un 'Monitoreo reactivo de sistemas' como una brecha actual (H3) y la ausencia de un SIEM activo (H19), lo que implica que la entidad carece de la capacidad de generar y utilizar información de seguridad relevante y de calidad de manera proactiva para el funcionamiento efectivo del control interno."
+        },
+        {
+          "numero": 14,
+          "descripcion": "La Entidad comunica internamente la información, incluidos los objetivos y las responsabilidades de control interno, necesaria para apoyar el funcionamiento del control interno.",
+          "cantidad_deficiencias": 2,
+          "observaciones": "Lin.14 - Deficiencia: Aunque el 'Código de Ética' establece normas de conducta y las 'Políticas de Seguridad de la Información' indican que las responsabilidades de seguridad están incorporadas en los 'Manuales de Funciones por Cargo', no se detalla explícitamente la efectividad de los mecanismos para comunicar las responsabilidades específicas de control interno, más allá de la conducta ética general (H11). Lin.14 - Deficiencia: Si bien el 'Manual de Procedimientos' detalla actividades y responsables para diversas operaciones de TI, y existen 'Manuales de Funciones por Cargo', la formalización y comunicación de responsabilidades específicas de control interno, más allá de las descripciones generales de puestos, podría mejorarse para asegurar que cada individuo comprenda y asuma plenamente su rol en el SCI (H12)."
+        },
+        {
+          "numero": 15,
+          "descripcion": "La Entidad se comunica con las partes externas sobre los asuntos que afectan al funcionamiento del control interno.",
+          "cantidad_deficiencias": 0,
+          "observaciones": "Lin.15 - Sin deficiencia: El Banco Luna Llena tiene procesos definidos para la comunicación externa, incluyendo la notificación a ASFI sobre hallazgos críticos (N-COM-04, N-SEG-06), la contratación de firmas externas para auditorías de alto impacto (N-ORG-03), y la inclusión de criterios de seguridad y reporte de brechas en contratos con proveedores cloud (Políticas de Seguridad de la Información, Sección 7.5; PETI, Anexo A)."
+        }
+      ]
+    },
+    {
+      "numero": 5,
+      "nombre": "ACTIVIDADES DE MONITOREO",
+      "lineamientos": [
+        {
+          "numero": 16,
+          "descripcion": "La Entidad selecciona, desarrolla y realiza evaluaciones continuas y/o independientes para determinar si los componentes del control interno están presentes y funcionan.",
+          "cantidad_deficiencias": 3,
+          "observaciones": "Lin.16 - Deficiencia: El PESI, en su 'Diagnóstico de Seguridad Actual', reporta 'Sin auditorías internas formales de seguridad' con un nivel de madurez 1 y prioridad ALTA (H15), lo que indica una ausencia de evaluaciones independientes y formales para determinar si los componentes del control interno de seguridad están presentes y funcionando. Lin.16 - Deficiencia: El PETI identifica un 'Monitoreo reactivo de sistemas' como una brecha actual (H3) y la ausencia de un SIEM activo (H19), lo que implica una deficiencia en las evaluaciones continuas para detectar y responder proactivamente a eventos que afecten el funcionamiento del control interno. Lin.16 - Deficiencia: El Banco Luna Llena presenta un 'Nivel de madurez COBIT' de Nivel 1 (H20), lo que sugiere que las evaluaciones continuas y separadas para determinar la presencia y funcionamiento de los componentes del control interno no están maduras ni formalizadas."
+        },
+        {
+          "numero": 17,
+          "descripcion": "La Entidad evalúa y comunica las deficiencias de control interno de forma oportuna a las partes responsables de tomar medidas correctoras, incluyendo la alta dirección y el Consejo de Administración, según corresponda.",
+          "cantidad_deficiencias": 0,
+          "observaciones": "Lin.17 - Sin deficiencia: Las 'Normas de Auditoría de Sistemas' establecen un proceso claro para la comunicación de deficiencias, incluyendo la presentación de hallazgos preliminares, informes finales con planes de acción, y la comunicación inmediata de hallazgos críticos (P1) al Gerente General, Gerente de Seguridad y, si corresponde, a ASFI (N-COM-02, N-COM-03, N-COM-04). Además, la Matriz de Hallazgos se revisa mensualmente por la GSI y trimestralmente por el Comité de TI, con escalamiento para hallazgos P1 no subsanados (H16, H22)."
+        }
+      ]
+    }
+  ]
+}

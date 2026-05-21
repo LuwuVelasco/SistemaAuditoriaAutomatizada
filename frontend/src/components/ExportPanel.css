@@ -1,0 +1,22 @@
+.export-panel { }
+.export-title { display: flex; align-items: center; gap: var(--space-md); font-size: 1.1rem; font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-xl); }
+.export-title svg { width: 22px; height: 22px; color: var(--accent-primary); }
+
+.export-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--space-md); }
+
+.export-card {
+  display: flex; align-items: center; gap: var(--space-md); padding: var(--space-lg);
+  text-decoration: none; color: inherit; cursor: pointer;
+}
+.export-card:hover .export-card-action { color: var(--accent-primary); transform: translateY(2px); }
+.export-card-icon { font-size: 2rem; }
+.export-card-info { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.export-card-name { font-size: 0.85rem; font-weight: 600; color: var(--text-primary); word-break: break-all; }
+.export-card-meta { font-size: 0.75rem; color: var(--text-muted); }
+.export-card-action { color: var(--text-muted); transition: all var(--transition-base); }
+.export-card-action svg { width: 20px; height: 20px; }
+
+.export-empty { text-align: center; padding: var(--space-3xl); }
+.export-empty-icon { font-size: 3rem; display: block; margin-bottom: var(--space-md); }
+.export-empty p { color: var(--text-secondary); font-size: 0.95rem; }
+.export-empty-sub { color: var(--text-muted); font-size: 0.85rem; margin-top: var(--space-xs); }

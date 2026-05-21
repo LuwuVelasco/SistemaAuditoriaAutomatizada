@@ -1,39 +1,64 @@
-# Sistema de Auditoría Automatizada Multimarco (SAAM)
+# Sistema de Auditoría Automatizada RAG (con Google Gemini)
 
-Un sistema inteligente diseñado para optimizar, centralizar y acelerar el proceso de auditoría de sistemas y de TI. La plataforma automatiza la revisión documental y la generación de matrices de riesgos cruzando normativas locales e internacionales.
-
-## 🚀 Características Principales
-
-* **Análisis Multimarco Inteligente:** Procesa documentación técnica y operativa para identificar hallazgos basados de forma simultánea en tres pilares regulatorios:
-    * **COBIT:** Gobernanza y gestión de TI.
-    * **COSO:** Control interno y gestión de riesgos corporativos.
-    * **RGSI de la ASFI:** Reglamento de Gestión de la Seguridad de la Información (Normativa Boliviana).
-* **Flexibilidad en Reportes:** * Generación de una **Matriz de Hallazgos Integrada** (COBIT + COSO + ASFI).
-    * Exportación de documentos y reportes individuales y específicos por cada marco normativo.
-* **Evaluación de Riesgos Interactiva:** El sistema detecta los hallazgos potenciales y guía al auditor a través de un flujo interactivo para calificar y verificar la **Probabilidad** y el **Impacto** automatizando el cálculo del nivel de riesgo.
-* **Documentación Automatizada:** Generación automática de papeles de trabajo, incluyendo **Fichas de Pruebas** y evidencias de auditoría.
+Este proyecto es una plataforma completa (Backend en Python + Frontend en React) diseñada para realizar auditorías automatizadas sobre documentos (PDFs, DOCX) utilizando el motor de **Google Gemini 2.5 Flash** (RAG).
 
 ---
 
-## 🛠️ Flujo de Trabajo del Sistema
+## 🔑 1. Configurar la API Key de Gemini
 
-1. **Carga de Archivos:** El usuario sube los documentos, PNP, manuales u otros de la organización.
-2. **Procesamiento y Mapeo:** El motor del software analiza el texto y lo contrasta con los objetivos de control de COBIT, los componentes de COSO y los artículos del RGSI de la ASFI.
-3. **Validación del Auditor:** El sistema presenta los hallazgos preliminares. El auditor confirma su veracidad, causa/efecto, conclusión y recomendaciones y asigna los criterios de impacto/probabilidad.
-4. **Generación de Entregables:** Se exportan las matrices integradas, reportes independientes y fichas de prueba listas para su presentación.
+Antes de iniciar el servidor, debes asegurarte de que el sistema tenga acceso a la API de Google Gemini.
+
+1. Ve a la carpeta `backend/app/`.
+2. Abre el archivo `config.py`.
+3. Busca la línea donde se define `GEMINI_API_KEY` (aproximadamente en la línea 57).
+4. Reemplaza el valor con tu clave secreta:
+   ```python
+   GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "TU_CLAVE_API_AQUI")
+   ```
+
+*(Nota: En un entorno de producción, lo ideal es crear un archivo `.env` y poner la clave ahí, pero por simplicidad para este proyecto académico, puedes dejarla directamente en `config.py`).*
+
+---
+
+## ⚙️ 2. Levantar el Backend (Servidor Python)
+
+El backend expone la API REST y los WebSockets que necesita la interfaz web.
+
+1. Abre una terminal (Símbolo del sistema o PowerShell).
+2. Navega hasta la carpeta `backend` del proyecto:
+   ```bash
+   cd "c:\UNIVERSIDAD\NOVENO SEMESTRE\AUDITORIA DE SISTEMAS\Trabajo\SistemaAuditoriaAutomatizada\backend"
+   ```
+3. *(Opcional pero recomendado)* Activa tu entorno virtual de Python si estás usando uno.
+4. Ejecuta el servidor con **Uvicorn**:
+   ```bash
+   python -m uvicorn app.main:app --reload --port 8000
+   ```
+5. Si ves un mensaje diciendo `Application startup complete`, el servidor estará corriendo exitosamente en `http://localhost:8000`.
 
 ---
 
-## 💻 Stack Tecnológico (Propuesto inicialmente)
+## 🌐 3. Levantar el Frontend (Interfaz React)
 
-* **Backend:** Python (FastAPI / Django) para el procesamiento lógico y análisis de texto.
-* **Base de Datos:** PostgreSQL para el almacenamiento relacional de hallazgos, marcos y matrices.
-* **Contenedores:** Docker para asegurar un despliegue rápido y consistente.
+El frontend es la página web visual donde configuras la auditoría y ves los resultados.
+
+1. Abre **otra** terminal nueva.
+2. Navega hasta la carpeta `frontend` del proyecto:
+   ```bash
+   cd "c:\UNIVERSIDAD\NOVENO SEMESTRE\AUDITORIA DE SISTEMAS\Trabajo\SistemaAuditoriaAutomatizada\frontend"
+   ```
+3. Ejecuta el servidor de desarrollo de **Vite**:
+   ```bash
+   npm run dev
+   ```
+4. La terminal te mostrará un enlace (usualmente `http://localhost:5173` o `http://localhost:5174`).
+5. Abre ese enlace en tu navegador web.
 
 ---
 
-## 👥 Autores
-* *Luciana Velasco, Daniela Guzman, Carlos Caba, Josue Nisthaus, José Manzaneda*
+## 🚀 4. Uso del Sistema
 
----
-*Proyecto desarrollado en el marco del Workshop de Auditoría de Sistemas.*
+1. **Sube Documentos:** Ve a la pestaña "Documentos" y sube los PDFs o archivos Word que quieras auditar.
+2. **Inicia Auditoría:** Ve a "Auditoría", ingresa el nombre de tu grupo y dale a **Iniciar Auditoría Automatizada**.
+3. **Ver Resultados:** Espera a que la IA analice todo (tardará unos segundos). Luego el sistema te redirigirá a la vista de resultados.
+4. **Exportar:** Desde la vista de resultados, podrás descargar automáticamente los informes en Word y Excel.

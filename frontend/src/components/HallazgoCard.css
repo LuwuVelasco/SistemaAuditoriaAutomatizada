@@ -1,0 +1,74 @@
+.hallazgo-card { padding: 0; overflow: hidden; }
+
+.hallazgo-header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: var(--space-lg); cursor: pointer; gap: var(--space-lg);
+}
+.hallazgo-left { display: flex; align-items: flex-start; gap: var(--space-md); flex: 1; min-width: 0; }
+
+.hallazgo-codigo {
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+  color: white; font-weight: 800; font-size: 0.8rem; padding: 6px 12px;
+  border-radius: var(--radius-sm); white-space: nowrap;
+}
+.hallazgo-meta { flex: 1; min-width: 0; }
+.hallazgo-titulo { font-size: 0.9rem; font-weight: 500; color: var(--text-primary); line-height: 1.5; margin-bottom: var(--space-sm); }
+.hallazgo-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+.tag {
+  padding: 2px 8px; background: var(--bg-tertiary); border-radius: var(--radius-full);
+  font-size: 0.7rem; color: var(--text-secondary); font-weight: 600;
+}
+
+.hallazgo-right { display: flex; align-items: center; gap: var(--space-md); flex-shrink: 0; }
+
+.risk-badge {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  padding: var(--space-sm) var(--space-md); border-radius: var(--radius-md);
+  border: 1px solid var(--risk-color); background: color-mix(in srgb, var(--risk-color) 10%, transparent);
+}
+.risk-value { font-size: 1.3rem; font-weight: 800; color: var(--risk-color); line-height: 1; }
+.risk-label { font-size: 0.65rem; font-weight: 600; color: var(--risk-color); text-transform: uppercase; letter-spacing: 0.5px; }
+
+.expand-btn {
+  background: none; border: none; cursor: pointer; padding: var(--space-xs);
+  color: var(--text-muted); transition: all var(--transition-base);
+}
+.expand-btn svg { width: 20px; height: 20px; transition: transform var(--transition-base); }
+.expand-btn:hover { color: var(--accent-primary); }
+
+/* Body */
+.hallazgo-body {
+  padding: 0 var(--space-lg) var(--space-lg);
+  border-top: 1px solid var(--border-subtle);
+}
+
+.detail-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-lg);
+  padding-top: var(--space-lg);
+}
+.detail-section h4 { font-size: 0.85rem; font-weight: 600; color: var(--accent-primary); margin-bottom: var(--space-sm); }
+.detail-section p { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6; }
+.detail-section.full-width { grid-column: 1 / -1; }
+
+/* Risk bars */
+.risk-matrix { display: flex; flex-direction: column; gap: var(--space-sm); }
+.risk-item { display: flex; align-items: center; gap: var(--space-sm); }
+.risk-label-sm { font-size: 0.75rem; color: var(--text-muted); min-width: 80px; }
+.risk-bar-container { flex: 1; height: 8px; background: var(--bg-tertiary); border-radius: var(--radius-full); overflow: hidden; }
+.risk-bar { height: 100%; border-radius: var(--radius-full); transition: width 0.6s ease-out; }
+.risk-num { font-size: 0.75rem; font-weight: 700; color: var(--text-secondary); font-family: var(--font-mono); min-width: 30px; }
+
+/* Citas */
+.citas-list { display: flex; flex-direction: column; gap: var(--space-md); }
+.cita-item {
+  display: flex; gap: var(--space-md); padding: var(--space-md);
+  background: var(--bg-glass); border-radius: var(--radius-md); border-left: 3px solid var(--accent-secondary);
+}
+.cita-num {
+  width: 24px; height: 24px; background: var(--accent-secondary); color: var(--bg-primary);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 0.7rem; font-weight: 700; flex-shrink: 0;
+}
+.cita-item strong { font-size: 0.8rem; color: var(--text-primary); }
+.cita-page { color: var(--text-muted); font-size: 0.8rem; }
+.cita-desc { font-size: 0.8rem; color: var(--text-secondary); margin-top: 4px; line-height: 1.5; }

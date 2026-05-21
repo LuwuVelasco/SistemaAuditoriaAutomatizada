@@ -1,0 +1,11 @@
+fastapi
+uvicorn[standard]
+python-multipart
+websockets
+pandas
+openpyxl
+docxtpl
+pydantic>=2.0
+python-docx
+aiofiles
+google-genai
