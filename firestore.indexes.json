@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "indexes": [
     {
       "collectionGroup": "audits",
@@ -19,3 +20,8 @@
   ],
   "fieldOverrides": []
 }
+=======
+  "indexes": [],
+  "fieldOverrides": []
+}
+>>>>>>> 6d2d1f8aa358d7846568b320413d2eadc7f26ab9
