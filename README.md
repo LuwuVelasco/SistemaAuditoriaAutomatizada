@@ -26,9 +26,9 @@ Un sistema inteligente diseñado para optimizar, centralizar y acelerar el proce
 
 ## 💻 Stack Tecnológico (Propuesto inicialmente)
 
-* **Backend:** Python (FastAPI / Django) para el procesamiento lógico y análisis de texto.
-* **Base de Datos:** PostgreSQL para el almacenamiento relacional de hallazgos, marcos y matrices.
-* **Contenedores:** Docker para asegurar un despliegue rápido y consistente.
+* **Backend:** Python (FastAPI) para el procesamiento lógico y análisis de texto.
+* **Base de Datos:** Firebase como solución NoSQL para almacenar documentos, hallazgos y reportes.
+* **Frontend:** Vue 3 para una interfaz de usuario interactiva y amigable.
 
 ---
 
