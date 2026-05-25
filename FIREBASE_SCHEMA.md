@@ -1,6 +1,6 @@
-# Esquema Firestore — COSFI MVP
+# Esquema Firestore y Supabase — COSFI MVP
 
-Diseño NO relacional. Regla central: **binarios siempre en Cloud Storage, Firestore solo metadatos**.
+Diseño híbrido. Regla central: **binarios siempre en Supabase Storage, Firestore solo metadatos**.
 
 ---
 
@@ -10,10 +10,10 @@ Diseño NO relacional. Regla central: **binarios siempre en Cloud Storage, Fires
 firestore/
 ├── users/{uid}
 ├── audits/{auditId}
-│   ├── documents/{docId}       ← subcolección
+│   ├── documents/{docId}       ← subcolección (metadatos del PDF)
 │   ├── findings/{findingId}    ← subcolección
-│   │   └── history/{eventId}   ← subcolección (write-only desde Cloud Functions)
-│   └── reports/{reportId}      ← subcolección
+│   │   └── history/{eventId}   ← subcolección (write-only desde Cloud Functions / Backend)
+│   └── reports/{reportId}      ← subcolección (metadatos del Excel)
 └── frameworks/{cobit|coso|rgsi}
     └── controls/{controlId}    ← catálogo normativo
 ```
@@ -23,109 +23,123 @@ firestore/
 ## Documentos por colección
 
 ### `users/{uid}`
+
 ```json
 {
-  "name":      "Ana Mamani",
-  "email":     "ana@banco.bo",
+  "name": "Ana Mamani",
+  "email": "ana@banco.bo",
   "createdAt": "2025-01-10",
   "stats": {
-    "audits":           7,
+    "audits": 7,
     "approvedFindings": 34
   }
 }
 ```
+
 - Clave = Firebase Auth UID.
 - Sin organización ni rol (cuenta personal).
 
 ---
 
 ### `audits/{auditId}`
+
 ```json
 {
-  "entity":    "Banco Unión S.A.",
-  "type":      "Auditoría TI",
-  "city":      "La Paz",
-  "period":    "2025-Q1",
-  "status":    "En revisión",
-  "progress":  73,
+  "entity": "Banco Unión S.A.",
+  "type": "Auditoría TI",
+  "city": "La Paz",
+  "period": "2025-Q1",
+  "status": "En revisión",
+  "progress": 73,
   "frameworks": ["COBIT", "COSO", "RGSI"],
-  "ownerId":   "uid-abc123",
+  "ownerId": "uid-abc123",
   "createdAt": "2025-01-15T10:00:00Z"
 }
 ```
+
 - `status`: `Pendiente | Procesando | En revisión | Finalizada`
 
 ---
 
 ### `audits/{auditId}/documents/{docId}`
+
 ```json
 {
-  "name":        "Manual_Seguridad_TI.pdf",
-  "type":        "pdf",
-  "size":        "2.4 MB",
-  "storagePath": "audits/aud-001/docs/Manual_Seguridad_TI.pdf",
-  "status":      "ready",
-  "chunks":      147,
-  "sha256":      "a3f8b1c2d4e5...",
-  "uploadedAt":  "2025-01-15T11:00:00Z"
+  "name": "Manual_Seguridad_TI.pdf",
+  "type": "pdf",
+  "size": "2.4 MB",
+  "supabasePath": "pdfs/audits/aud-001/Manual_Seguridad_TI.pdf",
+  "status": "ready",
+  "uploadedAt": "2025-01-15T11:00:00Z"
 }
 ```
+
+- `supabasePath`: Ruta dentro del bucket `pdfs` en Supabase Storage.
 - `status`: `queued | indexing | ready`
-- Cloud Function `onCreate` → encola indexación, actualiza status.
+- Cloud Function / Backend Trigger → encola indexación mediante webhook de Supabase Storage, actualiza status.
 
 ---
 
 ### `audits/{auditId}/findings/{findingId}`
+
 ```json
 {
-  "title":          "Ausencia de controles de acceso privilegiado",
-  "description":    "...",
+  "description": "...",
   "recommendation": "...",
-  "risk":           "Alto",
-  "impact":         4,
-  "probability":    3,
-  "status":         "Pendiente",
-  "confidence":     0.91,
-  "cobitRef": { "code": "APO13.01", "title": "...", "domain": "APO" },
-  "cosoRef":  { "code": "CC6.1",    "title": "...", "component": "Actividades de Control" },
-  "rgsiRef":  { "code": "Art. 12",  "title": "...", "section": "Cap. III" },
-  "evidence": [
-    { "docId": "doc-001", "docName": "Manual.pdf", "page": 34, "paragraph": "Sección 4.2" }
+  "risk": "Alto",
+  "impact": 4,
+  "probability": 3,
+  "status": "Pendiente",
+  "confidence": 0.91,
+  "cobitRef": [{ "code": "APO13.01", "title": "...", "domain": "APO" }],
+  "cosoRef": [
+    { "code": "CC6.1", "title": "...", "component": "Actividades de Control" }
   ],
-  "quote":       "Cita textual del documento...",
-  "detectedBy":  "COSFI-ENGINE-COBIT",
-  "aiRunId":     "run-xyz",
-  "createdAt":   "2025-01-20T14:00:00Z",
-  "updatedAt":   "2025-01-21T09:00:00Z"
+  "rgsiRef": [{ "code": "Art. 12", "title": "...", "section": "Cap. III" }],
+  "evidence": [
+    {
+      "docId": "doc-001",
+      "docName": "Manual.pdf",
+      "page": 34,
+      "paragraph": "Sección 4.2"
+    }
+  ],
+  "quote": "Cita textual del documento...",
+  "detectedBy": "COSFI-ENGINE-COBIT",
+  "createdAt": "2025-01-20T14:00:00Z",
+  "updatedAt": "2025-01-21T09:00:00Z"
 }
 ```
+
 - `status`: `Pendiente | Aprobado | Rechazado`
 - `onUpdate` Cloud Function → escribe en `history/` (inmutable).
 
 ---
 
 ### `audits/{auditId}/findings/{findingId}/history/{eventId}`
+
 ```json
 {
-  "field":     "status",
-  "oldValue":  "Pendiente",
-  "newValue":  "Aprobado",
+  "field": "status",
+  "oldValue": "Pendiente",
+  "newValue": "Aprobado",
   "changedBy": "uid-abc123",
   "changedAt": "2025-01-22T10:00:00Z"
 }
 ```
+
 - **Write-only desde Cloud Functions** — clientes no pueden escribir.
 - Trazabilidad regulatoria requerida por RGSI.
 
 ---
 
 ### `audits/{auditId}/reports/{reportId}`
+
 ```json
 {
-  "kind":        "matriz-hallazgos",
-  "format":      "xlsx",
-  "storagePath": "audits/aud-001/reports/matriz_2025Q1.xlsx",
-  "sha256":      "d7e2a9f1...",
+  "kind": "matriz-hallazgos",
+  "format": "xlsx",
+  "supabasePath": "xlsx/audits/aud-001/matriz_2025Q1.xlsx",
   "generatedAt": "2025-01-25T16:00:00Z"
 }
 ```
@@ -133,6 +147,7 @@ firestore/
 ---
 
 ### `frameworks/{cobit|coso|rgsi}/controls/{controlId}`
+
 ```json
 {
   "code":        "APO13.01",
@@ -143,6 +158,7 @@ firestore/
   "embedding":   [0.12, -0.34, ...]
 }
 ```
+
 - Catálogo de referencia. Los embeddings se usan para matching semántico en el pipeline IA.
 - Poblar una sola vez (seed) con los controles de COBIT 2019, COSO 2013, y artículos RGSI-ASFI.
 
@@ -196,21 +212,26 @@ service cloud.firestore {
 
 ---
 
-## Cloud Storage estructura
+## Supabase Storage estructura
+
+Los binarios se almacenan en Supabase Storage, organizados en buckets por tipo de archivo y estructurados internamente por auditoría:
 
 ```
-gs://cosfi-bucket/
-├── audits/{auditId}/
-│   ├── docs/{filename}        ← documentos subidos
-│   └── reports/{filename}     ← reportes generados
-└── frameworks/                ← recursos estáticos del catálogo
+supabase-storage/
+├── pdfs/                      ← Bucket para documentos originales en PDF
+│   └── audits/{auditId}/
+│       └── {filename}.pdf
+└── xlsx/                      ← Bucket para reportes y matrices generados en Excel
+    └── audits/{auditId}/
+        └── {filename}.xlsx
 ```
 
 ---
 
-## Notas de diseño
+## Notas de diseño e integración Firestore + Supabase
 
-- **Sin embeddings en cliente**: el matching semántico ocurre en Cloud Functions (Vertex AI Vector Search).
-- **aiRuns no incluido** en este MVP — agregar cuando el pipeline IA sea real.
-- **Timestamps**: usar `serverTimestamp()` en escrituras para consistencia.
-- **Índices compuestos** que necesitarás: `audits` por `ownerId + createdAt`, `findings` por `auditId + risk + status`.
+- **Autenticación Cruzada**: Firebase Auth se utiliza para la autenticación principal en el frontend. Para permitir que Supabase Storage verifique de forma segura los permisos del usuario usando RLS (Row Level Security), se debe configurar Supabase para confiar en los tokens de Firebase Auth (JWT) o bien firmar URLs temporales desde un backend controlado.
+- **Pipeline de indexación de PDFs**: Cuando un PDF es subido a Supabase Storage (`pdfs/`), un webhook de Supabase Storage o un trigger en la base de datos de Supabase puede notificar a la Cloud Function / API para que descargue el PDF, extraiga el texto, genere los embeddings y cree el documento correspondiente en la colección `audits/{auditId}/documents/` con estado `ready`.
+- **Sin embeddings en cliente**: el matching semántico ocurre en Cloud Functions / Backend (Vertex AI Vector Search o pgvector si se decide mover el motor de búsqueda en el futuro).
+- **Timestamps**: usar `serverTimestamp()` en escrituras de Firestore para consistencia.
+- **Índices compuestos** en Firestore: `audits` por `ownerId + createdAt`, `findings` por `auditId + risk + status`.
