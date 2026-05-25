@@ -1,27 +1,4 @@
 {
-<<<<<<< HEAD
-  "indexes": [
-    {
-      "collectionGroup": "audits",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "ownerId",   "order": "ASCENDING" },
-        { "fieldPath": "createdAt", "order": "DESCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "findings",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "auditId", "order": "ASCENDING" },
-        { "fieldPath": "risk",    "order": "ASCENDING" }
-      ]
-    }
-  ],
-  "fieldOverrides": []
-}
-=======
   "indexes": [],
   "fieldOverrides": []
 }
->>>>>>> 6d2d1f8aa358d7846568b320413d2eadc7f26ab9
