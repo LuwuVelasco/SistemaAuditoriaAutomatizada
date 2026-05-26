@@ -9,14 +9,35 @@
  * O bien: `firebase login` y luego `firebase use <project-id>`
  */
 
-import { initializeApp, cert } from 'firebase-admin/app'
-import { getFirestore }         from 'firebase-admin/firestore'
-import { readFileSync }         from 'fs'
+const { initializeApp, cert } = require('firebase-admin/app')
+const { getFirestore } = require('firebase-admin/firestore')
+const { readFileSync } = require('fs')
+const { existsSync } = require('fs')
+const path = require('path')
 
 // ── Configuración ──────────────────────────────────────────────────────────
 // Descarga tu service account desde Firebase Console →
 // Proyecto → Configuración → Cuentas de servicio → Generar nueva clave privada
-const serviceAccount = JSON.parse(readFileSync('./serviceAccountKey.json', 'utf8'))
+const candidatePaths = [
+  process.env.GOOGLE_APPLICATION_CREDENTIALS,
+  path.resolve(process.cwd(), 'serviceAccountKey.json'),
+  path.resolve(process.cwd(), 'backend', 'serviceAccountKey.json'),
+  path.resolve(__dirname, '..', 'backend', 'serviceAccountKey.json')
+].filter(Boolean)
+
+const serviceAccountPath = candidatePaths.find((candidate) => existsSync(candidate))
+
+if (!existsSync(serviceAccountPath)) {
+  console.error('No se encontró el service account.')
+  console.error('Busqué en:')
+  for (const candidate of candidatePaths) {
+    console.error(`- ${candidate}`)
+  }
+  console.error('Coloca serviceAccountKey.json en la raíz o en backend/, o define GOOGLE_APPLICATION_CREDENTIALS.')
+  process.exit(1)
+}
+
+const serviceAccount = JSON.parse(readFileSync(serviceAccountPath, 'utf8'))
 
 initializeApp({ credential: cert(serviceAccount) })
 const db = getFirestore()
