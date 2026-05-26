@@ -25,12 +25,15 @@ function toggleFramework(fw) {
   else form.frameworks.push(fw)
 }
 
-function create() {
-  const id = store.createAudit({
+async function create() {
+  const quarter = Math.ceil((new Date().getMonth() + 1) / 3)
+  const period = form.period || `${new Date().getFullYear()}-Q${quarter}`
+  const city = form.city || 'La Paz'
+  const id = await store.createAudit({
     entity: form.entity,
     type: form.type,
-    city: form.city,
-    period: form.period || new Date().getFullYear() + '-Q' + (Math.ceil((new Date().getMonth() + 1) / 3)),
+    city,
+    period,
     frameworks: [...form.frameworks]
   })
   emit('close')
