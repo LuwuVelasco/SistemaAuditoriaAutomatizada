@@ -1,4 +1,4 @@
-"""
+﻿"""
 Pipeline de extracción: descarga documentos de Supabase y extrae texto para los motores.
 """
 
@@ -54,6 +54,6 @@ class ExtractionPipeline:
 
         combined = "\n\n".join(sections)
         logger.info(
-            f"ExtractionPipeline: {len(ready_docs)} documentos → {len(combined)} caracteres totales."
+            f"ExtractionPipeline: {len(ready_docs)} documentos -> {len(combined)} caracteres totales."
         )
         return combined

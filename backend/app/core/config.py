@@ -25,6 +25,7 @@ class Settings(BaseSettings):
     FIREBASE_PROJECT_ID: str = ""
     FIREBASE_CLIENT_EMAIL: str = ""
     FIREBASE_PRIVATE_KEY: str = ""
+    FIREBASE_WEB_API_KEY: str = ""  # Firebase Console > Configuracion > General > Clave API web
 
     # ── Supabase ─────────────────────────────────────────────────────────────
     SUPABASE_URL: str = ""

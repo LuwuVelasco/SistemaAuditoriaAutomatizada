@@ -1,13 +1,14 @@
 """
-Middleware de autenticación: lista las rutas públicas que no requieren Bearer token.
-La verificación real del token ocurre en deps.get_current_uid() para cada endpoint.
-Este middleware solo bloquea rutas protegidas sin Authorization header presente,
-devolviendo 401 temprano antes de entrar al router.
+Middleware de autenticación early-exit.
+En DEBUG=True se omite: la validación real ocurre en get_current_uid() por endpoint.
+En producción bloquea rutas protegidas sin Authorization header antes del router.
 """
 
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 from starlette.responses import JSONResponse
+
+from app.core.config import settings
 
 _PUBLIC_PATHS = {
     "/",
@@ -15,18 +16,21 @@ _PUBLIC_PATHS = {
     "/docs",
     "/redoc",
     "/openapi.json",
+    "/api/v1/auth/login",
 }
 
 
 class AuthMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
+        # En desarrollo el dep get_current_uid() maneja la auth por endpoint
+        if settings.DEBUG:
+            return await call_next(request)
+
         path = request.url.path
 
-        # Rutas públicas y prefijos de docs
         if path in _PUBLIC_PATHS or path.startswith("/docs") or path.startswith("/redoc"):
             return await call_next(request)
 
-        # Verificar presencia del header (no validar el token aquí)
         auth_header = request.headers.get("authorization", "")
         if not auth_header.startswith("Bearer "):
             return JSONResponse(

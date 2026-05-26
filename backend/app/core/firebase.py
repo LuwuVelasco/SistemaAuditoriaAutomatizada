@@ -1,4 +1,4 @@
-"""Inicialización de Firebase Admin SDK y cliente Firestore async."""
+﻿"""Inicialización de Firebase Admin SDK y cliente Firestore async."""
 
 import json
 import os
@@ -20,7 +20,7 @@ def _build_credentials() -> credentials.Base:
     path = settings.FIREBASE_CREDENTIALS_PATH
 
     if os.path.isfile(path):
-        logger.info(f"Firebase: usando credenciales desde archivo → {path}")
+        logger.info(f"Firebase: usando credenciales desde archivo -> {path}")
         return credentials.Certificate(path)
 
     # Fallback: construir desde variables de entorno

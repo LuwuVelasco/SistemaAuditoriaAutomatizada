@@ -6,7 +6,8 @@ Inyectan: usuario autenticado, clientes DB/Storage, y servicios de dominio.
 from functools import lru_cache
 from typing import Annotated
 
-from fastapi import Depends, Header
+from fastapi import Depends
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from google.cloud import firestore
 
 from app.core.firebase import get_firestore_client, verify_token
@@ -120,17 +121,18 @@ def get_ai_service(
 
 # ── Autenticación ─────────────────────────────────────────────────────────────
 
-async def get_current_uid(authorization: Annotated[str | None, Header()] = None) -> str:
-    """
-    Extrae y verifica el Bearer token de Firebase.
-    Retorna el UID del usuario autenticado.
-    """
-    if not authorization or not authorization.startswith("Bearer "):
+_bearer = HTTPBearer(auto_error=False)
+
+
+async def get_current_uid(
+    credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(_bearer)] = None,
+) -> str:
+    """Extrae y verifica el Bearer token de Firebase. Retorna el UID."""
+    if not credentials:
         raise_unauthorized()
-    token = authorization.removeprefix("Bearer ").strip()
     try:
-        uid = await verify_token(token)
-        return uid
+        decoded = verify_token(credentials.credentials)
+        return decoded["uid"]
     except Exception:
         raise_unauthorized()
 

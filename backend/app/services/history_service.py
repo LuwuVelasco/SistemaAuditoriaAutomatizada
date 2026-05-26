@@ -1,4 +1,4 @@
-"""Servicio de historial de cambios en hallazgos (trazabilidad regulatoria)."""
+﻿"""Servicio de historial de cambios en hallazgos (trazabilidad regulatoria)."""
 
 from typing import Any, List
 
@@ -47,7 +47,7 @@ class HistoryService:
             "changedAt": utcnow_iso(),
         }
         await self._history_col(audit_id, finding_id).document(event_id).set(event)
-        logger.debug(f"Historia [{finding_id}] campo '{field}': {old_value!r} → {new_value!r}")
+        logger.debug(f"Historia [{finding_id}] campo '{field}': {old_value!r} -> {new_value!r}")
 
     async def record_update(
         self,

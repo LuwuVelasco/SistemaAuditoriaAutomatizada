@@ -1,4 +1,4 @@
-"""
+﻿"""
 Servicio de extracción de texto de documentos.
 
 Arquitectura preparada para:
@@ -62,11 +62,11 @@ class ExtractionService:
 
     def process(self, content: bytes) -> tuple[str, List[str]]:
         """
-        Pipeline completo: extracción → normalización → chunking.
+        Pipeline completo: extracción -> normalización -> chunking.
         Retorna (texto_completo, lista_de_chunks).
         """
         raw = self.extract_text_from_pdf(content)
         normalized = self.normalize(raw)
         chunks = self.chunk(normalized) if normalized else []
-        logger.info(f"Extracción completa: {len(normalized)} chars → {len(chunks)} chunks.")
+        logger.info(f"Extracción completa: {len(normalized)} chars -> {len(chunks)} chunks.")
         return normalized, chunks

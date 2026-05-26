@@ -14,6 +14,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.security import HTTPBearer
 from loguru import logger
 
 from app.api.routes import audits, auth, dashboard, documents, findings, frameworks, reports
@@ -50,13 +51,17 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="SAAM — Sistema de Auditoría Automatizada Multimarco",
     description=(
-        "API REST para COSFI/SAAM. Procesa auditorías TI con tres motores IA "
-        "(COSO, COBIT, RGSI) y almacena hallazgos en Firestore."
+        "API REST para COSFI/SAAM.\n\n"
+        "**Como autenticarse:**\n"
+        "1. Llama `POST /api/v1/auth/login` con tu email y password\n"
+        "2. Copia el `idToken` de la respuesta\n"
+        "3. Haz clic en **Authorize** (arriba a la derecha) y pega el token"
     ),
     version="1.0.0",
     docs_url="/docs" if settings.DEBUG else None,
     redoc_url="/redoc" if settings.DEBUG else None,
     lifespan=lifespan,
+    swagger_ui_parameters={"persistAuthorization": True},
 )
 
 # ── Middleware (orden importa: primero CORS, luego logging, luego auth) ───────

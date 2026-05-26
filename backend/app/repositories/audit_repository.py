@@ -1,4 +1,4 @@
-"""Repositorio Firestore para auditorías."""
+﻿"""Repositorio Firestore para auditorías."""
 
 from typing import List, Optional
 
@@ -40,7 +40,7 @@ class AuditRepository:
         if not clean:
             return await self.get_by_id(audit_id)
         await self._col.document(audit_id).update(clean)
-        logger.debug(f"Auditoría actualizada: {audit_id} → {list(clean.keys())}")
+        logger.debug(f"Auditoría actualizada: {audit_id} -> {list(clean.keys())}")
         return await self.get_by_id(audit_id)
 
     async def delete(self, audit_id: str) -> None:

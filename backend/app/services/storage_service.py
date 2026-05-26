@@ -1,4 +1,4 @@
-"""Servicio de almacenamiento de binarios en Supabase Storage."""
+﻿"""Servicio de almacenamiento de binarios en Supabase Storage."""
 
 import hashlib
 import io
@@ -30,7 +30,7 @@ class StorageService:
                 file=content,
                 file_options={"content-type": "application/pdf", "upsert": "true"},
             )
-            logger.info(f"PDF subido → {bucket}/{path}")
+            logger.info(f"PDF subido -> {bucket}/{path}")
             return path
         except Exception as exc:
             raise StorageError(f"Error al subir PDF a Supabase: {exc}") from exc
@@ -53,7 +53,7 @@ class StorageService:
                 file=content,
                 file_options={"content-type": content_type, "upsert": "true"},
             )
-            logger.info(f"Reporte subido → {bucket}/{path}")
+            logger.info(f"Reporte subido -> {bucket}/{path}")
             return path
         except Exception as exc:
             raise StorageError(f"Error al subir reporte a Supabase: {exc}") from exc

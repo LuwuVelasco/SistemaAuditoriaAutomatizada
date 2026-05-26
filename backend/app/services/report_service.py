@@ -1,4 +1,4 @@
-"""
+﻿"""
 Servicio de generación de reportes.
 Produce XLSX, DOCX o PDF a partir de los hallazgos de una auditoría.
 Sube el archivo a Supabase Storage y registra el reporte en Firestore.
@@ -95,7 +95,7 @@ class ReportService:
         elif fmt == ReportFormat.DOCX:
             content = self._build_docx(kind, entity, findings)
         else:
-            content = self._build_xlsx(kind, entity, findings)  # PDF → XLSX como fallback funcional
+            content = self._build_xlsx(kind, entity, findings)  # PDF -> XLSX como fallback funcional
             filename = filename.replace(".pdf", ".xlsx")
             fmt = ReportFormat.XLSX
 
@@ -112,7 +112,7 @@ class ReportService:
             generatedAt=now,
         )
         result = await self._reports.create(report)
-        logger.info(f"Reporte generado: {kind.value} ({fmt.value}) → {path}")
+        logger.info(f"Reporte generado: {kind.value} ({fmt.value}) -> {path}")
         return result
 
     async def list_by_audit(self, audit_id: str, owner_id: str) -> List[Report]:

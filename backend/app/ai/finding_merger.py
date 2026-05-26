@@ -1,4 +1,4 @@
-"""
+﻿"""
 Consolidador de hallazgos multimarco.
 
 Objetivo:
@@ -45,7 +45,7 @@ class FindingMerger:
                 consolidated.append(candidate)
 
         logger.info(
-            f"Merger: {len(all_findings)} hallazgos crudos → {len(consolidated)} consolidados."
+            f"Merger: {len(all_findings)} hallazgos crudos -> {len(consolidated)} consolidados."
         )
         return consolidated
 

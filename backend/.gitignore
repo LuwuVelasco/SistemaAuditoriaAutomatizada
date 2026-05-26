@@ -5,3 +5,5 @@ __pycache__/
 *.pyo
 .pytest_cache/
 serviceAccountKey.json
+venv/
+backend/venv/

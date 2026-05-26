@@ -1,4 +1,4 @@
-"""Repositorio Firestore para documentos (subcolección de auditorías)."""
+﻿"""Repositorio Firestore para documentos (subcolección de auditorías)."""
 
 from typing import List, Optional
 
@@ -19,7 +19,7 @@ class DocumentRepository:
     async def create(self, document: Document) -> Document:
         data = strip_none(document.to_firestore())
         await self._col(document.audit_id).document(document.id).set(data)
-        logger.debug(f"Documento registrado: {document.name} → {document.id}")
+        logger.debug(f"Documento registrado: {document.name} -> {document.id}")
         return document
 
     async def get_by_id(self, audit_id: str, doc_id: str) -> Optional[Document]:
@@ -37,7 +37,7 @@ class DocumentRepository:
         if chunks:
             update["chunks"] = chunks
         await self._col(audit_id).document(doc_id).update(update)
-        logger.debug(f"Documento {doc_id} → estado: {status}")
+        logger.debug(f"Documento {doc_id} -> estado: {status}")
 
     async def delete(self, audit_id: str, doc_id: str) -> None:
         await self._col(audit_id).document(doc_id).delete()

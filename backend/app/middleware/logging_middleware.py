@@ -19,7 +19,7 @@ class LoggingMiddleware(BaseHTTPMiddleware):
         try:
             response = await call_next(request)
         except Exception as exc:
-            logger.error(f"{method} {path} → 500 | {type(exc).__name__}: {exc}")
+            logger.error(f"{method} {path} -> 500 | {type(exc).__name__}: {exc}")
             raise
 
         elapsed_ms = (time.perf_counter() - start) * 1000
@@ -27,6 +27,6 @@ class LoggingMiddleware(BaseHTTPMiddleware):
 
         level = "warning" if status_code >= 400 else "info"
         getattr(logger, level)(
-            f"{method} {path} → {status_code} | {elapsed_ms:.1f}ms"
+            f"{method} {path} -> {status_code} | {elapsed_ms:.1f}ms"
         )
         return response

@@ -1,4 +1,4 @@
-"""
+﻿"""
 Orquestador del pipeline IA multimarco.
 
 Secuencia FIJA (según RGSI-ASFI, las regulaciones locales tienen precedencia):
@@ -109,7 +109,7 @@ class AIOrchestrator:
         ]
 
         logger.info(
-            f"[Orquestador] Pipeline completado: {len(all_raw)} crudos → "
+            f"[Orquestador] Pipeline completado: {len(all_raw)} crudos -> "
             f"{len(findings)} hallazgos finales para auditoría {audit_id}."
         )
         return findings

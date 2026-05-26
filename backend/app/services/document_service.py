@@ -1,4 +1,4 @@
-"""Servicio para gestión de documentos cargados por auditoría."""
+﻿"""Servicio para gestión de documentos cargados por auditoría."""
 
 from typing import List
 
@@ -64,7 +64,7 @@ class DocumentService:
         await self._docs.create(document)
         await self._audits.increment_counter(audit_id, "documentsCount", 1)
 
-        logger.info(f"Documento subido: {filename} → {doc_id} (auditoría {audit_id})")
+        logger.info(f"Documento subido: {filename} -> {doc_id} (auditoría {audit_id})")
         return document
 
     async def list_by_audit(self, audit_id: str, owner_id: str) -> List[Document]:

@@ -1,4 +1,4 @@
-"""Repositorio Firestore para reportes generados."""
+﻿"""Repositorio Firestore para reportes generados."""
 
 from typing import List, Optional
 
@@ -19,7 +19,7 @@ class ReportRepository:
     async def create(self, report: Report) -> Report:
         data = strip_none(report.to_firestore())
         await self._col(report.audit_id).document(report.id).set(data)
-        logger.debug(f"Reporte registrado: {report.kind} → {report.id}")
+        logger.debug(f"Reporte registrado: {report.kind} -> {report.id}")
         return report
 
     async def list_by_audit(self, audit_id: str) -> List[Report]:
