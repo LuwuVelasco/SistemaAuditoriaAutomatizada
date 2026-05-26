@@ -6,3 +6,5 @@ dist/
 *.log
 .agents/
 skills-lock.json
+venv/
+backend/venv/
