@@ -123,6 +123,7 @@ export const useAuditsStore = defineStore('audits', () => {
     try {
       const uploaded = await remote.uploadDocument(auditId, file)
       const doc = mapDocument(uploaded)
+      doc.status = 'ready'
       const idx = documents.value[auditId].findIndex(d => d.id === tempId)
       if (idx >= 0) documents.value[auditId][idx] = doc
       const audit = audits.value.find(a => a.id === auditId)
