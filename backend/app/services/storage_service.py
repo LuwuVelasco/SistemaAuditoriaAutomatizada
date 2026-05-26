@@ -25,14 +25,21 @@ class StorageService:
         path = f"audits/{audit_id}/{filename}"
         bucket = settings.SUPABASE_BUCKET_PDFS
         try:
-            self._client.storage.from_(bucket).upload(
+            logger.debug(f"Iniciando upload PDF: bucket={bucket}, path={path}, size={len(content)} bytes")
+            result = self._client.storage.from_(bucket).upload(
                 path=path,
                 file=content,
                 file_options={"content-type": "application/pdf", "upsert": "true"},
             )
-            logger.info(f"PDF subido → {bucket}/{path}")
+            logger.info(f"PDF subido exitosamente → {bucket}/{path} | respuesta: {result}")
             return path
         except Exception as exc:
+            msg = str(exc)
+            if "row-level security policy" in msg:
+                raise StorageError(
+                    "Error al subir PDF a Supabase: RLS bloqueó la operación. "
+                    "Configura policies para storage.objects o usa SUPABASE_KEY de backend (service_role)."
+                ) from exc
             raise StorageError(f"Error al subir PDF a Supabase: {exc}") from exc
 
     async def download_file(self, bucket: str, path: str) -> bytes:
@@ -56,6 +63,12 @@ class StorageService:
             logger.info(f"Reporte subido → {bucket}/{path}")
             return path
         except Exception as exc:
+            msg = str(exc)
+            if "row-level security policy" in msg:
+                raise StorageError(
+                    "Error al subir reporte a Supabase: RLS bloqueó la operación. "
+                    "Configura policies para storage.objects o usa SUPABASE_KEY de backend (service_role)."
+                ) from exc
             raise StorageError(f"Error al subir reporte a Supabase: {exc}") from exc
 
     async def delete_file(self, bucket: str, path: str) -> None:

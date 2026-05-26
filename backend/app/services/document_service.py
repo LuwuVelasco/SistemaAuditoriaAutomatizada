@@ -45,7 +45,12 @@ class DocumentService:
         ext = filename.rsplit(".", 1)[-1].lower() if "." in filename else "pdf"
         sha256 = StorageService.compute_sha256(content)
 
-        supabase_path = await self._storage.upload_pdf(audit_id, filename, content)
+        # Usa upload_pdf para PDFs, upload_report para otros (XLSX, DOCX, etc.)
+        if ext == "pdf":
+            supabase_path = await self._storage.upload_pdf(audit_id, filename, content)
+        else:
+            supabase_path = await self._storage.upload_report(audit_id, filename, content, content_type)
+        
         doc_id = generate_id("doc-")
 
         document = Document(
@@ -80,7 +85,13 @@ class DocumentService:
 
     async def delete(self, audit_id: str, doc_id: str, owner_id: str) -> None:
         doc = await self.get_by_id(audit_id, doc_id, owner_id)
-        await self._storage.delete_file(settings.SUPABASE_BUCKET_PDFS, doc.supabase_path)
+        # Determina el bucket según la extensión
+        bucket = (
+            settings.SUPABASE_BUCKET_PDFS
+            if doc.type.lower() == "pdf"
+            else settings.SUPABASE_BUCKET_XLSX
+        )
+        await self._storage.delete_file(bucket, doc.supabase_path)
         await self._docs.delete(audit_id, doc_id)
         await self._audits.increment_counter(audit_id, "documentsCount", -1)
         logger.info(f"Documento eliminado: {doc_id}")
@@ -88,7 +99,13 @@ class DocumentService:
     async def download_content(self, audit_id: str, doc_id: str, owner_id: str) -> bytes:
         """Descarga el contenido binario de un documento desde Supabase."""
         doc = await self.get_by_id(audit_id, doc_id, owner_id)
-        return await self._storage.download_file(settings.SUPABASE_BUCKET_PDFS, doc.supabase_path)
+        # Determina el bucket según la extensión
+        bucket = (
+            settings.SUPABASE_BUCKET_PDFS
+            if doc.type.lower() == "pdf"
+            else settings.SUPABASE_BUCKET_XLSX
+        )
+        return await self._storage.download_file(bucket, doc.supabase_path)
 
     async def update_status(
         self, audit_id: str, doc_id: str, status: DocumentStatus, chunks: int = 0
