@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuditsStore } from '@/stores/audits'
 import AppIcon from '@/components/ui/AppIcon.vue'
@@ -13,11 +13,28 @@ const form = reactive({
   entity: '', type: 'Auditoría TI', city: '', period: '',
   frameworks: ['COBIT', 'COSO', 'RGSI']
 })
+const periodError = ref('')
 
 const entityTypes = ['Banco', 'Cooperativa', 'Financiera', 'Fondo Financiero Privado', 'Institución Financiera de Desarrollo']
 const auditTypes  = ['Auditoría TI', 'Auditoría Seguridad', 'Auditoría Cumplimiento', 'Auditoría Operativa']
 const frameworkOptions = ['COBIT', 'COSO', 'RGSI']
 const cities = ['La Paz', 'Cochabamba', 'Santa Cruz', 'Oruro', 'Potosí', 'Sucre', 'Tarija', 'Beni', 'Pando']
+
+const isStep1Valid = computed(() => form.entity && !periodError.value)
+
+function validatePeriod(value) {
+  if (!value) {
+    periodError.value = ''
+    return true
+  }
+  const pattern = /^\d{4}-Q[1-4]$/
+  if (!pattern.test(value)) {
+    periodError.value = 'Formato inválido. Usa: YYYY-Q[1-4] (ej: 2026-Q1)'
+    return false
+  }
+  periodError.value = ''
+  return true
+}
 
 function toggleFramework(fw) {
   const idx = form.frameworks.indexOf(fw)
@@ -26,18 +43,36 @@ function toggleFramework(fw) {
 }
 
 async function create() {
+  // Validar período antes de crear
   const quarter = Math.ceil((new Date().getMonth() + 1) / 3)
   const period = form.period || `${new Date().getFullYear()}-Q${quarter}`
+  
+  if (!validatePeriod(period)) {
+    console.warn('Período inválido:', period)
+    return
+  }
+  
   const city = form.city || 'La Paz'
-  const id = await store.createAudit({
-    entity: form.entity,
-    type: form.type,
-    city,
-    period,
-    frameworks: [...form.frameworks]
-  })
-  emit('close')
-  router.push(`/workspace/${id}`)
+  try {
+    const id = await store.createAudit({
+      entity: form.entity,
+      type: form.type,
+      city,
+      period,
+      frameworks: [...form.frameworks]
+    })
+    emit('close')
+    router.push(`/workspace/${id}`)
+  } catch (e) {
+    console.error('Error creando auditoría:', e)
+    periodError.value = 'Error al crear auditoría. Intenta de nuevo.'
+  }
+}
+
+function nextStep() {
+  if (isStep1Valid.value) {
+    step.value++
+  }
 }
 </script>
 
@@ -87,8 +122,17 @@ async function create() {
             </div>
           </div>
           <div class="form-group" style="margin-bottom:0;">
-            <label class="form-label">Período</label>
-            <input v-model="form.period" class="form-input" placeholder="Ej. 2025-Q1" />
+            <label class="form-label">Período <span style="color:var(--text-3);">(opcional)</span></label>
+            <input
+              v-model="form.period"
+              class="form-input"
+              :style="{ borderColor: periodError ? 'var(--risk-h)' : '' }"
+              placeholder="Ej. 2026-Q1 (vacío = trimestre actual)"
+              @input="validatePeriod(form.period)"
+            />
+            <div v-if="periodError" style="color:var(--risk-h);font-size:12px;margin-top:4px;font-weight:500;">
+              ⚠️ {{ periodError }}
+            </div>
           </div>
         </template>
 
@@ -125,7 +169,7 @@ async function create() {
         <button v-if="step > 1" class="btn btn-ghost" @click="step--">Atrás</button>
         <div style="margin-left:auto;display:flex;gap:8px;">
           <button class="btn btn-ghost" @click="emit('close')">Cancelar</button>
-          <button v-if="step < 2" class="btn btn-primary" :disabled="!form.entity" @click="step++">
+          <button v-if="step < 2" class="btn btn-primary" :disabled="!isStep1Valid" @click="nextStep">
             Siguiente
           </button>
           <button v-else class="btn btn-primary" :disabled="!form.frameworks.length" @click="create">
