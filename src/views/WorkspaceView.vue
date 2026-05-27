@@ -16,7 +16,7 @@ const audit = computed(() => store.audits.find(a => a.id === auditId.value))
 const docs = computed(() => store.documents[auditId.value] || [])
 const findings = computed(() => store.findings[auditId.value] || [])
 
-const activeTab = ref('documentos')
+const activeTab = ref(route.query.tab || 'documentos')
 const isDragOver = ref(false)
 
 // Analysis state
@@ -34,6 +34,20 @@ const engines = ref([
   { name: 'RGSI',  pct: 0, status: 'waiting' }
 ])
 const globalPct = computed(() => Math.round((engines.value.reduce((s, e) => s + e.pct, 0)) / 3))
+watch(activeTab, (tab) => {
+  router.replace({
+    query: {
+      ...route.query,
+      tab
+    }
+  })
+})
+watch(
+  () => route.query.tab,
+  (tab) => {
+    if (tab) activeTab.value = tab
+  }
+)
 
 // Reports selection
 const selectedReports = ref(['matriz-hallazgos'])

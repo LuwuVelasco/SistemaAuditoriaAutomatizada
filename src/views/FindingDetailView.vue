@@ -33,14 +33,14 @@ function approve() {
   finding.value.status = 'Aprobado'
   store.updateFinding(auditId.value, findingId.value, { ...finding.value, status: 'Aprobado' })
   feedback.value = { type: 'approved', msg: 'Hallazgo aprobado.' }
-  setTimeout(() => { feedback.value = null; router.back() }, 1500)
+  setTimeout(() => { feedback.value = null; router.push(`/workspace/${auditId.value}?tab=hallazgos`) }, 1500)
 }
 
 function reject() {
   finding.value.status = 'Rechazado'
   store.updateFinding(auditId.value, findingId.value, { ...finding.value, status: 'Rechazado' })
   feedback.value = { type: 'rejected', msg: 'Hallazgo rechazado.' }
-  setTimeout(() => { feedback.value = null; router.back() }, 1500)
+  setTimeout(() => { feedback.value = null; router.push(`/workspace/${auditId.value}?tab=hallazgos`) }, 1500)
 }
 
 const feedback = ref(null)
@@ -313,17 +313,19 @@ const relatedFindings = computed(() => {
 
     <!-- Action bar -->
     <div v-if="finding" class="action-bar">
-      <button class="btn btn-primary" @click="approve">
-        <AppIcon name="check" :size="13" />
-        Aprobar
-      </button>
-      <button class="btn btn-outline" @click="save">
-        Guardar
-      </button>
-      <button class="btn btn-danger" @click="reject">
-        <AppIcon name="x" :size="13" />
-        Rechazar
-      </button>
+      <div v-if="finding.status === 'Pendiente'" >
+        <button class="btn btn-primary" @click="approve">
+          <AppIcon name="check" :size="13" />
+          Aprobar
+        </button>
+        <button class="btn btn-outline" @click="save">
+          Guardar
+        </button>
+        <button class="btn btn-danger" @click="reject">
+          <AppIcon name="x" :size="13" />
+          Rechazar
+        </button>
+      </div>
       <div style="margin-left:auto;">
         <button class="btn btn-ghost">
           <AppIcon name="download" :size="13" />

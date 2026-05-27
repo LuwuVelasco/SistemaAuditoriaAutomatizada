@@ -160,8 +160,42 @@ export const useAuditsStore = defineStore('audits', () => {
 
   async function updateFinding(auditId, findingId, data) {
     if (USE_API) {
-      try { await remote.updateFinding(auditId, findingId, data) } catch (e) { console.error('Error actualizando hallazgo:', e) }
+      // Construir payload limpio con solo los campos que acepta FindingUpdate
+      const payload = {}
+
+      if (data.title       !== undefined) payload.title       = data.title
+      if (data.description !== undefined) payload.description = data.description
+      if (data.recommendation !== undefined) payload.recommendation = data.recommendation
+      if (data.impact      !== undefined) payload.impact      = data.impact
+      if (data.probability !== undefined) payload.probability = data.probability
+      if (data.status      !== undefined) payload.status      = data.status
+      if (data.quote       !== undefined) payload.quote       = data.quote
+
+      // Normalizar refs: el backend espera arrays, el store los guarda como objeto plano
+      if (data.cobitRef !== undefined) {
+        payload.cobitRef = data.cobitRef
+          ? (Array.isArray(data.cobitRef) ? data.cobitRef : [data.cobitRef])
+          : []
+      }
+      if (data.cosoRef !== undefined) {
+        payload.cosoRef = data.cosoRef
+          ? (Array.isArray(data.cosoRef) ? data.cosoRef : [data.cosoRef])
+          : []
+      }
+      if (data.rgsiRef !== undefined) {
+        payload.rgsiRef = data.rgsiRef
+          ? (Array.isArray(data.rgsiRef) ? data.rgsiRef : [data.rgsiRef])
+          : []
+      }
+
+      try {
+        await remote.updateFinding(auditId, findingId, payload)
+      } catch (e) {
+        console.error('Error actualizando hallazgo:', e)
+      }
     }
+
+    // Actualizar estado local igual que antes
     const list = findings.value[auditId]
     if (!list) return
     const idx = list.findIndex(f => f.id === findingId)

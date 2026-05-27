@@ -50,11 +50,11 @@ class FindingRepository:
         return [Finding.from_firestore(d.id, audit_id, d.to_dict()) for d in docs]
 
     async def update(self, audit_id: str, finding_id: str, fields: dict) -> Optional[Finding]:
-        clean = strip_none(fields)
+        clean = {k: v for k, v in fields.items() if v is not None}
         if not clean:
             return await self.get_by_id(audit_id, finding_id)
         await self._col(audit_id).document(finding_id).update(clean)
-        logger.debug(f"Hallazgo actualizado: {finding_id}")
+        logger.debug(f"Hallazgo actualizado: {finding_id} → campos: {list(clean.keys())}")
         return await self.get_by_id(audit_id, finding_id)
 
     async def delete(self, audit_id: str, finding_id: str) -> None:
