@@ -11,7 +11,7 @@ from loguru import logger
 
 from app.core.config import settings
 
-_MODEL = "gemini-2.0-flash"
+_MODEL = "gemini-2.5-flash"
 
 
 class GeminiProvider:

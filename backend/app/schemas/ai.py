@@ -10,7 +10,7 @@ class AIEngineResult(BaseModel):
     framework: str
     findings: List[Dict[str, Any]] = Field(default_factory=list)
     tokens_used: int = 0
-    engine_version: str = "gemini-2.0-flash"
+    engine_version: str = "gemini-2.5-flash"
 
 
 class RawFinding(BaseModel):
