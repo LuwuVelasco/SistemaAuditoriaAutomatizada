@@ -7,7 +7,7 @@ from typing import Any, List
 
 from loguru import logger
 
-from app.ai.providers.gemini_provider import GeminiProvider
+from app.ai.providers.ollama_provider import OllamaProvider
 from app.schemas.ai import RawFinding
 
 
@@ -19,26 +19,30 @@ class BaseEngine(ABC):
 
     framework: str = ""
 
-    def __init__(self, provider: GeminiProvider):
+    def __init__(self, provider: OllamaProvider):
         self._provider = provider
 
     @abstractmethod
     def build_prompt(self, text: str, prior_findings: List[dict]) -> str:
         """Construye el prompt específico del framework."""
 
-    async def analyze(self, text: str, prior_findings: List[dict] = None) -> List[RawFinding]:
+    async def analyze(self, text: str, prior_findings: List[dict] = None, images: List[str] = None) -> List[RawFinding]:
         """
         Ejecuta el análisis sobre el texto y retorna hallazgos crudos.
         prior_findings: hallazgos ya identificados por motores previos en la cadena.
         """
-        if not text.strip():
-            logger.warning(f"[{self.framework}] Texto vacío — se omite análisis.")
+        if not text.strip() and not images:
+            logger.warning(f"[{self.framework}] Texto e imágenes vacíos — se omite análisis.")
             return []
 
         prompt = self.build_prompt(text, prior_findings or [])
-        logger.info(f"[{self.framework}] Iniciando análisis ({len(text)} chars de texto)…")
+        logger.info(f"[{self.framework}] Iniciando análisis ({len(text)} chars de texto, {len(images or [])} imágenes)…")
 
-        raw_response = await self._provider.generate(prompt)
+        if images:
+            raw_response = await self._provider.generate_with_images(prompt, images=images)
+        else:
+            raw_response = await self._provider.generate(prompt)
+            
         findings = self._parse_response(raw_response)
 
         logger.info(f"[{self.framework}] {len(findings)} hallazgos identificados.")

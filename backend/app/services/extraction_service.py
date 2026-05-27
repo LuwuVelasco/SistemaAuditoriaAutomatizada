@@ -8,6 +8,7 @@ Arquitectura preparada para:
 - Generación de embeddings
 """
 
+import base64
 import io
 from pathlib import Path
 from typing import List
@@ -31,6 +32,12 @@ try:
     _XLSX_AVAILABLE = True
 except ImportError:
     _XLSX_AVAILABLE = False
+
+try:
+    import fitz  # PyMuPDF
+    _FITZ_AVAILABLE = True
+except ImportError:
+    _FITZ_AVAILABLE = False
 
 from app.utils.helpers import chunk_text, normalize_text
 
@@ -119,14 +126,23 @@ class ExtractionService:
         """Divide el texto en fragmentos con solapamiento."""
         return chunk_text(text, self.CHUNK_SIZE, self.CHUNK_OVERLAP)
 
-    def process(self, content: bytes, filename: str = "") -> tuple[str, List[str]]:
+    def render_pdf_to_images(self, content: bytes) -> List[str]:
+        """
+        Renderiza las páginas del PDF a imágenes PNG (base64) para el modelo VL.
+        **Modificado:** Desactivado temporalmente para ahorrar VRAM y usar solo texto plano.
+        """
+        return []
+
+    def process(self, content: bytes, filename: str = "") -> tuple[str, List[str], List[str]]:
         """
         Pipeline completo: extracción → normalización → chunking.
-        Retorna (texto_completo, lista_de_chunks).
+        Retorna (texto_completo, lista_de_chunks, lista_de_imagenes_base64).
         """
         ext = Path(filename).suffix.lower().lstrip(".") if filename else "pdf"
+        images = []
         if ext == "pdf":
             raw = self.extract_text_from_pdf(content)
+            images = self.render_pdf_to_images(content)
         elif ext == "docx":
             raw = self.extract_text_from_docx(content)
         elif ext == "xlsx":
@@ -134,7 +150,8 @@ class ExtractionService:
         else:
             logger.warning(f"Formato no soportado ({ext}) — intentando como texto PDF.")
             raw = self.extract_text_from_pdf(content)
+            images = self.render_pdf_to_images(content)
         normalized = self.normalize(raw)
         chunks = self.chunk(normalized) if normalized else []
-        logger.info(f"Extracción completa: {len(normalized)} chars → {len(chunks)} chunks.")
-        return normalized, chunks
+        logger.info(f"Extracción completa: {len(normalized)} chars → {len(chunks)} chunks, {len(images)} imágenes.")
+        return normalized, chunks, images

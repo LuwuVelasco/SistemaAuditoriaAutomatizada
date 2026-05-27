@@ -22,6 +22,11 @@ ni usar términos acusatorios. Evita palabras como "negligencia", "incumplimient
 """
 
 
+DEPTH_INSTRUCTIONS = """
+Realiza un análisis EXHAUSTIVO Y PROFUNDO. Debes extraer la mayor cantidad posible de hallazgos relevantes (intenta encontrar entre 3 y 5 hallazgos detallados y distintos, o más si el texto lo amerita). No te limites a un solo hallazgo general; desglosa los problemas en debilidades específicas, vulnerabilidades, incumplimientos normativos o riesgos latentes que identifiques en el texto.
+"""
+
+
 def build_coso_prompt(document_text: str, prior_findings: List[dict] = None) -> str:
     prior_section = ""
     if prior_findings:
@@ -35,6 +40,7 @@ Solo identifica hallazgos NUEVOS que no estén cubiertos por los anteriores.
     return f"""Eres un auditor experto en COSO 2013 (Marco Integrado de Control Interno).
 
 {TONE_INSTRUCTIONS}
+{DEPTH_INSTRUCTIONS}
 
 Tu tarea es analizar el siguiente texto de documentos organizacionales de una entidad
 del sistema financiero boliviano e identificar debilidades de control interno conforme
@@ -88,6 +94,7 @@ Solo identifica hallazgos de COBIT 2019 que complementen los anteriores.
     return f"""Eres un auditor experto en COBIT 2019 (Gobierno y Gestión de TI Empresarial).
 
 {TONE_INSTRUCTIONS}
+{DEPTH_INSTRUCTIONS}
 
 Tu tarea es analizar el siguiente texto de documentos organizacionales e identificar
 observaciones de auditoría TI conforme a los dominios de COBIT 2019:
@@ -141,6 +148,7 @@ Solo identifica hallazgos del RGSI-ASFI que complementen los anteriores.
 (RGSI) emitido por la ASFI (Autoridad de Supervisión del Sistema Financiero) de Bolivia.
 
 {TONE_INSTRUCTIONS}
+{DEPTH_INSTRUCTIONS}
 
 Tu tarea es analizar el siguiente texto de documentos de una entidad de intermediación
 financiera boliviana e identificar observaciones de cumplimiento normativo con el RGSI-ASFI.

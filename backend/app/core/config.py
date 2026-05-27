@@ -44,6 +44,10 @@ class Settings(BaseSettings):
     SUPABASE_BUCKET_PDFS: str = "pdfs"
     SUPABASE_BUCKET_XLSX: str = "xlsx"
 
+    # ── Ollama ───────────────────────────────────────────────────────────────
+    OLLAMA_BASE_URL: str = "http://localhost:11434"
+    OLLAMA_MODEL: str = "qwen2.5:7b"
+
     # ── Gemini (3 keys independientes) ───────────────────────────────────────
     GEMINI_COSO_API_KEY: str | None = None
     GEMINI_COBIT_API_KEY: str | None = None

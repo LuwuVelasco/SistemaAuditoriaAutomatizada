@@ -67,10 +67,10 @@ class AIOrchestrator:
             f"Frameworks: {[f.value for f in frameworks]}"
         )
 
-        # ── 1. Extracción de texto ────────────────────────────────────────────
-        text = await self._extraction.extract_from_documents(documents)
-        if not text:
-            logger.error(f"[Orquestador] Sin texto extraíble en {audit_id}.")
+        # ── 1. Extracción de texto e imágenes ─────────────────────────────────
+        text, images = await self._extraction.extract_from_documents(documents)
+        if not text and not images:
+            logger.error(f"[Orquestador] Sin contenido extraíble en {audit_id}.")
             return []
 
         # ── 2. Ejecución secuencial de motores ───────────────────────────────
@@ -81,21 +81,21 @@ class AIOrchestrator:
 
         # Motor 1: COBIT
         if "COBIT" in framework_values:
-            cobit_results = await self._cobit.analyze(text, prior_findings=prior_dicts)
+            cobit_results = await self._cobit.analyze(text, prior_findings=prior_dicts, images=images)
             all_raw.extend(cobit_results)
             prior_dicts.extend([r.model_dump() for r in cobit_results])
             logger.info(f"[COBIT] {len(cobit_results)} hallazgos.")
 
         # Motor 2: COSO (recibe contexto COBIT si fue ejecutado)
         if "COSO" in framework_values:
-            coso_results = await self._coso.analyze(text, prior_findings=prior_dicts)
+            coso_results = await self._coso.analyze(text, prior_findings=prior_dicts, images=images)
             all_raw.extend(coso_results)
             prior_dicts.extend([r.model_dump() for r in coso_results])
             logger.info(f"[COSO] {len(coso_results)} hallazgos.")
 
         # Motor 3: RGSI (recibe contexto COBIT + COSO)
         if "RGSI" in framework_values:
-            rgsi_results = await self._rgsi.analyze(text, prior_findings=prior_dicts)
+            rgsi_results = await self._rgsi.analyze(text, prior_findings=prior_dicts, images=images)
             all_raw.extend(rgsi_results)
             logger.info(f"[RGSI] {len(rgsi_results)} hallazgos.")
 
