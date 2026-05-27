@@ -25,6 +25,11 @@ class EvidenceIn(BaseModel):
 
 class FindingCreate(BaseModel):
     title: str = Field(min_length=5)
+    description_finding: str = Field(default="")
+    criteria_description: str = Field(default="")
+    cause: str = Field(default="")
+    effect: str = Field(default="")
+    conclusion: str = Field(default="")
     description: str = Field(min_length=10)
     recommendation: str = Field(min_length=10)
     impact: int = Field(ge=1, le=5)
@@ -41,6 +46,11 @@ class FindingCreate(BaseModel):
 
 class FindingUpdate(BaseModel):
     title: Optional[str] = None
+    description_finding: Optional[str] = None
+    criteria_description: Optional[str] = None
+    cause: Optional[str] = None
+    effect: Optional[str] = None
+    conclusion: Optional[str] = None
     description: Optional[str] = None
     recommendation: Optional[str] = None
     impact: Optional[int] = Field(default=None, ge=1, le=5)
@@ -58,11 +68,17 @@ class FindingOut(BaseModel):
     id: str
     audit_id: str = Field(alias="auditId")
     title: str
+    description_finding: str = Field(default="", alias="descriptionFinding")
+    criteria_description: str = Field(default="", alias="criteriaDescription")
+    cause: str = ""
+    effect: str = ""
+    conclusion: str = ""
     description: str
     recommendation: str
     risk: RiskLevel
     impact: int
     probability: int
+    risk_level: str = Field(default="", alias="riskLevel")
     status: FindingStatus
     confidence: float
     cobit_refs: List[Dict] = Field(default_factory=list, alias="cobitRef")

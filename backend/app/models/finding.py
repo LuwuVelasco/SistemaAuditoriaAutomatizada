@@ -32,9 +32,15 @@ class Finding(BaseModel):
     id: str
     audit_id: str = Field(alias="auditId")
     title: str
+    description_finding: str = Field(default="", alias="descriptionFinding")
+    criteria_description: str = Field(default="", alias="criteriaDescription")
+    cause: str = Field(default="")
+    effect: str = Field(default="")
+    conclusion: str = Field(default="")
     description: str
     recommendation: str
     risk: RiskLevel
+    risk_level: str = Field(default="", alias="riskLevel")
     impact: int = Field(ge=1, le=5)
     probability: int = Field(ge=1, le=5)
     status: FindingStatus = FindingStatus.PENDIENTE
@@ -54,9 +60,15 @@ class Finding(BaseModel):
         return {
             "auditId": self.audit_id,
             "title": self.title,
+            "descriptionFinding": self.description_finding,
+            "criteriaDescription": self.criteria_description,
+            "cause": self.cause,
+            "effect": self.effect,
+            "conclusion": self.conclusion,
             "description": self.description,
             "recommendation": self.recommendation,
             "risk": self.risk.value,
+            "riskLevel": self.risk_level or self.risk.value,
             "impact": self.impact,
             "probability": self.probability,
             "status": self.status.value,
@@ -84,9 +96,15 @@ class Finding(BaseModel):
             id=doc_id,
             auditId=audit_id,
             title=data.get("title", ""),
+            description_finding=data.get("descriptionFinding", data.get("description", "")),
+            criteria_description=data.get("criteriaDescription", ""),
+            cause=data.get("cause", ""),
+            effect=data.get("effect", ""),
+            conclusion=data.get("conclusion", ""),
             description=data.get("description", ""),
             recommendation=data.get("recommendation", ""),
             risk=data.get("risk", RiskLevel.MEDIO),
+            risk_level=data.get("riskLevel", data.get("risk", RiskLevel.MEDIO)),
             impact=data.get("impact", 3),
             probability=data.get("probability", 3),
             status=data.get("status", FindingStatus.PENDIENTE),

@@ -153,18 +153,29 @@ class ReportService:
     def _xlsx_matriz_hallazgos(self, ws, entity: str, findings: List[Finding]) -> None:
         ws["A1"] = f"MATRIZ DE HALLAZGOS — {entity}"
         ws["A1"].font = Font(bold=True, size=14, name="Calibri")
-        ws.merge_cells("A1:I1")
+        ws.merge_cells("A1:N1")
 
-        headers = ["ID", "Título", "Descripción", "Riesgo", "Impacto", "Probabilidad",
-                   "Estado", "Confianza IA", "Detectado por"]
+        headers = [
+            "ID", "Título", "Finding", "Criteria", "Cause", "Effect", "Conclusion",
+            "Riesgo", "Risk Level", "Impacto", "Probabilidad",
+            "Estado", "Confianza IA", "Detectado por"
+        ]
         self._write_header_row(ws, headers, row=2)
 
         for i, f in enumerate(findings, start=3):
             risk_color = _RISK_COLORS.get(f.risk.value if hasattr(f.risk, "value") else str(f.risk), "FFFFFF")
             row_data = [
-                f.id, f.title, f.description,
+                f.id,
+                f.title,
+                f.description_finding or f.description,
+                f.criteria_description or "",
+                f.cause or "",
+                f.effect or "",
+                f.conclusion or "",
                 f.risk.value if hasattr(f.risk, "value") else str(f.risk),
-                f.impact, f.probability,
+                getattr(f, "risk_level", "") or (f.risk.value if hasattr(f.risk, "value") else str(f.risk)),
+                f.impact,
+                f.probability,
                 f.status.value if hasattr(f.status, "value") else str(f.status),
                 f"{f.confidence:.0%}",
                 f.detected_by or "",
@@ -177,25 +188,39 @@ class ReportService:
                     cell.font = Font(bold=True, color="0D1117")
 
         ws.column_dimensions["A"].width = 14
-        ws.column_dimensions["B"].width = 35
-        ws.column_dimensions["C"].width = 55
-        ws.column_dimensions["D"].width = 12
-        ws.column_dimensions["G"].width = 14
+        ws.column_dimensions["B"].width = 30
+        ws.column_dimensions["C"].width = 40
+        ws.column_dimensions["D"].width = 38
+        ws.column_dimensions["E"].width = 28
+        ws.column_dimensions["F"].width = 28
+        ws.column_dimensions["G"].width = 40
         ws.column_dimensions["H"].width = 12
+        ws.column_dimensions["I"].width = 12
+        ws.column_dimensions["J"].width = 12
+        ws.column_dimensions["K"].width = 10
+        ws.column_dimensions["L"].width = 12
+        ws.column_dimensions["M"].width = 14
+        ws.column_dimensions["N"].width = 12
 
     def _xlsx_fichas_hallazgo(self, ws, entity: str, findings: List[Finding]) -> None:
         ws["A1"] = f"FICHAS DE HALLAZGO — {entity}"
         ws["A1"].font = Font(bold=True, size=14, name="Calibri")
-        ws.merge_cells("A1:F1")
+        ws.merge_cells("A1:K1")
 
-        headers = ["ID", "Título", "Riesgo", "Recomendación", "Refs COBIT", "Refs COSO"]
+        headers = ["ID", "Título", "Finding", "Criteria", "Cause", "Effect", "Conclusion", "Riesgo", "Recomendación", "Refs COBIT", "Refs COSO"]
         self._write_header_row(ws, headers, row=2)
 
         for i, f in enumerate(findings, start=3):
             cobit = "; ".join(r.code for r in (f.cobit_ref or []))
             coso  = "; ".join(r.code for r in (f.coso_ref or []))
             row_data = [
-                f.id, f.title,
+                f.id,
+                f.title,
+                f.description_finding or f.description,
+                f.criteria_description or "",
+                f.cause or "",
+                f.effect or "",
+                f.conclusion or "",
                 f.risk.value if hasattr(f.risk, "value") else str(f.risk),
                 f.recommendation,
                 cobit, coso,
@@ -203,8 +228,13 @@ class ReportService:
             for col, val in enumerate(row_data, 1):
                 ws.cell(row=i, column=col, value=val).alignment = Alignment(wrap_text=True, vertical="top")
 
-        ws.column_dimensions["B"].width = 35
-        ws.column_dimensions["D"].width = 60
+        ws.column_dimensions["B"].width = 26
+        ws.column_dimensions["C"].width = 36
+        ws.column_dimensions["D"].width = 36
+        ws.column_dimensions["E"].width = 28
+        ws.column_dimensions["F"].width = 28
+        ws.column_dimensions["G"].width = 36
+        ws.column_dimensions["I"].width = 60
 
     def _xlsx_fichas_pruebas(self, ws, entity: str, findings: List[Finding]) -> None:
         ws["A1"] = f"FICHAS DE PRUEBAS — {entity}"
@@ -271,16 +301,19 @@ class ReportService:
 
             tbl = doc.add_table(rows=1, cols=2)
             tbl.style = "Table Grid"
+            self._docx_row(tbl, "Finding", f.description_finding or f.description)
+            self._docx_row(tbl, "Criteria", f.criteria_description or "")
+            self._docx_row(tbl, "Cause", f.cause or "")
+            self._docx_row(tbl, "Effect", f.effect or "")
+            self._docx_row(tbl, "Conclusion", f.conclusion or "")
             self._docx_row(tbl, "Riesgo", f.risk.value if hasattr(f.risk, "value") else str(f.risk))
+            self._docx_row(tbl, "Risk Level", getattr(f, "risk_level", "") or (f.risk.value if hasattr(f.risk, "value") else str(f.risk)))
             self._docx_row(tbl, "Estado", f.status.value if hasattr(f.status, "value") else str(f.status))
             self._docx_row(tbl, "Impacto", str(f.impact))
             self._docx_row(tbl, "Probabilidad", str(f.probability))
             self._docx_row(tbl, "Confianza IA", f"{f.confidence:.0%}")
 
             doc.add_paragraph("")
-            doc.add_paragraph("Descripción").runs
-            p = doc.add_paragraph(f.description)
-            p.runs[0].font.size = Pt(10)
 
             doc.add_paragraph("Recomendación")
             p2 = doc.add_paragraph(f.recommendation)

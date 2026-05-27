@@ -4,7 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useAuditsStore } from '@/stores/audits'
 import AppShell from '@/components/layout/AppShell.vue'
 import AppIcon from '@/components/ui/AppIcon.vue'
-import { analyzeWithCOBIT, analyzeWithCOSO, analyzeWithRGSI, consolidateFindings } from '@/services/gemini'
+import { analyzeAudit } from '@/api/index'
 import { STATUS_PILL_CLASS, RISK_PILL_CLASS } from '@/data/mock'
 
 const route = useRoute()
@@ -88,42 +88,23 @@ async function startAnalysis() {
   await simulateProgress(engines.value[2], 28, 650)
   analysisStages.value[0].status = 'done'
 
-  // Stage 2: Análisis en paralelo con marcos (llamada real a Gemini si hay API key)
+  // Stage 2: Llamada real al backend IA
   analysisStages.value[1].status = 'running'
   engines.value.forEach(e => e.status = 'running')
 
-  const sampleText = `Documento: ${readyDocs.map(d => d.name).join(', ')}.
-  Este documento describe la política de seguridad de la información de la entidad financiera.
-  Los accesos a los sistemas críticos son gestionados por el departamento de TI sin un proceso
-  formal de aprobación documentado. El Plan de Continuidad del Negocio no ha sido probado en
-  los últimos 24 meses. El inventario de activos presenta inconsistencias con el entorno real.
-  No existe una política formal de clasificación de información. Los logs de auditoría no son
-  revisados periódicamente por personal designado.`
-
-  let cobitResults = [], cosoResults = [], rgsiResults = []
-
   try {
-    const apiKey = import.meta.env.VITE_GEMINI_API_KEY
-    if (apiKey && apiKey !== 'your_gemini_api_key_here') {
-      const [r1, r2, r3] = await Promise.all([
-        analyzeWithCOBIT(sampleText).then(r => { engines.value[0].pct = 100; engines.value[0].status = 'done'; return r }),
-        analyzeWithCOSO(sampleText).then(r  => { engines.value[1].pct = 100; engines.value[1].status = 'done'; return r }),
-        analyzeWithRGSI(sampleText).then(r  => { engines.value[2].pct = 100; engines.value[2].status = 'done'; return r })
-      ])
-      cobitResults = r1; cosoResults = r2; rgsiResults = r3
-    } else {
-      // Sin API key: simular progreso
-      await Promise.all([
-        simulateProgress(engines.value[0], 100, 2000).then(() => engines.value[0].status = 'done'),
-        simulateProgress(engines.value[1], 100, 2400).then(() => engines.value[1].status = 'done'),
-        simulateProgress(engines.value[2], 100, 2200).then(() => engines.value[2].status = 'done')
-      ])
-    }
-  } catch {
+    await analyzeAudit(auditId.value)
+
+    // El backend corre en background; esperamos y refrescamos estado/resultados.
+    await waitForAnalysisCompletion()
+
+    engines.value.forEach(e => { e.pct = 100; e.status = 'done' })
+  } catch (error) {
+    console.error('Error iniciando análisis IA real:', error)
     await Promise.all([
-      simulateProgress(engines.value[0], 100, 1800).then(() => engines.value[0].status = 'done'),
-      simulateProgress(engines.value[1], 100, 2200).then(() => engines.value[1].status = 'done'),
-      simulateProgress(engines.value[2], 100, 2000).then(() => engines.value[2].status = 'done')
+      simulateProgress(engines.value[0], 100, 1200).then(() => engines.value[0].status = 'done'),
+      simulateProgress(engines.value[1], 100, 1400).then(() => engines.value[1].status = 'done'),
+      simulateProgress(engines.value[2], 100, 1300).then(() => engines.value[2].status = 'done')
     ])
   }
 
@@ -138,30 +119,8 @@ async function startAnalysis() {
   analysisStages.value[3].status = 'running'
   await delay(400)
 
-  // Agregar hallazgos consolidados si vienen de Gemini, si no usar mock
-  if (cobitResults.length + cosoResults.length + rgsiResults.length > 0) {
-    const consolidated = await consolidateFindings(cobitResults, cosoResults, rgsiResults)
-    if (consolidated.length > 0) {
-      store.addFindings(auditId.value, consolidated)
-    }
-  }
-
-  // Si no hay hallazgos aún (modo mock o sin resultados), agregar algunos de ejemplo
-  if ((store.findings[auditId.value] || []).length === 0) {
-    store.addFindings(auditId.value, [
-      {
-        title: 'Control de acceso privilegiado no documentado',
-        description: 'No se encontraron políticas formales para la gestión de cuentas privilegiadas.',
-        recommendation: 'Implementar política PAM con revisión periódica y herramientas de control.',
-        risk: 'Alto', impact: 4, probability: 3, confidence: 0.88,
-        cobitRef: { code: 'APO13.01', title: 'Establecer y mantener el SGSI', domain: 'APO' },
-        cosoRef:  { code: 'CC6.1', title: 'Control de Acceso Lógico', component: 'Actividades de Control' },
-        rgsiRef:  { code: 'Art. 12', title: 'Gestión de Accesos', section: 'Cap. III' },
-        quote: 'Sin evidencia de proceso formal de aprobación de accesos privilegiados.',
-        evidence: []
-      }
-    ])
-  }
+  await store.loadAudits()
+  await store.setCurrentAudit(auditId.value)
 
   analysisStages.value[3].status = 'done'
   await delay(800)
@@ -182,6 +141,27 @@ async function simulateProgress(engine, target, duration) {
     await delay(interval)
     engine.pct = Math.min(target, Math.round(engine.pct + step))
   }
+}
+
+async function waitForAnalysisCompletion() {
+  const maxAttempts = 30
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    await delay(2000)
+    await store.loadAudits()
+    await store.setCurrentAudit(auditId.value)
+
+    const current = store.audits.find(a => a.id === auditId.value)
+    if (current && current.status !== 'Procesando') {
+      return current
+    }
+
+    engines.value.forEach((engine, index) => {
+      engine.pct = Math.min(95, 30 + (attempt + 1) * 2 + index)
+      engine.status = 'running'
+    })
+  }
+
+  return store.audits.find(a => a.id === auditId.value) || null
 }
 
 // ─── Findings helpers ────────────────────────────────────────────────────────

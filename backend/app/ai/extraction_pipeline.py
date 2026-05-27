@@ -38,10 +38,13 @@ class ExtractionPipeline:
         for doc in ready_docs:
             logger.info(f"Extrayendo texto de: {doc.name}")
             try:
-                content = await self._storage.download_file(
-                    settings.SUPABASE_BUCKET_PDFS, doc.supabase_path
+                bucket = (
+                    settings.SUPABASE_BUCKET_PDFS
+                    if doc.type.lower() == "pdf"
+                    else settings.SUPABASE_BUCKET_XLSX
                 )
-                full_text, chunks = self._extractor.process(content)
+                content = await self._storage.download_file(bucket, doc.supabase_path)
+                full_text, chunks = self._extractor.process(content, doc.name)
                 if full_text.strip():
                     sections.append(
                         f"=== DOCUMENTO: {doc.name} ===\n{full_text}"

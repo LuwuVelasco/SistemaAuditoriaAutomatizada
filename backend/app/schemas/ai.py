@@ -16,10 +16,14 @@ class AIEngineResult(BaseModel):
 class RawFinding(BaseModel):
     """Hallazgo crudo producido por un motor antes de consolidación."""
     title: str
-    description: str
+    description_finding: str = ""
+    criteria_description: str = ""
+    cause: str = ""
+    effect: str = ""
+    conclusion: str = ""
     recommendation: str
     confidence: float = Field(ge=0.0, le=1.0)
-    risk_hint: str = "Medio"           # sugerencia del motor
+    risk_level: str = "Medio"
     cobit_refs: List[Dict] = Field(default_factory=list)
     coso_refs: List[Dict] = Field(default_factory=list)
     rgsi_refs: List[Dict] = Field(default_factory=list)

@@ -79,11 +79,18 @@ class FindingMerger:
         target.confidence = max(target.confidence, source.confidence)
 
         # Riesgo más conservador (más alto)
-        target.risk_hint = self._higher_risk(target.risk_hint, source.risk_hint)
+        target.risk_level = self._higher_risk(target.risk_level, source.risk_level)
 
         # Recomendación más completa
         if len(source.recommendation) > len(target.recommendation):
             target.recommendation = source.recommendation
+
+        # Conservar campos analíticos más completos
+        target.description_finding = self._prefer_longer(target.description_finding, source.description_finding)
+        target.criteria_description = self._prefer_longer(target.criteria_description, source.criteria_description)
+        target.cause = self._prefer_longer(target.cause, source.cause)
+        target.effect = self._prefer_longer(target.effect, source.effect)
+        target.conclusion = self._prefer_longer(target.conclusion, source.conclusion)
 
         # Quote: conservar si no hay uno aún
         if not target.quote and source.quote:
@@ -107,3 +114,11 @@ class FindingMerger:
     def _higher_risk(self, a: str, b: str) -> str:
         order = self._RISK_ORDER
         return a if order.get(a, 2) >= order.get(b, 2) else b
+
+    @staticmethod
+    def _prefer_longer(current: str, incoming: str) -> str:
+        if not current:
+            return incoming or current
+        if incoming and len(incoming) > len(current):
+            return incoming
+        return current

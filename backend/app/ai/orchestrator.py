@@ -79,21 +79,21 @@ class AIOrchestrator:
 
         framework_values = {f.value for f in frameworks}
 
-        # Motor 1: COSO
-        if "COSO" in framework_values:
-            coso_results = await self._coso.analyze(text, prior_findings=prior_dicts)
-            all_raw.extend(coso_results)
-            prior_dicts.extend([r.model_dump() for r in coso_results])
-            logger.info(f"[COSO] {len(coso_results)} hallazgos.")
-
-        # Motor 2: COBIT (recibe contexto COSO si fue ejecutado)
+        # Motor 1: COBIT
         if "COBIT" in framework_values:
             cobit_results = await self._cobit.analyze(text, prior_findings=prior_dicts)
             all_raw.extend(cobit_results)
             prior_dicts.extend([r.model_dump() for r in cobit_results])
             logger.info(f"[COBIT] {len(cobit_results)} hallazgos.")
 
-        # Motor 3: RGSI (recibe contexto COSO + COBIT)
+        # Motor 2: COSO (recibe contexto COBIT si fue ejecutado)
+        if "COSO" in framework_values:
+            coso_results = await self._coso.analyze(text, prior_findings=prior_dicts)
+            all_raw.extend(coso_results)
+            prior_dicts.extend([r.model_dump() for r in coso_results])
+            logger.info(f"[COSO] {len(coso_results)} hallazgos.")
+
+        # Motor 3: RGSI (recibe contexto COBIT + COSO)
         if "RGSI" in framework_values:
             rgsi_results = await self._rgsi.analyze(text, prior_findings=prior_dicts)
             all_raw.extend(rgsi_results)
@@ -122,8 +122,9 @@ class AIOrchestrator:
         # Usar impact=4 / probability=3 como valores iniciales para riesgo "Alto"
         # El auditor los ajustará en la UI.
         RISK_TO_IMPACT = {"Bajo": 2, "Medio": 3, "Alto": 4, "Extremo": 5}
-        impact = RISK_TO_IMPACT.get(raw.risk_hint, 3)
-        probability = RISK_TO_IMPACT.get(raw.risk_hint, 3) - 1 or 1
+        risk_source = raw.risk_level or "Medio"
+        impact = RISK_TO_IMPACT.get(risk_source, 3)
+        probability = RISK_TO_IMPACT.get(risk_source, 3) - 1 or 1
         risk = calculate_risk(impact, probability)
 
         def parse_refs(raw_list: List[dict]) -> List[NormativeRef]:
@@ -139,9 +140,15 @@ class AIOrchestrator:
             id=finding_id,
             auditId=audit_id,
             title=raw.title,
-            description=raw.description,
+            description_finding=raw.description_finding or raw.conclusion,
+            criteria_description=raw.criteria_description,
+            cause=raw.cause,
+            effect=raw.effect,
+            conclusion=raw.conclusion,
+            description=raw.description_finding or raw.conclusion,
             recommendation=raw.recommendation,
             risk=risk,
+            risk_level=risk.value,
             impact=impact,
             probability=probability,
             status=FindingStatus.PENDIENTE,

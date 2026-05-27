@@ -3,7 +3,9 @@
 import hashlib
 import io
 from typing import Optional
+from urllib.parse import quote
 
+import httpx
 from loguru import logger
 from supabase import Client
 
@@ -43,10 +45,24 @@ class StorageService:
             raise StorageError(f"Error al subir PDF a Supabase: {exc}") from exc
 
     async def download_file(self, bucket: str, path: str) -> bytes:
-        """Descarga el contenido binario de un archivo de Supabase Storage."""
+        """Descarga el contenido binario de un archivo de Supabase Storage.
+
+        Usamos URL firmada + HTTP para evitar fallos intermitentes del endpoint
+        de descarga directa del SDK en algunos entornos.
+        URL-encodifica el path para manejar correctamente espacios y caracteres especiales.
+        """
         try:
-            response = self._client.storage.from_(bucket).download(path)
-            return response
+            # URL-encodifica el path: "5. PESI Banco.pdf" → "5%2E%20PESI%20Banco.pdf"
+            encoded_path = quote(path, safe="/")
+            signed = self._client.storage.from_(bucket).create_signed_url(encoded_path, 120, {"download": True})
+            signed_url = signed.get("signedURL") or signed.get("signedUrl")
+            if not signed_url:
+                raise StorageError(f"No se pudo generar URL firmada para '{bucket}/{path}'.")
+
+            async with httpx.AsyncClient(timeout=60.0, follow_redirects=True) as client:
+                response = await client.get(signed_url)
+                response.raise_for_status()
+                return response.content
         except Exception as exc:
             raise StorageError(f"Error al descargar '{path}' desde Supabase: {exc}") from exc
 

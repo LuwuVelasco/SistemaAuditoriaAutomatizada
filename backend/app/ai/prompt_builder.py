@@ -49,10 +49,14 @@ Para cada debilidad identificada, devuelve un JSON array con exactamente este fo
 [
   {{
     "title": "Título conciso del hallazgo (máx. 80 caracteres)",
-    "description": "Descripción objetiva de la debilidad observada en el control interno.",
+    "description_finding": "Registro de la deficiencia, falta de control, amenaza o vulnerabilidad identificada.",
+    "criteria_description": "Reglamento, ley o política que establece el requisito de cumplimiento.",
+    "cause": "Qué causa que ocurra el problema.",
+    "effect": "Consecuencia resultante.",
+    "conclusion": "Conclusión resumida considerando causa, efecto y criterio.",
     "recommendation": "Recomendación específica, accionable y orientada a la mejora.",
     "confidence": 0.85,
-    "risk_hint": "Alto",
+    "risk_level": "Alto",
     "coso_refs": [
       {{"code": "CC6.1", "title": "Control de Acceso Lógico", "component": "Actividades de Control"}}
     ],
@@ -97,10 +101,14 @@ Para cada observación identificada, devuelve un JSON array:
 [
   {{
     "title": "Título conciso (máx. 80 caracteres)",
-    "description": "Descripción objetiva de la observación en la gestión de TI.",
+    "description_finding": "Registro de la deficiencia, falta de control, amenaza o vulnerabilidad identificada.",
+    "criteria_description": "Reglamento, ley o política que establece el requisito de cumplimiento.",
+    "cause": "Qué causa que ocurra el problema.",
+    "effect": "Consecuencia resultante.",
+    "conclusion": "Conclusión resumida considerando causa, efecto y criterio.",
     "recommendation": "Recomendación específica y accionable.",
     "confidence": 0.85,
-    "risk_hint": "Alto",
+    "risk_level": "Alto",
     "cobit_refs": [
       {{"code": "APO13.01", "title": "Establecer y mantener el SGSI", "domain": "APO"}}
     ],
@@ -149,10 +157,14 @@ Para cada observación identificada, devuelve un JSON array:
 [
   {{
     "title": "Título conciso (máx. 80 caracteres)",
-    "description": "Descripción objetiva de la observación de cumplimiento.",
+    "description_finding": "Registro de la deficiencia, falta de control, amenaza o vulnerabilidad identificada.",
+    "criteria_description": "Reglamento, ley o política que establece el requisito de cumplimiento.",
+    "cause": "Qué causa que ocurra el problema.",
+    "effect": "Consecuencia resultante.",
+    "conclusion": "Conclusión resumida considerando causa, efecto y criterio.",
     "recommendation": "Recomendación específica para alcanzar conformidad con el RGSI.",
     "confidence": 0.85,
-    "risk_hint": "Alto",
+    "risk_level": "Alto",
     "rgsi_refs": [
       {{"code": "Art. 12", "title": "Gestión de Accesos y Autenticación", "section": "Cap. IV"}}
     ],
