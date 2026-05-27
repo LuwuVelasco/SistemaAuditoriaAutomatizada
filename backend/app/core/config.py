@@ -48,6 +48,7 @@ class Settings(BaseSettings):
     GEMINI_COSO_API_KEY: str | None = None
     GEMINI_COBIT_API_KEY: str | None = None
     GEMINI_RGSI_API_KEY: str | None = None
+    GEMINI_LOG_RESPONSES: bool = False
 
     # ── CORS ─────────────────────────────────────────────────────────────────
     ALLOWED_ORIGINS: str = "http://localhost:5173"

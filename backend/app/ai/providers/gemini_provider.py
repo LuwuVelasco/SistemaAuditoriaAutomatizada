@@ -39,14 +39,20 @@ class GeminiProvider:
         config = genai.types.GenerationConfig(
             temperature=temperature,
             max_output_tokens=8192,
+            response_mime_type="application/json",
         )
         try:
             response = self._model.generate_content(prompt, generation_config=config)
-            text = response.text
+            text = response.text or ""
             logger.debug(
                 f"[{self._framework}] Gemini respondió: {len(text)} chars "
                 f"(tokens aprox. {len(text) // 4})"
             )
+            if settings.GEMINI_LOG_RESPONSES:
+                preview = text.replace("\n", " ")[:1200]
+                logger.info(
+                    f"[{self._framework}] Gemini response preview (1200 chars max): {preview}"
+                )
             return text
         except Exception as exc:
             logger.error(f"[{self._framework}] Error Gemini: {exc}")

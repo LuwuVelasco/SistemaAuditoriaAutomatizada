@@ -49,16 +49,45 @@ class BaseEngine(ABC):
         Parsea la respuesta de Gemini en objetos RawFinding.
         Maneja JSON parcial, markdown fences y errores de formato.
         """
-        # Extraer bloque JSON
-        json_match = re.search(r"\[[\s\S]*\]", raw)
-        if not json_match:
-            logger.warning(f"[{self.framework}] No se encontró JSON en la respuesta.")
+        raw = (raw or "").strip()
+
+        # Intento 1: parsear directo (a veces Gemini devuelve JSON puro).
+        parsed: Any = None
+        try:
+            parsed = json.loads(raw)
+        except Exception:
+            parsed = None
+
+        # Intento 2: extraer JSON en markdown fence ```json ... ```
+        if parsed is None:
+            fenced = re.search(r"```(?:json)?\s*([\s\S]*?)\s*```", raw, re.IGNORECASE)
+            if fenced:
+                try:
+                    parsed = json.loads(fenced.group(1))
+                except Exception:
+                    parsed = None
+
+        # Intento 3: extraer primer array JSON dentro del texto.
+        if parsed is None:
+            json_match = re.search(r"\[[\s\S]*\]", raw)
+            if json_match:
+                try:
+                    parsed = json.loads(json_match.group())
+                except json.JSONDecodeError as exc:
+                    logger.error(f"[{self.framework}] JSON inválido: {exc}")
+                    return []
+
+        if parsed is None:
+            logger.warning(f"[{self.framework}] No se encontró JSON parseable en la respuesta.")
             return []
 
-        try:
-            data: List[Any] = json.loads(json_match.group())
-        except json.JSONDecodeError as exc:
-            logger.error(f"[{self.framework}] JSON inválido: {exc}")
+        # Permitir salida tipo {"findings": [...]} además de [...]
+        if isinstance(parsed, dict):
+            data = parsed.get("findings", [])
+        elif isinstance(parsed, list):
+            data = parsed
+        else:
+            logger.warning(f"[{self.framework}] JSON con formato no soportado: {type(parsed).__name__}")
             return []
 
         findings = []
@@ -66,9 +95,54 @@ class BaseEngine(ABC):
             if not isinstance(item, dict):
                 continue
             try:
+                item = self._normalize_item(item)
                 item["source_framework"] = self.framework
                 findings.append(RawFinding(**item))
             except Exception as exc:
                 logger.warning(f"[{self.framework}] Hallazgo descartado por error: {exc}")
 
         return findings
+
+    def _normalize_item(self, item: dict) -> dict:
+        """Normaliza variantes comunes de campos devueltos por LLMs."""
+        normalized = dict(item)
+
+        # Alias frecuentes
+        if "description_finding" not in normalized and normalized.get("description"):
+            normalized["description_finding"] = normalized.get("description")
+        if "criteria_description" not in normalized and normalized.get("criteria"):
+            normalized["criteria_description"] = normalized.get("criteria")
+        if "recommendation" not in normalized and normalized.get("recommendations"):
+            normalized["recommendation"] = normalized.get("recommendations")
+
+        # Campos mínimos para no descartar por ausencias menores
+        normalized.setdefault("description_finding", "")
+        normalized.setdefault("criteria_description", "")
+        normalized.setdefault("cause", "")
+        normalized.setdefault("effect", "")
+        normalized.setdefault("conclusion", "")
+        normalized.setdefault("recommendation", "Revisar el proceso y fortalecer controles.")
+
+        # Confidence: aceptar 0-1, 0-100 o string numérico
+        conf = normalized.get("confidence", 0.75)
+        try:
+            conf = float(conf)
+            if conf > 1.0:
+                conf = conf / 100.0
+            conf = max(0.0, min(1.0, conf))
+        except Exception:
+            conf = 0.75
+        normalized["confidence"] = conf
+
+        # Risk level tolerante a mayúsculas/minúsculas
+        risk = str(normalized.get("risk_level", "Medio") or "Medio").strip().capitalize()
+        if risk not in {"Bajo", "Medio", "Alto", "Extremo", "Oportunidad"}:
+            risk = "Medio"
+        normalized["risk_level"] = risk
+
+        # Listas opcionales
+        for k in ("cobit_refs", "coso_refs", "rgsi_refs", "evidence"):
+            v = normalized.get(k, [])
+            normalized[k] = v if isinstance(v, list) else []
+
+        return normalized

@@ -51,9 +51,12 @@ class FindingMerger:
 
     def _should_merge(self, a: RawFinding, b: RawFinding) -> bool:
         """Determina si dos hallazgos deben fusionarse."""
-        # Comparar título + descripción concatenados para mayor precisión
-        text_a = f"{a.title} {a.description}"
-        text_b = f"{b.title} {b.description}"
+        # Comparar título + cuerpo del hallazgo para mayor precisión.
+        # RawFinding ya no tiene `description`; usar description_finding/conclusion.
+        body_a = a.description_finding or a.conclusion or ""
+        body_b = b.description_finding or b.conclusion or ""
+        text_a = f"{a.title} {body_a}"
+        text_b = f"{b.title} {body_b}"
         return are_duplicates(text_a, text_b, self.DUPLICATE_THRESHOLD)
 
     def _merge_into(self, target: RawFinding, source: RawFinding) -> None:
