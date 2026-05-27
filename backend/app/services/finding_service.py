@@ -103,34 +103,70 @@ class FindingService:
 
         update_fields: dict = {"updatedAt": utcnow_iso()}
 
+        # ── Campos de texto editables ──────────────────────────────────────────
         if data.title is not None:
             update_fields["title"] = data.title
+        if data.description_finding is not None:
+            update_fields["descriptionFinding"] = data.description_finding
+        if data.criteria_description is not None:
+            update_fields["criteriaDescription"] = data.criteria_description
+        if data.cause is not None:
+            update_fields["cause"] = data.cause
+        if data.effect is not None:
+            update_fields["effect"] = data.effect
+        if data.conclusion is not None:
+            update_fields["conclusion"] = data.conclusion
         if data.description is not None:
             update_fields["description"] = data.description
         if data.recommendation is not None:
             update_fields["recommendation"] = data.recommendation
+        if data.quote is not None:
+            update_fields["quote"] = data.quote
+
+        # ── Referencias normativas ─────────────────────────────────────────────
+        if data.cobit_refs is not None:
+            update_fields["cobitRef"] = [r.model_dump(exclude_none=True) for r in data.cobit_refs]
+        if data.coso_refs is not None:
+            update_fields["cosoRef"] = [r.model_dump(exclude_none=True) for r in data.coso_refs]
+        if data.rgsi_refs is not None:
+            update_fields["rgsiRef"] = [r.model_dump(exclude_none=True) for r in data.rgsi_refs]
+
+        # ── Evidencia ──────────────────────────────────────────────────────────
+        if data.evidence is not None:
+            update_fields["evidence"] = [
+                e.model_dump(by_alias=True, exclude_none=True) for e in data.evidence
+            ]
+
+        # ── Riesgo: recalcular si cambiaron impacto o probabilidad ─────────────
         if data.impact is not None:
             update_fields["impact"] = data.impact
         if data.probability is not None:
             update_fields["probability"] = data.probability
-
-        # Recalcular riesgo si cambiaron impacto o probabilidad
-        new_impact = data.impact if data.impact is not None else old.impact
-        new_prob = data.probability if data.probability is not None else old.probability
         if data.impact is not None or data.probability is not None:
-            update_fields["risk"] = calculate_risk(new_impact, new_prob).value
+            new_impact = data.impact if data.impact is not None else old.impact
+            new_prob   = data.probability if data.probability is not None else old.probability
+            new_risk   = calculate_risk(new_impact, new_prob)
+            update_fields["risk"]      = new_risk.value
+            update_fields["riskLevel"] = new_risk.value
 
+        # ── Status: aceptar / rechazar ─────────────────────────────────────────
         if data.status is not None:
             update_fields["status"] = data.status.value
-            # Ajustar contador pendingFindings
-            if old.status == FindingStatus.PENDIENTE and data.status != FindingStatus.PENDIENTE:
+            # Normalizar old.status a enum para comparar de forma segura
+            try:
+                old_status = FindingStatus(old.status) if isinstance(old.status, str) else old.status
+            except ValueError:
+                old_status = FindingStatus.PENDIENTE
+
+            if old_status == FindingStatus.PENDIENTE and data.status != FindingStatus.PENDIENTE:
                 await self._audits.increment_counter(audit_id, "pendingFindings", -1)
-            elif old.status != FindingStatus.PENDIENTE and data.status == FindingStatus.PENDIENTE:
+            elif old_status != FindingStatus.PENDIENTE and data.status == FindingStatus.PENDIENTE:
                 await self._audits.increment_counter(audit_id, "pendingFindings", 1)
 
+        # ── Persistir ──────────────────────────────────────────────────────────
         updated = await self._findings.update(audit_id, finding_id, update_fields)
 
-        # Registrar en history los campos modificados
+        # ── Historial ──────────────────────────────────────────────────────────
         await self._history.record_update(
             audit_id, finding_id, old_dict, update_fields, owner_id
         )
