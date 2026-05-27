@@ -2,9 +2,9 @@
 Orquestador del pipeline IA multimarco.
 
 Secuencia FIJA (según RGSI-ASFI, las regulaciones locales tienen precedencia):
-  1. COSO  — analiza primero
-  2. COBIT — recibe hallazgos COSO como contexto
-  3. RGSI  — recibe hallazgos COSO + COBIT como contexto
+  1. COBIT — analiza primero
+  2. COSO  — recibe hallazgos COBIT como contexto
+  3. RGSI  — recibe hallazgos COBIT + COSO como contexto
 
 Solo se ejecutan los motores cuyo framework fue seleccionado en la auditoría.
 Al finalizar, el FindingMerger consolida y deduplica todos los hallazgos.
@@ -20,7 +20,7 @@ from app.ai.extraction_pipeline import ExtractionPipeline
 from app.ai.finding_merger import FindingMerger
 from app.ai.rgsi_engine import RGSIEngine
 from app.models.document import Document
-from app.models.finding import Finding, NormativeRef
+from app.models.finding import Evidence, Finding, NormativeRef
 from app.schemas.ai import RawFinding
 from app.utils.enums import FindingStatus, FrameworkType, RiskLevel
 from app.utils.helpers import generate_id
@@ -81,30 +81,49 @@ class AIOrchestrator:
 
         # Motor 1: COBIT
         if "COBIT" in framework_values:
-            cobit_results = await self._cobit.analyze(text, prior_findings=prior_dicts)
+            cobit_results = await self._safe_analyze_motor(
+                name="COBIT",
+                engine=self._cobit,
+                text=text,
+                prior_findings=prior_dicts,
+            )
             all_raw.extend(cobit_results)
             prior_dicts.extend([r.model_dump() for r in cobit_results])
-            logger.info(f"[COBIT] {len(cobit_results)} hallazgos.")
 
         # Motor 2: COSO (recibe contexto COBIT si fue ejecutado)
         if "COSO" in framework_values:
-            coso_results = await self._coso.analyze(text, prior_findings=prior_dicts)
+            coso_results = await self._safe_analyze_motor(
+                name="COSO",
+                engine=self._coso,
+                text=text,
+                prior_findings=prior_dicts,
+            )
             all_raw.extend(coso_results)
             prior_dicts.extend([r.model_dump() for r in coso_results])
-            logger.info(f"[COSO] {len(coso_results)} hallazgos.")
 
         # Motor 3: RGSI (recibe contexto COBIT + COSO)
         if "RGSI" in framework_values:
-            rgsi_results = await self._rgsi.analyze(text, prior_findings=prior_dicts)
+            rgsi_results = await self._safe_analyze_motor(
+                name="RGSI",
+                engine=self._rgsi,
+                text=text,
+                prior_findings=prior_dicts,
+            )
             all_raw.extend(rgsi_results)
-            logger.info(f"[RGSI] {len(rgsi_results)} hallazgos.")
 
         # ── 3. Consolidación y deduplicación ─────────────────────────────────
-        consolidated = self._merger.merge(all_raw)
+        try:
+            consolidated = self._merger.merge(all_raw)
+        except Exception as exc:
+            logger.exception(
+                f"[Orquestador] Error consolidando hallazgos en {audit_id}: {exc}. "
+                "Se usarán los hallazgos crudos disponibles."
+            )
+            consolidated = all_raw
 
         # ── 4. Convertir a Finding del dominio ───────────────────────────────
         findings = [
-            self._raw_to_finding(audit_id, raw)
+            self._raw_to_finding(audit_id, raw, documents)
             for raw in consolidated
         ]
 
@@ -114,7 +133,28 @@ class AIOrchestrator:
         )
         return findings
 
-    def _raw_to_finding(self, audit_id: str, raw: RawFinding) -> Finding:
+    async def _safe_analyze_motor(
+        self,
+        name: str,
+        engine,
+        text: str,
+        prior_findings: List[dict],
+    ) -> List[RawFinding]:
+        """
+        Ejecuta un motor sin cortar el pipeline completo si falla.
+        Devuelve [] cuando el motor no puede completarse.
+        """
+        try:
+            results = await engine.analyze(text, prior_findings=prior_findings)
+            logger.info(f"[{name}] {len(results)} hallazgos.")
+            return results
+        except Exception as exc:
+            logger.exception(
+                f"[Orquestador] Motor {name} falló y se omite para continuar el pipeline: {exc}"
+            )
+            return []
+
+    def _raw_to_finding(self, audit_id: str, raw: RawFinding, documents: List[Document]) -> Finding:
         """Convierte un RawFinding (salida del motor) a Finding (modelo de dominio)."""
         now = utcnow_iso()
         finding_id = generate_id("HLZ-")
@@ -134,6 +174,40 @@ class AIOrchestrator:
                     result.append(NormativeRef(**r))
                 except Exception:
                     pass
+            return result
+
+        def parse_evidence(raw_list: List[dict]) -> List[Evidence]:
+            result: List[Evidence] = []
+            seen = set()
+
+            for item in raw_list or []:
+                try:
+                    evidence = Evidence.model_validate(item)
+                except Exception:
+                    continue
+
+                key = (
+                    evidence.doc_id,
+                    evidence.doc_name,
+                    evidence.page,
+                    evidence.paragraph,
+                )
+                if key in seen:
+                    continue
+                seen.add(key)
+                result.append(evidence)
+
+            # Si Gemini no devolvió evidencias, persistir la relación con los
+            # documentos analizados para que el hallazgo no quede huérfano.
+            if not result:
+                for doc in documents:
+                    evidence = Evidence(docId=doc.id, docName=doc.name)
+                    key = (evidence.doc_id, evidence.doc_name, evidence.page, evidence.paragraph)
+                    if key in seen:
+                        continue
+                    seen.add(key)
+                    result.append(evidence)
+
             return result
 
         return Finding(
@@ -156,7 +230,7 @@ class AIOrchestrator:
             cobitRef=parse_refs(raw.cobit_refs),
             cosoRef=parse_refs(raw.coso_refs),
             rgsiRef=parse_refs(raw.rgsi_refs),
-            evidence=[],
+            evidence=parse_evidence(raw.evidence),
             quote=raw.quote,
             detectedBy=f"COSFI-{raw.source_framework}",
             createdAt=now,

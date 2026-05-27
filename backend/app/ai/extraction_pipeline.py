@@ -47,7 +47,7 @@ class ExtractionPipeline:
                 full_text, chunks = self._extractor.process(content, doc.name)
                 if full_text.strip():
                     sections.append(
-                        f"=== DOCUMENTO: {doc.name} ===\n{full_text}"
+                        f"=== DOCUMENTO: {doc.name} | ID: {doc.id} ===\n{full_text}"
                     )
                     logger.debug(f"{doc.name}: {len(chunks)} chunks extraídos.")
                 else:

@@ -19,6 +19,10 @@ orientadas a la mejora continua, sin señalar responsables individuales
 ni usar términos acusatorios. Evita palabras como "negligencia", "incumplimiento grave",
 "falla crítica" o similares. Prefiere frases como "se identificó una oportunidad de mejora",
 "se observa la ausencia de", "se recomienda fortalecer".
+
+Cuando puedas sostener el hallazgo con uno o más documentos analizados, incluye
+objetos en `evidence` con `docId`, `docName` y, si es posible, `page` y `paragraph`.
+Los textos de entrada incluyen encabezados con el nombre e ID de cada documento.
 """
 
 
@@ -62,7 +66,9 @@ Para cada debilidad identificada, devuelve un JSON array con exactamente este fo
     ],
     "cobit_refs": [],
     "rgsi_refs": [],
-    "evidence": [],
+    "evidence": [
+      {{"docId": "doc-001", "docName": "Manual_de_Seguridad.pdf", "page": 12, "paragraph": "Fragmento textual que sustenta el hallazgo."}}
+    ],
     "quote": "Fragmento textual del documento que sustenta el hallazgo (si aplica)"
   }}
 ]
@@ -114,7 +120,9 @@ Para cada observación identificada, devuelve un JSON array:
     ],
     "coso_refs": [],
     "rgsi_refs": [],
-    "evidence": [],
+    "evidence": [
+      {{"docId": "doc-001", "docName": "Política_TI.docx", "page": 4, "paragraph": "Fragmento textual que sustenta el hallazgo."}}
+    ],
     "quote": "Cita textual que sustenta el hallazgo (si aplica)"
   }}
 ]
@@ -170,7 +178,9 @@ Para cada observación identificada, devuelve un JSON array:
     ],
     "cobit_refs": [],
     "coso_refs": [],
-    "evidence": [],
+    "evidence": [
+      {{"docId": "doc-001", "docName": "Procedimiento_RGSI.pdf", "page": 7, "paragraph": "Fragmento textual que sustenta la observación."}}
+    ],
     "quote": "Cita textual que sustenta la observación (si aplica)"
   }}
 ]

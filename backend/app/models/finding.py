@@ -92,6 +92,22 @@ class Finding(BaseModel):
                 raw = [raw]
             return [NormativeRef(**r) for r in raw if isinstance(r, dict)]
 
+        def parse_evidence(raw: Any) -> list:
+            if not raw:
+                return []
+            if isinstance(raw, dict):
+                raw = [raw]
+
+            evidence = []
+            for item in raw:
+                if not isinstance(item, dict):
+                    continue
+                try:
+                    evidence.append(Evidence.model_validate(item))
+                except Exception:
+                    continue
+            return evidence
+
         return cls(
             id=doc_id,
             auditId=audit_id,
@@ -112,7 +128,7 @@ class Finding(BaseModel):
             cobitRef=parse_refs(data.get("cobitRef")),
             cosoRef=parse_refs(data.get("cosoRef")),
             rgsiRef=parse_refs(data.get("rgsiRef")),
-            evidence=[Evidence(**e) for e in data.get("evidence", []) if isinstance(e, dict)],
+            evidence=parse_evidence(data.get("evidence")),
             quote=data.get("quote"),
             detectedBy=data.get("detectedBy", "COSFI-AI"),
             createdAt=data.get("createdAt", ""),

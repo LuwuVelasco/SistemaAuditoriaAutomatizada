@@ -74,9 +74,7 @@ class FindingMerger:
         target.rgsi_refs  = self._merge_refs(target.rgsi_refs,  source.rgsi_refs)
 
         # Combinar evidencias
-        target.evidence = list({
-            str(e): e for e in (target.evidence + source.evidence)
-        }.values())
+        target.evidence = self._merge_evidence(target.evidence, source.evidence)
 
         # Promediar confianza (ponderar hacia el valor más alto)
         target.confidence = max(target.confidence, source.confidence)
@@ -111,6 +109,28 @@ class FindingMerger:
                 existing.append(ref)
                 existing_codes.add(ref.get("code"))
         return existing
+
+    @staticmethod
+    def _merge_evidence(existing: List[dict], incoming: List[dict]) -> List[dict]:
+        """Une evidencias eliminando duplicados por documento/página/párrafo."""
+        merged: List[dict] = []
+        seen = set()
+
+        for item in existing + incoming:
+            if not isinstance(item, dict):
+                continue
+            key = (
+                item.get("docId") or item.get("doc_id"),
+                item.get("docName") or item.get("doc_name"),
+                item.get("page"),
+                item.get("paragraph"),
+            )
+            if key in seen:
+                continue
+            seen.add(key)
+            merged.append(item)
+
+        return merged
 
     _RISK_ORDER = {"Bajo": 1, "Medio": 2, "Alto": 3, "Extremo": 4}
 

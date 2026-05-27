@@ -62,15 +62,24 @@ function confidClass(c) {
   return c >= 0.8 ? 'high' : ''
 }
 
+function normalizeRefs(refs) {
+  if (!refs) return []
+  return Array.isArray(refs) ? refs : [refs]
+}
+
 function onTitleBlur(e) { finding.value.title = e.target.innerText.trim() }
 function onDescBlur(e) { finding.value.description = e.target.innerText.trim() }
 function onRecBlur(e) { finding.value.recommendation = e.target.innerText.trim() }
 
 // Related findings (same COBIT domain)
 const relatedFindings = computed(() => {
-  if (!finding.value?.cobitRef?.domain) return []
+  const primaryCobit = normalizeRefs(finding.value?.cobitRefs)[0] || finding.value?.cobitRef
+  if (!primaryCobit?.domain) return []
   return (store.findings[auditId.value] || [])
-    .filter(f => f.id !== findingId.value && f.cobitRef?.domain === finding.value.cobitRef?.domain)
+    .filter(f => {
+      const refs = normalizeRefs(f.cobitRefs)
+      return f.id !== findingId.value && refs.some(ref => ref?.domain === primaryCobit.domain)
+    })
     .slice(0, 3)
 })
 </script>
@@ -240,30 +249,36 @@ const relatedFindings = computed(() => {
         <div style="margin-bottom:20px;">
           <div class="form-label" style="margin-bottom:8px;">Mapeo normativo cruzado</div>
 
-          <div v-if="finding.cobitRef" class="norm-row">
+          <div v-if="normalizeRefs(finding.cobitRefs).length" class="norm-row">
             <div class="norm-framework norm-cobit">COBIT</div>
             <div class="norm-content">
-              <div class="norm-code" style="color:#a78bfa;">{{ finding.cobitRef.code }}</div>
-              <div class="norm-title">{{ finding.cobitRef.title }}</div>
-              <div class="mono text-xs" style="color:#a78bfa;margin-top:2px;">Dominio {{ finding.cobitRef.domain }}</div>
+              <div v-for="ref in normalizeRefs(finding.cobitRefs)" :key="ref.code" style="margin-bottom:10px;">
+                <div class="norm-code" style="color:#a78bfa;">{{ ref.code }}</div>
+                <div class="norm-title">{{ ref.title }}</div>
+                <div class="mono text-xs" style="color:#a78bfa;margin-top:2px;">Dominio {{ ref.domain }}</div>
+              </div>
             </div>
           </div>
 
-          <div v-if="finding.cosoRef" class="norm-row">
+          <div v-if="normalizeRefs(finding.cosoRefs).length" class="norm-row">
             <div class="norm-framework norm-coso">COSO</div>
             <div class="norm-content">
-              <div class="norm-code" style="color:#fb923c;">{{ finding.cosoRef.code }}</div>
-              <div class="norm-title">{{ finding.cosoRef.title }}</div>
-              <div class="mono text-xs" style="color:#fb923c;margin-top:2px;">{{ finding.cosoRef.component }}</div>
+              <div v-for="ref in normalizeRefs(finding.cosoRefs)" :key="ref.code" style="margin-bottom:10px;">
+                <div class="norm-code" style="color:#fb923c;">{{ ref.code }}</div>
+                <div class="norm-title">{{ ref.title }}</div>
+                <div class="mono text-xs" style="color:#fb923c;margin-top:2px;">{{ ref.component }}</div>
+              </div>
             </div>
           </div>
 
-          <div v-if="finding.rgsiRef" class="norm-row">
+          <div v-if="normalizeRefs(finding.rgsiRefs).length" class="norm-row">
             <div class="norm-framework norm-rgsi">RGSI</div>
             <div class="norm-content">
-              <div class="norm-code" style="color:var(--accent);">{{ finding.rgsiRef.code }}</div>
-              <div class="norm-title">{{ finding.rgsiRef.title }}</div>
-              <div class="mono text-xs" style="color:var(--accent);margin-top:2px;">{{ finding.rgsiRef.section }}</div>
+              <div v-for="ref in normalizeRefs(finding.rgsiRefs)" :key="ref.code" style="margin-bottom:10px;">
+                <div class="norm-code" style="color:var(--accent);">{{ ref.code }}</div>
+                <div class="norm-title">{{ ref.title }}</div>
+                <div class="mono text-xs" style="color:var(--accent);margin-top:2px;">{{ ref.section }}</div>
+              </div>
             </div>
           </div>
         </div>

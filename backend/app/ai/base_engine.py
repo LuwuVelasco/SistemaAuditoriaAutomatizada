@@ -51,57 +51,194 @@ class BaseEngine(ABC):
         """
         raw = (raw or "").strip()
 
-        # Intento 1: parsear directo (a veces Gemini devuelve JSON puro).
-        parsed: Any = None
-        try:
-            parsed = json.loads(raw)
-        except Exception:
-            parsed = None
-
-        # Intento 2: extraer JSON en markdown fence ```json ... ```
-        if parsed is None:
-            fenced = re.search(r"```(?:json)?\s*([\s\S]*?)\s*```", raw, re.IGNORECASE)
-            if fenced:
-                try:
-                    parsed = json.loads(fenced.group(1))
-                except Exception:
-                    parsed = None
-
-        # Intento 3: extraer primer array JSON dentro del texto.
-        if parsed is None:
-            json_match = re.search(r"\[[\s\S]*\]", raw)
-            if json_match:
-                try:
-                    parsed = json.loads(json_match.group())
-                except json.JSONDecodeError as exc:
-                    logger.error(f"[{self.framework}] JSON inválido: {exc}")
-                    return []
-
-        if parsed is None:
-            logger.warning(f"[{self.framework}] No se encontró JSON parseable en la respuesta.")
-            return []
-
-        # Permitir salida tipo {"findings": [...]} además de [...]
-        if isinstance(parsed, dict):
-            data = parsed.get("findings", [])
-        elif isinstance(parsed, list):
-            data = parsed
-        else:
-            logger.warning(f"[{self.framework}] JSON con formato no soportado: {type(parsed).__name__}")
-            return []
-
         findings = []
-        for item in data:
+        discarded = 0
+
+        for item, error in self._iter_candidate_items(raw):
             if not isinstance(item, dict):
+                discarded += 1
                 continue
             try:
-                item = self._normalize_item(item)
-                item["source_framework"] = self.framework
-                findings.append(RawFinding(**item))
+                normalized = self._normalize_item(item)
+                normalized["source_framework"] = self.framework
+                findings.append(RawFinding(**normalized))
             except Exception as exc:
-                logger.warning(f"[{self.framework}] Hallazgo descartado por error: {exc}")
+                discarded += 1
+                logger.warning(
+                    f"[{self.framework}] Hallazgo descartado por error: {exc}"
+                    + (f" | candidato: {error}" if error else "")
+                )
 
+        logger.info(
+            f"[{self.framework}] Parseo completado: {len(findings)} válidos, {discarded} descartados."
+        )
+        if not findings and raw:
+            logger.debug(f"[{self.framework}] Respuesta cruda (preview): {raw[:1200]}")
         return findings
+
+    def _iter_candidate_items(self, raw: str) -> list[tuple[Any, str]]:
+        """
+        Devuelve candidatos JSON recuperables.
+        Primero intenta extraer un bloque JSON completo; si falla, rescata
+        objetos de nivel superior uno por uno para no perder todo el lote.
+        """
+        candidates: list[tuple[Any, str]] = []
+        payloads = self._extract_json_payloads(raw)
+
+        for payload in payloads:
+            parsed = self._load_json_best_effort(payload)
+            if isinstance(parsed, dict) and "findings" in parsed:
+                findings = parsed.get("findings", [])
+                if isinstance(findings, list):
+                    for item in findings:
+                        candidates.append((item, "findings[]"))
+                continue
+            if isinstance(parsed, list):
+                for item in parsed:
+                    candidates.append((item, "array"))
+                continue
+            if isinstance(parsed, dict):
+                candidates.append((parsed, "object"))
+                continue
+
+            # Fallback: intentar recuperar objetos de nivel superior dentro del array.
+            for obj_text in self._split_top_level_objects(payload):
+                obj = self._load_json_best_effort(obj_text)
+                candidates.append((obj, obj_text[:120]))
+
+        if not candidates and raw:
+            # Último recurso: tratar todo el texto como un solo objeto si parece JSON.
+            obj = self._load_json_best_effort(raw)
+            if isinstance(obj, dict):
+                candidates.append((obj, "raw"))
+
+        return candidates
+
+    def _extract_json_payloads(self, raw: str) -> list[str]:
+        """Extrae uno o más bloques JSON candidatos desde texto crudo."""
+        payloads: list[str] = []
+
+        fenced = re.findall(r"```(?:json)?\s*([\s\S]*?)\s*```", raw, re.IGNORECASE)
+        if fenced:
+            payloads.extend(fenced)
+
+        if not payloads:
+            balanced = self._find_balanced_json_block(raw)
+            if balanced:
+                payloads.append(balanced)
+            else:
+                json_match = re.search(r"\[[\s\S]*\]", raw)
+                if json_match:
+                    payloads.append(json_match.group())
+
+        return payloads
+
+    def _load_json_best_effort(self, text: str) -> Any:
+        """Intenta cargar JSON aplicando reparaciones menores primero."""
+        if not text:
+            return None
+
+        for candidate in (text, self._repair_json(text), self._repair_json(self._normalize_quotes(text))):
+            try:
+                return json.loads(candidate)
+            except Exception:
+                continue
+        return None
+
+    @staticmethod
+    def _normalize_quotes(raw: str) -> str:
+        """Normaliza comillas tipográficas que a veces devuelve el modelo."""
+        return (
+            raw.replace("“", '"')
+            .replace("”", '"')
+            .replace("«", '"')
+            .replace("»", '"')
+            .replace("’", "'")
+        )
+
+    def _find_balanced_json_block(self, raw: str) -> str | None:
+        """Devuelve el primer bloque JSON balanceado que encuentre en el texto."""
+        start = None
+        stack = []
+        in_string = False
+        escape = False
+
+        for idx, ch in enumerate(raw):
+            if start is None:
+                if ch in "[{":
+                    start = idx
+                    stack.append(ch)
+                continue
+
+            if in_string:
+                if escape:
+                    escape = False
+                elif ch == "\\":
+                    escape = True
+                elif ch == '"':
+                    in_string = False
+                continue
+
+            if ch == '"':
+                in_string = True
+            elif ch in "[{":
+                stack.append(ch)
+            elif ch in "]}":
+                if not stack:
+                    continue
+                opener = stack.pop()
+                if (opener == "[" and ch != "]") or (opener == "{" and ch != "}"):
+                    continue
+                if not stack:
+                    return raw[start: idx + 1]
+
+        return None
+
+    def _split_top_level_objects(self, raw: str) -> list[str]:
+        """
+        Divide un array JSON en objetos de nivel superior.
+        Sirve para rescatar hallazgos completos aunque el array esté roto.
+        """
+        objects: list[str] = []
+        start = None
+        depth = 0
+        in_string = False
+        escape = False
+
+        for idx, ch in enumerate(raw):
+            if in_string:
+                if escape:
+                    escape = False
+                elif ch == "\\":
+                    escape = True
+                elif ch == '"':
+                    in_string = False
+                continue
+
+            if ch == '"':
+                in_string = True
+                continue
+
+            if ch == "{":
+                if depth == 0:
+                    start = idx
+                depth += 1
+            elif ch == "}":
+                if depth > 0:
+                    depth -= 1
+                    if depth == 0 and start is not None:
+                        objects.append(raw[start:idx + 1])
+                        start = None
+
+        return objects
+
+    @staticmethod
+    def _repair_json(raw: str) -> str:
+        """Repara problemas menores de JSON sin introducir nuevas llamadas al modelo."""
+        repaired = raw.strip()
+        repaired = re.sub(r",\s*([}\]])", r"\1", repaired)
+        repaired = re.sub(r"'([^']+)'\s*:", r'"\1":', repaired)
+        return repaired
 
     def _normalize_item(self, item: dict) -> dict:
         """Normaliza variantes comunes de campos devueltos por LLMs."""

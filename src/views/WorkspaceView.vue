@@ -328,9 +328,9 @@ function randomSha() { return Math.random().toString(16).slice(2, 10) + '...' }
               <div class="finding-id">{{ f.id }}</div>
               <div class="finding-title">{{ f.title }}</div>
               <div class="finding-refs">
-                <span v-if="f.cobitRef" class="ref-tag ref-cobit">{{ f.cobitRef.code }}</span>
-                <span v-if="f.cosoRef"  class="ref-tag ref-coso" >{{ f.cosoRef.code  }}</span>
-                <span v-if="f.rgsiRef"  class="ref-tag ref-rgsi" >{{ f.rgsiRef.code  }}</span>
+                <span v-for="ref in (f.cobitRefs || [])" :key="`cobit-${f.id}-${ref.code}`" class="ref-tag ref-cobit">{{ ref.code }}</span>
+                <span v-for="ref in (f.cosoRefs || [])" :key="`coso-${f.id}-${ref.code}`" class="ref-tag ref-coso">{{ ref.code }}</span>
+                <span v-for="ref in (f.rgsiRefs || [])" :key="`rgsi-${f.id}-${ref.code}`" class="ref-tag ref-rgsi">{{ ref.code }}</span>
               </div>
             </div>
             <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0;">
