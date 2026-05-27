@@ -211,8 +211,8 @@ class ReportService:
         self._write_header_row(ws, headers, row=2)
 
         for i, f in enumerate(findings, start=3):
-            cobit = "; ".join(r.code for r in (f.cobit_ref or []))
-            coso  = "; ".join(r.code for r in (f.coso_ref or []))
+            cobit = "; ".join(r.code for r in (f.cobit_refs or []))
+            coso  = "; ".join(r.code for r in (f.coso_refs or []))
             row_data = [
                 f.id,
                 f.title,
@@ -267,7 +267,7 @@ class ReportService:
         self._write_header_row(ws, headers, row=2)
 
         for i, f in enumerate(findings, start=3):
-            coso_ref = (f.coso_ref or [])
+            coso_ref = (f.coso_refs or [])
             comp  = coso_ref[0].component if coso_ref and hasattr(coso_ref[0], "component") else ""
             princ = coso_ref[0].principle if coso_ref and hasattr(coso_ref[0], "principle") else ""
             row_data = [

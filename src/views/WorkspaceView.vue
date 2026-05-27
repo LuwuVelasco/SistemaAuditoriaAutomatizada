@@ -4,7 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useAuditsStore } from '@/stores/audits'
 import AppShell from '@/components/layout/AppShell.vue'
 import AppIcon from '@/components/ui/AppIcon.vue'
-import { analyzeAudit } from '@/api/index'
+import { analyzeAudit, downloadReport, generateReports as remoteGenerateReports, getReports } from '@/api/index'
 import { STATUS_PILL_CLASS, RISK_PILL_CLASS } from '@/data/mock'
 
 const route = useRoute()
@@ -48,14 +48,19 @@ watch(
     if (tab) activeTab.value = tab
   }
 )
+watch(activeTab, (tab) => {
+  if (tab === 'reportes') {
+    loadReports()
+  }
+})
 
 // Reports selection
 const selectedReports = ref(['matriz-hallazgos'])
 const reportOptions = [
-  { id: 'matriz-hallazgos', label: 'Matriz de hallazgos', desc: 'Consolidada COBIT × COSO × RGSI', icon: 'layers', format: 'XLSX' },
-  { id: 'fichas-hallazgo',  label: 'Fichas de hallazgo',  desc: 'Una ficha por hallazgo aprobado', icon: 'file-text', format: 'DOCX/PDF' },
-  { id: 'fichas-pruebas',   label: 'Fichas de pruebas',   desc: 'Pruebas sustentatorias',          icon: 'database', format: 'DOCX/PDF' },
-  { id: 'matriz-coso',      label: 'Matriz COSO',          desc: 'Componentes × principios',       icon: 'grid', format: 'XLSX' }
+  { id: 'matriz-hallazgos', label: 'Matriz de hallazgos', desc: 'Consolidada COBIT × COSO × RGSI', icon: 'layers', format: 'xlsx' },
+  { id: 'fichas-hallazgo',  label: 'Fichas de hallazgo',  desc: 'Una ficha por hallazgo aprobado', icon: 'file-text', format: 'docx' },
+  { id: 'fichas-pruebas',   label: 'Fichas de pruebas',   desc: 'Pruebas sustentatorias',          icon: 'database', format: 'docx' },
+  { id: 'matriz-coso',      label: 'Matriz COSO',          desc: 'Componentes × principios',       icon: 'grid', format: 'xlsx' }
 ]
 
 const isTabLocked = computed(() => {
@@ -63,7 +68,10 @@ const isTabLocked = computed(() => {
   return ['Pendiente', 'Procesando'].includes(audit.value.status)
 })
 
-onMounted(() => { store.setCurrentAudit(auditId.value) })
+onMounted(async () => {
+  await store.setCurrentAudit(auditId.value)
+  await loadReports()
+})
 
 // ─── File upload ────────────────────────────────────────────────────────────
 function handleDrop(e) {
@@ -199,15 +207,70 @@ const generatingReports = ref(false)
 
 async function generateReports() {
   generatingReports.value = true
-  await delay(2000)
-  generatedReports.value = selectedReports.value.map(id => {
-    const r = reportOptions.find(o => o.id === id)
-    return { id, label: r.label, format: r.format, sha256: randomSha(), generatedAt: new Date().toLocaleString() }
-  })
-  generatingReports.value = false
+  try {
+    const created = []
+    for (const id of selectedReports.value) {
+      const option = reportOptions.find(o => o.id === id)
+      if (!option) continue
+
+      const reports = await remoteGenerateReports(auditId.value, [id], option.format)
+      created.push(...(Array.isArray(reports) ? reports : [reports]))
+    }
+
+    await loadReports()
+    if (!generatedReports.value.length && created.length) {
+      generatedReports.value = created.map(mapReport)
+    }
+  } catch (error) {
+    console.error('Error generando reportes:', error)
+  } finally {
+    generatingReports.value = false
+  }
 }
 
-function randomSha() { return Math.random().toString(16).slice(2, 10) + '...' }
+async function loadReports() {
+  try {
+    const data = await getReports(auditId.value)
+    generatedReports.value = (data || []).map(mapReport)
+  } catch (error) {
+    console.error('Error cargando reportes:', error)
+  }
+}
+
+async function downloadGeneratedReport(report) {
+  try {
+    const { blob, filename } = await downloadReport(auditId.value, report.id)
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = filename || `${report.label}.${report.format.toLowerCase()}`
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
+    setTimeout(() => URL.revokeObjectURL(url), 1000)
+  } catch (error) {
+    console.error('Error descargando reporte:', error)
+  }
+}
+
+function mapReport(r) {
+  const opt = reportOptions.find(o => o.id === r.kind || o.id === r.kind?.value)
+  return {
+    id: r.id,
+    kind: r.kind,
+    label: opt?.label || r.kind,
+    format: (r.format || '').toUpperCase(),
+    sha256: r.sha256,
+    generatedAt: (r.generatedAt || '').replace('T', ' ').replace('Z', ''),
+    supabasePath: r.supabasePath,
+  }
+}
+
+watch(auditId, () => {
+  if (activeTab.value === 'reportes') {
+    loadReports()
+  }
+})
 </script>
 
 <template>
@@ -373,7 +436,7 @@ function randomSha() { return Math.random().toString(16).slice(2, 10) + '...' }
                 <div class="mono text-xs text-muted">{{ r.desc }}</div>
               </div>
               <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
-                <span class="pill pill-pending">{{ r.format }}</span>
+                <span class="pill pill-pending">{{ r.format.toUpperCase() }}</span>
                 <div class="checkbox" :class="{ checked: selectedReports.includes(r.id) }">
                   <AppIcon v-if="selectedReports.includes(r.id)" name="check" :size="9" style="color:#000;" />
                 </div>
@@ -405,7 +468,7 @@ function randomSha() { return Math.random().toString(16).slice(2, 10) + '...' }
               </div>
               <div class="sha-badge">SHA-256: {{ r.sha256 }}</div>
               <div class="mono text-xs text-muted" style="margin-top:4px;">{{ r.generatedAt }}</div>
-              <button class="btn btn-ghost btn-sm" style="margin-top:8px;">
+              <button class="btn btn-ghost btn-sm" style="margin-top:8px;" @click="downloadGeneratedReport(r)">
                 <AppIcon name="download" :size="12" />
                 Descargar {{ r.format }}
               </button>
