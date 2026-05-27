@@ -33,14 +33,14 @@ function approve() {
   finding.value.status = 'Aprobado'
   store.updateFinding(auditId.value, findingId.value, { ...finding.value, status: 'Aprobado' })
   feedback.value = { type: 'approved', msg: 'Hallazgo aprobado.' }
-  setTimeout(() => { feedback.value = null; router.back() }, 1500)
+  setTimeout(() => { feedback.value = null; router.push(`/workspace/${auditId.value}?tab=hallazgos`) }, 1500)
 }
 
 function reject() {
   finding.value.status = 'Rechazado'
   store.updateFinding(auditId.value, findingId.value, { ...finding.value, status: 'Rechazado' })
   feedback.value = { type: 'rejected', msg: 'Hallazgo rechazado.' }
-  setTimeout(() => { feedback.value = null; router.back() }, 1500)
+  setTimeout(() => { feedback.value = null; router.push(`/workspace/${auditId.value}?tab=hallazgos`) }, 1500)
 }
 
 const feedback = ref(null)
