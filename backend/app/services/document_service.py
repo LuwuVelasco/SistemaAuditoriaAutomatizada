@@ -60,7 +60,8 @@ class DocumentService:
             type=ext,
             size=size_str,
             supabasePath=supabase_path,
-            status=DocumentStatus.QUEUED,
+            # El archivo ya quedó persistido en Supabase; queda listo para análisis.
+            status=DocumentStatus.READY,
             chunks=0,
             sha256=sha256,
             uploadedAt=utcnow_iso(),
