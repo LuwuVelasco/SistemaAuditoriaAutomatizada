@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useAuditsStore } from '@/stores/audits'
 import AppShell from '@/components/layout/AppShell.vue'
 import AppIcon from '@/components/ui/AppIcon.vue'
+import ChatBot from '@/components/ChatBot.vue'
 import { analyzeAudit, downloadReport, generateReports as remoteGenerateReports, getReports } from '@/api/index'
 import { STATUS_PILL_CLASS, RISK_PILL_CLASS } from '@/data/mock'
 
@@ -555,5 +556,6 @@ watch(auditId, () => {
         </div>
       </div>
     </Transition>
+    <ChatBot :audit-id="auditId" />
   </AppShell>
 </template>

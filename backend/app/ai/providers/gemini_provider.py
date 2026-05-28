@@ -36,16 +36,15 @@ class GeminiProvider:
         self._framework = framework
         logger.info(f"GeminiProvider inicializado para {framework.upper()} ({_MODEL})")
 
-    async def generate(self, prompt: str, temperature: float = 0.2) -> str:
+    async def generate(self, prompt: str, temperature: float = 0.2, json_mode: bool = True) -> str:
         """
         Envía el prompt a Gemini y retorna el texto generado.
-        temperature baja = respuestas más consistentes y formales.
+        json_mode=False para respuestas de texto libre (chatbot).
         """
-        config = genai.types.GenerationConfig(
-            temperature=temperature,
-            max_output_tokens=8192,
-            response_mime_type="application/json",
-        )
+        config_kwargs = dict(temperature=temperature, max_output_tokens=8192)
+        if json_mode:
+            config_kwargs["response_mime_type"] = "application/json"
+        config = genai.types.GenerationConfig(**config_kwargs)
         max_attempts = 3
         for attempt in range(1, max_attempts + 1):
             try:
@@ -138,3 +137,8 @@ def get_cobit_provider() -> GeminiProvider:
 @lru_cache(maxsize=3)
 def get_rgsi_provider() -> GeminiProvider:
     return GeminiProvider(settings.GEMINI_RGSI_API_KEY, "rgsi")
+
+
+@lru_cache(maxsize=1)
+def get_chat_provider() -> GeminiProvider:
+    return GeminiProvider(settings.GEMINI_CHAT_API_KEY, "chat")
