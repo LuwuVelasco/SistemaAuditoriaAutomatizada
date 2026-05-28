@@ -65,6 +65,8 @@ class AuditService:
             update_fields["frameworks"] = [f.value for f in data.frameworks]
         if data.alcance is not None:
             update_fields["alcance"] = data.alcance
+        if data.maturity is not None:
+            update_fields["maturity"] = data.maturity
 
         updated = await self._repo.update(audit_id, update_fields)
         logger.info(f"Auditoría actualizada: {audit_id}")

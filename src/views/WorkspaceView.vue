@@ -314,10 +314,32 @@ const localGapAnalysis = computed(() => localMaturity.value?.gapAnalysis ?? { st
 watch(
   () => audit.value,
   (newAudit) => {
-    if (newAudit && newAudit.maturity) {
-      localMaturity.value = JSON.parse(JSON.stringify(newAudit.maturity))
-      if (newAudit.maturity.checklist) {
-        localChecklist.value = JSON.parse(JSON.stringify(newAudit.maturity.checklist))
+    if (newAudit) {
+      if (newAudit.maturity && Object.keys(newAudit.maturity).length > 0) {
+        localMaturity.value = JSON.parse(JSON.stringify(newAudit.maturity))
+        if (newAudit.maturity.checklist) {
+          localChecklist.value = JSON.parse(JSON.stringify(newAudit.maturity.checklist))
+        }
+      } else {
+        // Initialize default maturity structure
+        const defaultChecklist = {
+          l1_repositorios: true, l1_sin_politicas: true,
+          l2_cuadro: false, l2_calendario: false, l2_desigual: true,
+          l3_procesos: false, l3_roles: false, l3_trazabilidad: false,
+          l4_riesgos: false, l4_activos: false, l4_coordinacion: false,
+          l5_cultura: false, l5_mejora: false, l5_inspeccion: false
+        }
+        localMaturity.value = {
+          level: 1,
+          scores: { policies: 20, processes: 10, traceability: 15, culture: 5 },
+          checklist: defaultChecklist,
+          gapAnalysis: {
+            strengths: ["Existen repositorios digitales para almacenamiento de archivos."],
+            weaknesses: ["Ausencia de políticas documentales aprobadas formalmente.", "Falta de un cuadro de clasificación archivística."],
+            roadmap: ["Diseñar y formalizar un Cuadro de Clasificación Documental básico.", "Definir responsables funcionales y técnicos de gestión de archivos."]
+          }
+        }
+        localChecklist.value = defaultChecklist
       }
     }
   },
@@ -327,7 +349,14 @@ watch(
 watch(
   localChecklist,
   (chk) => {
-    if (!localMaturity.value) return
+    if (!localMaturity.value) {
+      localMaturity.value = {
+        level: 1,
+        scores: { policies: 0, processes: 0, traceability: 0, culture: 0 },
+        checklist: {},
+        gapAnalysis: { strengths: [], weaknesses: [], roadmap: [] }
+      }
+    }
     
     // Policies score
     let pol = 0
@@ -406,10 +435,24 @@ watch(
       }
     }
 
+    // IA: Integrate findings-based alerts into gap analysis
+    if (hasClassificationFinding.value) {
+      weaknesses.push("⚠ IA: Se detectaron hallazgos relacionados con ausencia de políticas o clasificación documental.")
+      roadmap.push("Revisar y formalizar las políticas documentales de acuerdo con los hallazgos de IA.")
+    }
+    if (hasAccessControlFinding.value) {
+      weaknesses.push("⚠ IA: Hallazgos sobre control de acceso o cuentas privilegiadas sin gestión.")
+      roadmap.push("Implementar controles de acceso y revisión periódica de cuentas según los hallazgos.")
+    }
+    if (hasBcpFinding.value) {
+      weaknesses.push("⚠ IA: Pruebas de continuidad de negocio (BCP) inexistentes o insuficientes.")
+      roadmap.push("Diseñar y ejecutar pruebas de BCP para asegurar la resiliencia documental.")
+    }
+
     localMaturity.value.gapAnalysis = {
-      strengths: strengths.slice(0, 3),
-      weaknesses: weaknesses.slice(0, 3),
-      roadmap: roadmap.slice(0, 3)
+      strengths: strengths.slice(0, 5),
+      weaknesses: weaknesses.slice(0, 5),
+      roadmap: roadmap.slice(0, 5)
     }
   },
   { deep: true }
@@ -417,7 +460,9 @@ watch(
 
 const isSaving = ref(false)
 const hasChanges = computed(() => {
-  if (!audit.value || !audit.value.maturity || !audit.value.maturity.checklist) return false
+  if (!audit.value) return false
+  // If the audit has no maturity yet, any change is new
+  if (!audit.value.maturity || !audit.value.maturity.checklist) return true
   return JSON.stringify(localChecklist.value) !== JSON.stringify(audit.value.maturity.checklist)
 })
 
@@ -438,7 +483,8 @@ async function saveMaturity() {
 }
 
 // ─── Radar Chart SVG ────────────────────────────────────────────────────────
-const center = 120
+const svgSize = 300
+const center = svgSize / 2
 const maxRadius = 85
 
 function getPoint(index, value) {
@@ -714,20 +760,29 @@ const hasBcpFinding = computed(() => findings.value.some(f => f.title.toLowerCas
             <div class="card" style="padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(13, 17, 23, 0.7); border: 1px solid var(--border); border-radius: 12px;">
               <span class="mono text-2xs text-muted" style="margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.05em;">Perfil de Madurez Multidimensional</span>
               
-              <div style="position: relative; width: 240px; height: 240px;">
-                <svg width="240" height="240" viewBox="0 0 240 240" style="display: block;">
-                  <!-- Concentric circles grid -->
-                  <polygon points="120,35 205,120 120,205 35,120" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1" />
-                  <polygon points="120,56.25 183.75,120 120,183.75 56.25,120" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1" />
-                  <polygon points="120,77.5 162.5,120 120,162.5 77.5,120" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1" stroke-dasharray="3,3" />
-                  <polygon points="120,98.75 141.25,120 120,141.25 98.75,120" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1" />
+              <div style="position: relative; width: 300px; height: 300px;">
+                <svg width="300" height="300" :viewBox="`0 0 ${svgSize} ${svgSize}`" style="display: block; overflow: visible;">
+                  <!-- 5 concentric diamond rings for levels 1-5 -->
+                  <!-- Level 5 outermost ring highlighted in emerald with a separate styling -->
+                  <polygon :points="`${center},${center - maxRadius} ${center + maxRadius},${center} ${center},${center + maxRadius} ${center - maxRadius},${center}`" fill="none" stroke="rgba(34, 197, 94, 0.45)" stroke-width="1.8" />
+                  <polygon :points="`${center},${center - maxRadius * 0.8} ${center + maxRadius * 0.8},${center} ${center},${center + maxRadius * 0.8} ${center - maxRadius * 0.8},${center}`" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1" />
+                  <polygon :points="`${center},${center - maxRadius * 0.6} ${center + maxRadius * 0.6},${center} ${center},${center + maxRadius * 0.6} ${center - maxRadius * 0.6},${center}`" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="1" stroke-dasharray="3,3" />
+                  <polygon :points="`${center},${center - maxRadius * 0.4} ${center + maxRadius * 0.4},${center} ${center},${center + maxRadius * 0.4} ${center - maxRadius * 0.4},${center}`" fill="none" stroke="rgba(255,255,255,0.09)" stroke-width="1" />
+                  <polygon :points="`${center},${center - maxRadius * 0.2} ${center + maxRadius * 0.2},${center} ${center},${center + maxRadius * 0.2} ${center - maxRadius * 0.2},${center}`" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="1" />
 
                   <!-- Cross Axes -->
-                  <line x1="35" y1="120" x2="205" y2="120" stroke="rgba(255,255,255,0.08)" stroke-width="1" />
-                  <line x1="120" y1="35" x2="120" y2="205" stroke="rgba(255,255,255,0.08)" stroke-width="1" />
+                  <line :x1="center - maxRadius" :y1="center" :x2="center + maxRadius" :y2="center" stroke="rgba(255,255,255,0.08)" stroke-width="1" />
+                  <line :x1="center" :y1="center - maxRadius" :x2="center" :y2="center + maxRadius" stroke="rgba(255,255,255,0.08)" stroke-width="1" />
+
+                  <!-- Axis level indicator labels to explicitly separate and mark levels 1 to 5 -->
+                  <text :x="center + 4" :y="center - maxRadius * 0.2 + 3" font-size="8" fill="rgba(255,255,255,0.3)" font-family="monospace">1</text>
+                  <text :x="center + 4" :y="center - maxRadius * 0.4 + 3" font-size="8" fill="rgba(255,255,255,0.3)" font-family="monospace">2</text>
+                  <text :x="center + 4" :y="center - maxRadius * 0.6 + 3" font-size="8" fill="rgba(255,255,255,0.3)" font-family="monospace">3</text>
+                  <text :x="center + 4" :y="center - maxRadius * 0.8 + 3" font-size="8" fill="rgba(255,255,255,0.3)" font-family="monospace">4</text>
+                  <text :x="center + 4" :y="center - maxRadius + 3" font-size="8.5" fill="rgba(34, 197, 94, 0.75)" font-family="monospace" font-weight="bold">5</text>
 
                   <!-- Center glow dot -->
-                  <circle cx="120" cy="120" r="3" fill="var(--border)" opacity="0.3" />
+                  <circle :cx="center" :cy="center" r="3" fill="var(--border)" opacity="0.3" />
 
                   <!-- Value polygon filled with gradient -->
                   <polygon
@@ -745,11 +800,11 @@ const hasBcpFinding = computed(() => findings.value.some(f => f.title.toLowerCas
                   <circle :cx="getPoint(2, localScores.traceability).x" :cy="getPoint(2, localScores.traceability).y" r="4" :fill="levelColor" style="transition: all 0.3s;" />
                   <circle :cx="getPoint(3, localScores.culture).x" :cy="getPoint(3, localScores.culture).y" r="4" :fill="levelColor" style="transition: all 0.3s;" />
 
-                  <!-- Text Labels -->
-                  <text x="120" y="20" text-anchor="middle" font-size="9" fill="var(--text-3)" font-family="monospace">POLÍTICAS</text>
-                  <text x="215" y="123" text-anchor="start" font-size="9" fill="var(--text-3)" font-family="monospace">PROCESOS</text>
-                  <text x="120" y="222" text-anchor="middle" font-size="9" fill="var(--text-3)" font-family="monospace">TRAZABILIDAD</text>
-                  <text x="25" y="123" text-anchor="end" font-size="9" fill="var(--text-3)" font-family="monospace">CULTURA</text>
+                  <!-- Text Labels (positioned with generous padding to avoid clipping) -->
+                  <text :x="center" :y="center - maxRadius - 12" text-anchor="middle" font-size="10" font-weight="600" fill="var(--text-2)" font-family="monospace" letter-spacing="0.05em">POLÍTICAS</text>
+                  <text :x="center + maxRadius + 10" :y="center + 4" text-anchor="start" font-size="10" font-weight="600" fill="var(--text-2)" font-family="monospace" letter-spacing="0.05em">PROCESOS</text>
+                  <text :x="center" :y="center + maxRadius + 18" text-anchor="middle" font-size="10" font-weight="600" fill="var(--text-2)" font-family="monospace" letter-spacing="0.05em">TRAZABILIDAD</text>
+                  <text :x="center - maxRadius - 10" :y="center + 4" text-anchor="end" font-size="10" font-weight="600" fill="var(--text-2)" font-family="monospace" letter-spacing="0.05em">CULTURA</text>
 
                   <defs>
                     <radialGradient id="radarGradient" cx="50%" cy="50%" r="50%">
@@ -793,7 +848,7 @@ const hasBcpFinding = computed(() => findings.value.some(f => f.title.toLowerCas
                     <span style="font-size: 12px; font-weight:600; color: var(--text-1);">Nivel Inicial: Acumulación Digital</span>
                   </div>
                   <div style="display:flex; flex-direction:column; gap:8px;">
-                    <label class="maturity-toggle-row" style="display:flex; align-items:flex-start; justify-content:space-between; gap:15px; padding: 6px 8px; border-radius: 6px; cursor: pointer; hover:background:rgba(255,255,255,0.01); transition: background 0.2s;">
+                    <label class="maturity-toggle-row" style="display:flex; align-items:flex-start; justify-content:space-between; gap:15px; padding: 6px 8px; border-radius: 6px; cursor: pointer; transition: background 0.2s;">
                       <div style="flex:1;">
                         <div style="font-size: 12px; font-weight:500; color: var(--text-1);">Repositorios Digitales</div>
                         <div style="font-size: 10.5px; color: var(--text-3); margin-top:2px;">Existen repositorios o directorios para guardar documentos.</div>
@@ -807,9 +862,6 @@ const hasBcpFinding = computed(() => findings.value.some(f => f.title.toLowerCas
                           <span class="pill pill-extreme" style="font-size:8px; padding: 1px 4px; font-weight:600;">RIESGO</span>
                         </div>
                         <div style="font-size: 10.5px; color: var(--text-3); margin-top:2px;">La organización opera sin políticas documentales claras.</div>
-                        <div v-if="hasClassificationFinding" class="mono text-2xs" style="color: var(--risk-h); margin-top:4px; display:flex; align-items:center; gap:4px;">
-                          <AppIcon name="alert-triangle" :size="9" /> IA: Ausencia de políticas identificada en hallazgos
-                        </div>
                       </div>
                       <input type="checkbox" v-model="localChecklist.l1_sin_politicas" class="form-checkbox" style="margin-top:3px;" />
                     </label>
@@ -827,9 +879,6 @@ const hasBcpFinding = computed(() => findings.value.some(f => f.title.toLowerCas
                       <div style="flex:1;">
                         <div style="font-size: 12px; font-weight:500; color: var(--text-1);">Cuadro de Clasificación Aprobado</div>
                         <div style="font-size: 10.5px; color: var(--text-3); margin-top:2px;">Existe una codificación para clasificar la información corporativa.</div>
-                        <div v-if="hasClassificationFinding" class="mono text-2xs" style="color: var(--risk-h); margin-top:4px; display:flex; align-items:center; gap:4px;">
-                          <AppIcon name="alert-triangle" :size="9" /> IA: Ausencia de cuadro/clasificación detectada en documentos
-                        </div>
                       </div>
                       <input type="checkbox" v-model="localChecklist.l2_cuadro" class="form-checkbox" style="margin-top:3px;" />
                     </label>
@@ -871,9 +920,6 @@ const hasBcpFinding = computed(() => findings.value.some(f => f.title.toLowerCas
                       <div style="flex:1;">
                         <div style="font-size: 12px; font-weight:500; color: var(--text-1);">Roles Multidisciplinarios Claros</div>
                         <div style="font-size: 10.5px; color: var(--text-3); margin-top:2px;">Responsables funcionales, técnicos e informáticos designados formalmente.</div>
-                        <div v-if="hasAccessControlFinding" class="mono text-2xs" style="color: var(--risk-h); margin-top:4px; display:flex; align-items:center; gap:4px;">
-                          <AppIcon name="alert-triangle" :size="9" /> IA: Cuentas privilegiadas descontroladas en hallazgos
-                        </div>
                       </div>
                       <input type="checkbox" v-model="localChecklist.l3_roles" class="form-checkbox" style="margin-top:3px;" />
                     </label>
@@ -881,47 +927,68 @@ const hasBcpFinding = computed(() => findings.value.some(f => f.title.toLowerCas
                       <div style="flex:1;">
                         <div style="font-size: 12px; font-weight:500; color: var(--text-1);">Trazabilidad Real y Ciclo de Vida</div>
                         <div style="font-size: 10.5px; color: var(--text-3); margin-top:2px;">Control total sobre la creación, modificación, y borrado de documentos.</div>
-                        <div v-if="hasBcpFinding" class="mono text-2xs" style="color: var(--risk-e); margin-top:4px; display:flex; align-items:center; gap:4px;">
-                          <AppIcon name="alert-triangle" :size="9" /> IA: Pruebas de BCP inexistentes; afecta ciclo de vida y resiliencia
-                        </div>
                       </div>
                       <input type="checkbox" v-model="localChecklist.l3_trazabilidad" class="form-checkbox" style="margin-top:3px;" />
                     </label>
                   </div>
                 </div>
 
-                <!-- Nivel 4 & 5 -->
+                <!-- Nivel 4: Gobierno de la Información -->
                 <div>
                   <div style="display:flex; align-items:center; gap:8px; border-bottom: 1px solid rgba(255,255,255,0.03); padding-bottom: 6px; margin-bottom: 10px;">
-                    <span class="pill pill-done" style="font-size: 10px; font-weight:600; padding: 2px 6px; background: #a855f7 !important; color:#fff;">L4+</span>
-                    <span style="font-size: 12px; font-weight:600; color: var(--text-1);">Nivel Estratégico y Optimizado</span>
+                    <span class="pill" style="font-size: 10px; font-weight:600; padding: 2px 6px; background: #a855f7; color:#fff; border:none;">L4</span>
+                    <span style="font-size: 12px; font-weight:600; color: var(--text-1);">Nivel Estratégico: Gobierno de la Información</span>
                   </div>
                   <div style="display:flex; flex-direction:column; gap:8px;">
                     <label class="maturity-toggle-row" style="display:flex; align-items:flex-start; justify-content:space-between; gap:15px; padding: 6px 8px; border-radius: 6px; cursor: pointer; transition: background 0.2s;">
                       <div style="flex:1;">
-                        <div style="font-size: 12px; font-weight:500; color: var(--text-1);">Gobernanza de Información Activa (L4)</div>
+                        <div style="font-size: 12px; font-weight:500; color: var(--text-1);">Gobernanza de Información Activa</div>
                         <div style="font-size: 10.5px; color: var(--text-3); margin-top:2px;">La dirección gestiona la información como activo de valor estratégico y conoce los riesgos.</div>
                       </div>
                       <input type="checkbox" v-model="localChecklist.l4_riesgos" class="form-checkbox" style="margin-top:3px;" />
                     </label>
                     <label class="maturity-toggle-row" style="display:flex; align-items:flex-start; justify-content:space-between; gap:15px; padding: 6px 8px; border-radius: 6px; cursor: pointer; transition: background 0.2s;">
                       <div style="flex:1;">
-                        <div style="font-size: 12px; font-weight:500; color: var(--text-1);">Coordinación Interdepartamental (L4)</div>
+                        <div style="font-size: 12px; font-weight:500; color: var(--text-1);">Gestión de Activos Documentales</div>
+                        <div style="font-size: 10.5px; color: var(--text-3); margin-top:2px;">Inventario y valoración de los documentos como activos organizacionales protegidos.</div>
+                      </div>
+                      <input type="checkbox" v-model="localChecklist.l4_activos" class="form-checkbox" style="margin-top:3px;" />
+                    </label>
+                    <label class="maturity-toggle-row" style="display:flex; align-items:flex-start; justify-content:space-between; gap:15px; padding: 6px 8px; border-radius: 6px; cursor: pointer; transition: background 0.2s;">
+                      <div style="flex:1;">
+                        <div style="font-size: 12px; font-weight:500; color: var(--text-1);">Coordinación Interdepartamental</div>
                         <div style="font-size: 10.5px; color: var(--text-3); margin-top:2px;">Coordinación formal y regular entre IT, área Jurídica, Compliance y Negocio.</div>
                       </div>
                       <input type="checkbox" v-model="localChecklist.l4_coordinacion" class="form-checkbox" style="margin-top:3px;" />
                     </label>
+                  </div>
+                </div>
+
+                <!-- Nivel 5: Cultura Documental y Mejora Continua -->
+                <div>
+                  <div style="display:flex; align-items:center; gap:8px; border-bottom: 1px solid rgba(255,255,255,0.03); padding-bottom: 6px; margin-bottom: 10px;">
+                    <span class="pill" style="font-size: 10px; font-weight:600; padding: 2px 6px; background: hsl(142, 80%, 45%); color:#fff; border:none;">L5</span>
+                    <span style="font-size: 12px; font-weight:600; color: var(--text-1);">Nivel Optimizado: Cultura Documental</span>
+                  </div>
+                  <div style="display:flex; flex-direction:column; gap:8px;">
                     <label class="maturity-toggle-row" style="display:flex; align-items:flex-start; justify-content:space-between; gap:15px; padding: 6px 8px; border-radius: 6px; cursor: pointer; transition: background 0.2s;">
                       <div style="flex:1;">
-                        <div style="font-size: 12px; font-weight:500; color: var(--text-1);">Cultura Documental Impregnada (L5)</div>
+                        <div style="font-size: 12px; font-weight:500; color: var(--text-1);">Cultura Documental Impregnada</div>
                         <div style="font-size: 10.5px; color: var(--text-3); margin-top:2px;">La buena gestión documental es parte innata de las tareas de cada empleado.</div>
                       </div>
                       <input type="checkbox" v-model="localChecklist.l5_cultura" class="form-checkbox" style="margin-top:3px;" />
                     </label>
                     <label class="maturity-toggle-row" style="display:flex; align-items:flex-start; justify-content:space-between; gap:15px; padding: 6px 8px; border-radius: 6px; cursor: pointer; transition: background 0.2s;">
                       <div style="flex:1;">
-                        <div style="font-size: 12px; font-weight:500; color: var(--text-1);">Mejora Continua y ASFI Ready (L5)</div>
+                        <div style="font-size: 12px; font-weight:500; color: var(--text-1);">Mejora Continua y ASFI Ready</div>
                         <div style="font-size: 10.5px; color: var(--text-3); margin-top:2px;">La organización anticipa litigios, auditorías del regulador, y riesgos normativos.</div>
+                      </div>
+                      <input type="checkbox" v-model="localChecklist.l5_mejora" class="form-checkbox" style="margin-top:3px;" />
+                    </label>
+                    <label class="maturity-toggle-row" style="display:flex; align-items:flex-start; justify-content:space-between; gap:15px; padding: 6px 8px; border-radius: 6px; cursor: pointer; transition: background 0.2s;">
+                      <div style="flex:1;">
+                        <div style="font-size: 12px; font-weight:500; color: var(--text-1);">Inspección y Anticipación Regulatoria</div>
+                        <div style="font-size: 10.5px; color: var(--text-3); margin-top:2px;">Procesos proactivos de revisión que previenen incidentes antes de inspecciones.</div>
                       </div>
                       <input type="checkbox" v-model="localChecklist.l5_inspeccion" class="form-checkbox" style="margin-top:3px;" />
                     </label>
