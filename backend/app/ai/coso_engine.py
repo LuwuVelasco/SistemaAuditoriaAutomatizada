@@ -13,5 +13,5 @@ class COSOEngine(BaseEngine):
     def __init__(self, provider: GeminiProvider | None = None):
         super().__init__(provider or get_coso_provider())
 
-    def build_prompt(self, text: str, prior_findings: List[dict]) -> str:
-        return build_coso_prompt(text, prior_findings)
+    def build_prompt(self, text: str, prior_findings: List[dict], audit_meta: dict = None) -> str:
+        return build_coso_prompt(text, prior_findings, audit_meta)

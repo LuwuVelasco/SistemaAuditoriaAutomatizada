@@ -26,7 +26,24 @@ Los textos de entrada incluyen encabezados con el nombre e ID de cada documento.
 """
 
 
-def build_coso_prompt(document_text: str, prior_findings: List[dict] = None) -> str:
+def _build_meta_section(audit_meta: dict) -> str:
+    if not audit_meta:
+        return ""
+    alcance = audit_meta.get("alcance") or "No especificado"
+    return f"""
+Contexto de la auditoría:
+- Entidad: {audit_meta.get("entity", "")}
+- Tipo: {audit_meta.get("type", "")}
+- Período: {audit_meta.get("period", "")}
+- Ciudad: {audit_meta.get("city", "")}
+- Alcance: {alcance}
+
+Enfoca el análisis exclusivamente en el alcance indicado. Los hallazgos deben ser
+relevantes para el tipo de auditoría y el período señalado.
+"""
+
+
+def build_coso_prompt(document_text: str, prior_findings: List[dict] = None, audit_meta: dict = None) -> str:
     prior_section = ""
     if prior_findings:
         prior_section = f"""
@@ -39,7 +56,7 @@ Solo identifica hallazgos NUEVOS que no estén cubiertos por los anteriores.
     return f"""Eres un auditor experto en COSO 2013 (Marco Integrado de Control Interno).
 
 {TONE_INSTRUCTIONS}
-
+{_build_meta_section(audit_meta)}
 Tu tarea es analizar el siguiente texto de documentos organizacionales de una entidad
 del sistema financiero boliviano e identificar debilidades de control interno conforme
 a los 5 componentes de COSO 2013:
@@ -81,7 +98,7 @@ TEXTO A ANALIZAR:
 """
 
 
-def build_cobit_prompt(document_text: str, prior_findings: List[dict] = None) -> str:
+def build_cobit_prompt(document_text: str, prior_findings: List[dict] = None, audit_meta: dict = None) -> str:
     prior_section = ""
     if prior_findings:
         prior_section = f"""
@@ -94,7 +111,7 @@ Solo identifica hallazgos de COBIT 2019 que complementen los anteriores.
     return f"""Eres un auditor experto en COBIT 2019 (Gobierno y Gestión de TI Empresarial).
 
 {TONE_INSTRUCTIONS}
-
+{_build_meta_section(audit_meta)}
 Tu tarea es analizar el siguiente texto de documentos organizacionales e identificar
 observaciones de auditoría TI conforme a los dominios de COBIT 2019:
 - EDM: Evaluar, Orientar y Supervisar
@@ -135,7 +152,7 @@ TEXTO A ANALIZAR:
 """
 
 
-def build_rgsi_prompt(document_text: str, prior_findings: List[dict] = None) -> str:
+def build_rgsi_prompt(document_text: str, prior_findings: List[dict] = None, audit_meta: dict = None) -> str:
     prior_section = ""
     if prior_findings:
         prior_section = f"""
@@ -149,7 +166,7 @@ Solo identifica hallazgos del RGSI-ASFI que complementen los anteriores.
 (RGSI) emitido por la ASFI (Autoridad de Supervisión del Sistema Financiero) de Bolivia.
 
 {TONE_INSTRUCTIONS}
-
+{_build_meta_section(audit_meta)}
 Tu tarea es analizar el siguiente texto de documentos de una entidad de intermediación
 financiera boliviana e identificar observaciones de cumplimiento normativo con el RGSI-ASFI.
 Los capítulos principales del RGSI son:

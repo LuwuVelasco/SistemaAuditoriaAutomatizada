@@ -6,8 +6,8 @@ Puntuación compuesta (1–25):
 
   1 – 4   → Bajo
   5 – 9   → Medio
- 10 – 16  → Alto
- 17 – 25  → Extremo
+ 10 – 15  → Alto
+ 16 – 25  → Extremo
 """
 
 from app.utils.enums import RiskLevel
@@ -24,7 +24,7 @@ def calculate_risk(impact: int, probability: int) -> RiskLevel:
         return RiskLevel.BAJO
     elif score <= 9:
         return RiskLevel.MEDIO
-    elif score <= 16:
+    elif score <= 15:
         return RiskLevel.ALTO
     else:
         return RiskLevel.EXTREMO

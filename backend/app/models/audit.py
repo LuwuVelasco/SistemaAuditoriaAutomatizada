@@ -15,6 +15,7 @@ class Audit(BaseModel):
     type: str
     city: str
     period: str
+    alcance: Optional[str] = None
     status: AuditStatus = AuditStatus.PENDIENTE
     progress: int = Field(default=0, ge=0, le=100)
     frameworks: List[FrameworkType]
@@ -28,7 +29,7 @@ class Audit(BaseModel):
 
     def to_firestore(self) -> dict:
         """Serializa para Firestore (camelCase, sin campos nulos)."""
-        return {
+        d = {
             "entity": self.entity,
             "type": self.type,
             "city": self.city,
@@ -42,6 +43,9 @@ class Audit(BaseModel):
             "pendingFindings": self.pending_findings,
             "documentsCount": self.documents_count,
         }
+        if self.alcance is not None:
+            d["alcance"] = self.alcance
+        return d
 
     @classmethod
     def from_firestore(cls, doc_id: str, data: dict) -> "Audit":
@@ -51,6 +55,7 @@ class Audit(BaseModel):
             type=data.get("type", ""),
             city=data.get("city", ""),
             period=data.get("period", ""),
+            alcance=data.get("alcance"),
             status=data.get("status", AuditStatus.PENDIENTE),
             progress=data.get("progress", 0),
             frameworks=data.get("frameworks", []),

@@ -230,6 +230,7 @@ function mapAudit(a) {
     type:            a.type,
     city:            a.city,
     period:          a.period,
+    alcance:         a.alcance || null,
     status:          a.status,
     progress:        a.progress ?? 0,
     frameworks:      a.frameworks ?? [],

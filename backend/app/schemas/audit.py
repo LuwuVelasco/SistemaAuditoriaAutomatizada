@@ -13,6 +13,7 @@ class AuditCreate(BaseModel):
     city: str = Field(min_length=2, max_length=60)
     period: str = Field(pattern=r"^\d{4}-Q[1-4]$", examples=["2025-Q1"])
     frameworks: List[FrameworkType] = Field(min_length=1)
+    alcance: Optional[str] = Field(default=None, max_length=1000)
 
     @field_validator("entity", "type", "city", mode="before")
     @classmethod
@@ -28,6 +29,7 @@ class AuditUpdate(BaseModel):
     status: Optional[AuditStatus] = None
     progress: Optional[int] = Field(default=None, ge=0, le=100)
     frameworks: Optional[List[FrameworkType]] = None
+    alcance: Optional[str] = Field(default=None, max_length=1000)
 
 
 class AuditOut(BaseModel):
@@ -36,6 +38,7 @@ class AuditOut(BaseModel):
     type: str
     city: str
     period: str
+    alcance: Optional[str] = None
     status: AuditStatus
     progress: int
     frameworks: List[str]

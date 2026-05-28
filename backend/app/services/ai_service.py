@@ -94,10 +94,19 @@ class AIService:
 
             await self._audit_service.set_status(audit_id, AuditStatus.PROCESANDO, 40)
 
+            audit_meta = {
+                "entity": audit.entity,
+                "type": audit.type,
+                "period": audit.period,
+                "city": audit.city,
+                "alcance": audit.alcance,
+            }
+
             findings = await orchestrator.run(
                 audit_id=audit_id,
                 frameworks=audit.frameworks,
                 documents=ready_docs,
+                audit_meta=audit_meta,
             )
 
             await self._audit_service.set_status(audit_id, AuditStatus.PROCESANDO, 80)

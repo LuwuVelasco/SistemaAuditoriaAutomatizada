@@ -23,19 +23,20 @@ class BaseEngine(ABC):
         self._provider = provider
 
     @abstractmethod
-    def build_prompt(self, text: str, prior_findings: List[dict]) -> str:
+    def build_prompt(self, text: str, prior_findings: List[dict], audit_meta: dict = None) -> str:
         """Construye el prompt específico del framework."""
 
-    async def analyze(self, text: str, prior_findings: List[dict] = None) -> List[RawFinding]:
+    async def analyze(self, text: str, prior_findings: List[dict] = None, audit_meta: dict = None) -> List[RawFinding]:
         """
         Ejecuta el análisis sobre el texto y retorna hallazgos crudos.
         prior_findings: hallazgos ya identificados por motores previos en la cadena.
+        audit_meta: metadata de la auditoría (entity, type, period, city, alcance).
         """
         if not text.strip():
             logger.warning(f"[{self.framework}] Texto vacío — se omite análisis.")
             return []
 
-        prompt = self.build_prompt(text, prior_findings or [])
+        prompt = self.build_prompt(text, prior_findings or [], audit_meta)
         logger.info(f"[{self.framework}] Iniciando análisis ({len(text)} chars de texto)…")
 
         raw_response = await self._provider.generate(prompt)

@@ -25,6 +25,7 @@ class AuditService:
             type=data.type,
             city=data.city,
             period=data.period,
+            alcance=data.alcance,
             frameworks=[f for f in data.frameworks],
             ownerId=owner_id,
             createdAt=utcnow_iso(),
@@ -62,6 +63,8 @@ class AuditService:
             update_fields["progress"] = data.progress
         if data.frameworks is not None:
             update_fields["frameworks"] = [f.value for f in data.frameworks]
+        if data.alcance is not None:
+            update_fields["alcance"] = data.alcance
 
         updated = await self._repo.update(audit_id, update_fields)
         logger.info(f"Auditoría actualizada: {audit_id}")

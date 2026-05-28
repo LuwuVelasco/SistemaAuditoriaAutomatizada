@@ -53,6 +53,7 @@ class AIOrchestrator:
         audit_id: str,
         frameworks: List[FrameworkType],
         documents: List[Document],
+        audit_meta: dict = None,
     ) -> List[Finding]:
         """
         Ejecuta el pipeline completo y retorna hallazgos listos para Firestore.
@@ -86,6 +87,7 @@ class AIOrchestrator:
                 engine=self._cobit,
                 text=text,
                 prior_findings=prior_dicts,
+                audit_meta=audit_meta,
             )
             all_raw.extend(cobit_results)
             prior_dicts.extend([r.model_dump() for r in cobit_results])
@@ -97,6 +99,7 @@ class AIOrchestrator:
                 engine=self._coso,
                 text=text,
                 prior_findings=prior_dicts,
+                audit_meta=audit_meta,
             )
             all_raw.extend(coso_results)
             prior_dicts.extend([r.model_dump() for r in coso_results])
@@ -108,6 +111,7 @@ class AIOrchestrator:
                 engine=self._rgsi,
                 text=text,
                 prior_findings=prior_dicts,
+                audit_meta=audit_meta,
             )
             all_raw.extend(rgsi_results)
 
@@ -139,13 +143,14 @@ class AIOrchestrator:
         engine,
         text: str,
         prior_findings: List[dict],
+        audit_meta: dict = None,
     ) -> List[RawFinding]:
         """
         Ejecuta un motor sin cortar el pipeline completo si falla.
         Devuelve [] cuando el motor no puede completarse.
         """
         try:
-            results = await engine.analyze(text, prior_findings=prior_findings)
+            results = await engine.analyze(text, prior_findings=prior_findings, audit_meta=audit_meta)
             logger.info(f"[{name}] {len(results)} hallazgos.")
             return results
         except Exception as exc:

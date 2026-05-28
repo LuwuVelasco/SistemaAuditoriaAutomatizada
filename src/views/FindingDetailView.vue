@@ -4,7 +4,6 @@ import { useRoute, useRouter } from 'vue-router'
 import { useAuditsStore } from '@/stores/audits'
 import AppShell from '@/components/layout/AppShell.vue'
 import AppIcon from '@/components/ui/AppIcon.vue'
-import { RISK_LEVELS } from '@/data/mock'
 
 const route  = useRoute()
 const router = useRouter()
@@ -45,18 +44,26 @@ function reject() {
 
 const feedback = ref(null)
 
-function setRisk(r) { finding.value.risk = r }
-function setImpact(v) { finding.value.impact = v }
-function setProbability(v) { finding.value.probability = v }
+function calculateRisk(impact, probability) {
+  const score = impact * probability
+  if (score <= 4) return 'Bajo'
+  if (score <= 9) return 'Medio'
+  if (score <= 15) return 'Alto'
+  return 'Extremo'
+}
+function setImpact(v) {
+  finding.value.impact = v
+  finding.value.risk = calculateRisk(v, finding.value.probability)
+}
+function setProbability(v) {
+  finding.value.probability = v
+  finding.value.risk = calculateRisk(finding.value.impact, v)
+}
 
 function riskPillClass(r) {
   return { Extremo: 'pill-extreme', Alto: 'pill-high', Medio: 'pill-medium', Bajo: 'pill-low', Oportunidad: 'pill-opp' }[r] || ''
 }
 
-function riskBtnColor(r) {
-  const map = { Extremo: 'var(--risk-x)', Alto: 'var(--risk-h)', Medio: 'var(--risk-m)', Bajo: 'var(--risk-l)', Oportunidad: 'var(--risk-o)' }
-  return map[r] || 'var(--text-2)'
-}
 
 function confidClass(c) {
   return c >= 0.8 ? 'high' : ''
@@ -177,26 +184,10 @@ const relatedFindings = computed(() => {
           style="font-size:18px;font-weight:600;line-height:1.3;margin-bottom:20px;padding:4px 6px;border-radius:3px;"
         >{{ finding.title }}</div>
 
-        <!-- Risk selector -->
+        <!-- Risk display (read-only, calculated from impact × probability) -->
         <div style="margin-bottom:20px;">
-          <div class="form-label" style="margin-bottom:8px;">Nivel de riesgo</div>
-          <div class="risk-pills">
-            <button
-              v-for="r in RISK_LEVELS"
-              :key="r"
-              class="risk-pill-btn"
-              :class="{ selected: finding.risk === r }"
-              :style="{
-                color: riskBtnColor(r),
-                background: finding.risk === r ? `color-mix(in srgb, ${riskBtnColor(r)} 10%, transparent)` : 'var(--surface-2)',
-                borderColor: finding.risk === r ? riskBtnColor(r) : 'var(--border-2)'
-              }"
-              @click="setRisk(r)"
-            >
-              <span v-if="finding.risk === r" style="width:5px;height:5px;border-radius:50%;background:currentColor;display:inline-block;margin-right:3px;box-shadow:0 0 6px currentColor;" />
-              {{ r }}
-            </button>
-          </div>
+          <div class="form-label" style="margin-bottom:8px;">Nivel de riesgo <span class="mono text-xs text-muted">(impacto × probabilidad = {{ finding.impact * finding.probability }})</span></div>
+          <span class="pill" :class="riskPillClass(finding.risk)" style="font-size:13px;padding:5px 14px;">{{ finding.risk }}</span>
         </div>
 
         <!-- Impact / Probability -->

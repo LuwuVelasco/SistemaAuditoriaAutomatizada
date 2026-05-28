@@ -49,9 +49,7 @@ watch(
   }
 )
 watch(activeTab, (tab) => {
-  if (tab === 'reportes') {
-    loadReports()
-  }
+  if (tab === 'reportes') loadReports()
 })
 
 // Reports selection
@@ -205,6 +203,26 @@ function toggleReport(id) {
 const generatedReports = ref([])
 const generatingReports = ref(false)
 
+function latestPerKind(rawList) {
+  const byKind = {}
+  for (const r of rawList) {
+    const k = r.kind?.value ?? r.kind
+    if (!byKind[k] || (r.generatedAt || '') > (byKind[k].generatedAt || '')) {
+      byKind[k] = r
+    }
+  }
+  return Object.values(byKind).map(mapReport)
+}
+
+async function loadReports() {
+  try {
+    const data = await getReports(auditId.value)
+    generatedReports.value = latestPerKind(data || [])
+  } catch (error) {
+    console.error('Error cargando reportes:', error)
+  }
+}
+
 async function generateReports() {
   generatingReports.value = true
   try {
@@ -212,15 +230,17 @@ async function generateReports() {
     for (const id of selectedReports.value) {
       const option = reportOptions.find(o => o.id === id)
       if (!option) continue
-
       const reports = await remoteGenerateReports(auditId.value, [id], option.format)
       created.push(...(Array.isArray(reports) ? reports : [reports]))
     }
-
-    await loadReports()
-    if (!generatedReports.value.length && created.length) {
-      generatedReports.value = created.map(mapReport)
+    // Reemplaza el slot de cada tipo generado, mantiene los demás
+    const next = [...generatedReports.value]
+    for (const r of created.map(mapReport)) {
+      const idx = next.findIndex(c => (c.kind?.value ?? c.kind) === (r.kind?.value ?? r.kind))
+      if (idx >= 0) next[idx] = r
+      else next.push(r)
     }
+    generatedReports.value = next
   } catch (error) {
     console.error('Error generando reportes:', error)
   } finally {
@@ -228,12 +248,16 @@ async function generateReports() {
   }
 }
 
-async function loadReports() {
+function formatBoliviaDate(iso) {
+  if (!iso) return ''
   try {
-    const data = await getReports(auditId.value)
-    generatedReports.value = (data || []).map(mapReport)
-  } catch (error) {
-    console.error('Error cargando reportes:', error)
+    return new Date(iso).toLocaleString('es-BO', {
+      timeZone: 'America/La_Paz',
+      day: '2-digit', month: 'short', year: 'numeric',
+      hour: '2-digit', minute: '2-digit',
+    })
+  } catch {
+    return iso
   }
 }
 
@@ -261,15 +285,13 @@ function mapReport(r) {
     label: opt?.label || r.kind,
     format: (r.format || '').toUpperCase(),
     sha256: r.sha256,
-    generatedAt: (r.generatedAt || '').replace('T', ' ').replace('Z', ''),
+    generatedAt: formatBoliviaDate(r.generatedAt),
     supabasePath: r.supabasePath,
   }
 }
 
 watch(auditId, () => {
-  if (activeTab.value === 'reportes') {
-    loadReports()
-  }
+  if (activeTab.value === 'reportes') loadReports()
 })
 </script>
 

@@ -10,7 +10,7 @@ const store = useAuditsStore()
 
 const step = ref(1)
 const form = reactive({
-  entity: '', type: 'Auditoría TI', city: '', period: '',
+  entity: '', type: 'Auditoría TI', city: '', period: '', alcance: '',
   frameworks: ['COBIT', 'COSO', 'RGSI']
 })
 const periodError = ref('')
@@ -59,6 +59,7 @@ async function create() {
       type: form.type,
       city,
       period,
+      alcance: form.alcance || undefined,
       frameworks: [...form.frameworks]
     })
     emit('close')
@@ -121,7 +122,7 @@ function nextStep() {
               </select>
             </div>
           </div>
-          <div class="form-group" style="margin-bottom:0;">
+          <div class="form-group">
             <label class="form-label">Período <span style="color:var(--text-3);">(opcional)</span></label>
             <input
               v-model="form.period"
@@ -133,6 +134,16 @@ function nextStep() {
             <div v-if="periodError" style="color:var(--risk-h);font-size:12px;margin-top:4px;font-weight:500;">
               ⚠️ {{ periodError }}
             </div>
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label">Alcance de auditoría <span style="color:var(--text-3);">(opcional)</span></label>
+            <textarea
+              v-model="form.alcance"
+              class="form-input"
+              rows="3"
+              style="resize:vertical;min-height:64px;"
+              placeholder="Ej. Revisión de controles de acceso lógico y gestión de identidades en los sistemas core bancarios…"
+            />
           </div>
         </template>
 
