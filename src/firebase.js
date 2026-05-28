@@ -11,6 +11,33 @@ const firebaseConfig = {
   appId:             import.meta.env.VITE_FIREBASE_APP_ID
 }
 
+function validateFirebaseConfig(config) {
+  const placeholders = new Set([
+    undefined,
+    null,
+    '',
+    'your_firebase_api_key',
+    'your_project.firebaseapp.com',
+    'your_project_id',
+    'your_project.firebasestorage.app',
+    'your_sender_id',
+    'your_app_id'
+  ])
+
+  const missing = Object.entries(config)
+    .filter(([, value]) => placeholders.has(value))
+    .map(([key]) => key)
+
+  if (missing.length) {
+    console.warn(
+      `Firebase config incompleta o de ejemplo en el frontend: ${missing.join(', ')}. ` +
+      'Si el deploy ya está en producción, rebuild con las variables reales del proyecto.'
+    )
+  }
+}
+
+validateFirebaseConfig(firebaseConfig)
+
 const app = initializeApp(firebaseConfig)
 
 export const auth = getAuth(app)
