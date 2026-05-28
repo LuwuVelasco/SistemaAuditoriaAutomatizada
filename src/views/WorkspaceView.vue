@@ -60,7 +60,8 @@ const reportOptions = [
   { id: 'matriz-hallazgos', label: 'Matriz de hallazgos', desc: 'Consolidada COBIT × COSO × RGSI', icon: 'layers', format: 'xlsx' },
   { id: 'fichas-hallazgo',  label: 'Fichas de hallazgo',  desc: 'Una ficha por hallazgo aprobado', icon: 'file-text', format: 'docx' },
   { id: 'fichas-pruebas',   label: 'Fichas de pruebas',   desc: 'Pruebas sustentatorias',          icon: 'database', format: 'docx' },
-  { id: 'matriz-coso',      label: 'Matriz COSO',          desc: 'Componentes × principios',       icon: 'grid', format: 'xlsx' }
+  { id: 'matriz-coso',      label: 'Matriz COSO',          desc: 'Componentes × principios',       icon: 'grid', format: 'xlsx' },
+  { id: 'informe-madurez',  label: 'Informe de Madurez',  desc: 'Autoevaluación de madurez documental', icon: 'shield', format: 'docx' }
 ]
 
 const isTabLocked = computed(() => {
@@ -295,6 +296,253 @@ function mapReport(r) {
 watch(auditId, () => {
   if (activeTab.value === 'reportes') loadReports()
 })
+
+// ─── Documentary Maturity ───────────────────────────────────────────────────
+const localMaturity = ref(null)
+
+const localLevel = computed(() => localMaturity.value?.level ?? 1)
+const localScores = computed(() => localMaturity.value?.scores ?? { policies: 0, processes: 0, traceability: 0, culture: 0 })
+const localChecklist = ref({
+  l1_repositorios: true, l1_sin_politicas: true,
+  l2_cuadro: false, l2_calendario: false, l2_desigual: true,
+  l3_procesos: false, l3_roles: false, l3_trazabilidad: false,
+  l4_riesgos: false, l4_activos: false, l4_coordinacion: false,
+  l5_cultura: false, l5_mejora: false, l5_inspeccion: false
+})
+const localGapAnalysis = computed(() => localMaturity.value?.gapAnalysis ?? { strengths: [], weaknesses: [], roadmap: [] })
+
+watch(
+  () => audit.value,
+  (newAudit) => {
+    if (newAudit) {
+      if (newAudit.maturity && Object.keys(newAudit.maturity).length > 0) {
+        localMaturity.value = JSON.parse(JSON.stringify(newAudit.maturity))
+        if (newAudit.maturity.checklist) {
+          localChecklist.value = JSON.parse(JSON.stringify(newAudit.maturity.checklist))
+        }
+      } else {
+        // Initialize default maturity structure
+        const defaultChecklist = {
+          l1_repositorios: true, l1_sin_politicas: true,
+          l2_cuadro: false, l2_calendario: false, l2_desigual: true,
+          l3_procesos: false, l3_roles: false, l3_trazabilidad: false,
+          l4_riesgos: false, l4_activos: false, l4_coordinacion: false,
+          l5_cultura: false, l5_mejora: false, l5_inspeccion: false
+        }
+        localMaturity.value = {
+          level: 1,
+          scores: { policies: 20, processes: 10, traceability: 15, culture: 5 },
+          checklist: defaultChecklist,
+          gapAnalysis: {
+            strengths: ["Existen repositorios digitales para almacenamiento de archivos."],
+            weaknesses: ["Ausencia de políticas documentales aprobadas formalmente.", "Falta de un cuadro de clasificación archivística."],
+            roadmap: ["Diseñar y formalizar un Cuadro de Clasificación Documental básico.", "Definir responsables funcionales y técnicos de gestión de archivos."]
+          }
+        }
+        localChecklist.value = defaultChecklist
+      }
+    }
+  },
+  { immediate: true, deep: true }
+)
+
+watch(
+  localChecklist,
+  (chk) => {
+    if (!localMaturity.value) {
+      localMaturity.value = {
+        level: 1,
+        scores: { policies: 0, processes: 0, traceability: 0, culture: 0 },
+        checklist: {},
+        gapAnalysis: { strengths: [], weaknesses: [], roadmap: [] }
+      }
+    }
+    
+    // Policies score
+    let pol = 0
+    if (!chk.l1_sin_politicas) pol += 25
+    if (chk.l2_cuadro) pol += 35
+    if (chk.l2_calendario) pol += 25
+    if (!chk.l2_desigual) pol += 15
+    
+    // Processes score
+    let prc = 0
+    if (chk.l3_procesos) prc += 35
+    if (chk.l3_roles) prc += 35
+    if (chk.l4_coordinacion) prc += 30
+    
+    // Traceability score
+    let trc = 0
+    if (chk.l1_repositorios) trc += 25
+    if (chk.l3_trazabilidad) trc += 45
+    if (chk.l4_activos) trc += 30
+    
+    // Culture score
+    let clt = 0
+    if (chk.l4_riesgos) clt += 25
+    if (chk.l5_cultura) clt += 25
+    if (chk.l5_mejora) clt += 25
+    if (chk.l5_inspeccion) clt += 25
+
+    localMaturity.value.scores = {
+      policies: Math.min(100, pol),
+      processes: Math.min(100, prc),
+      traceability: Math.min(100, trc),
+      culture: Math.min(100, clt)
+    }
+
+    // Calculate level based on average score
+    const avg = (pol + prc + trc + clt) / 4
+    let lvl = 1
+    if (avg > 85) lvl = 5
+    else if (avg > 65) lvl = 4
+    else if (avg > 40) lvl = 3
+    else if (avg > 20) lvl = 2
+    
+    localMaturity.value.level = lvl
+
+    // Auto-generate dynamic gapAnalysis values based on checklist state!
+    const strengths = []
+    const weaknesses = []
+    const roadmap = []
+
+    if (chk.l1_repositorios) strengths.push("Existen repositorios digitales para almacenamiento.")
+    else weaknesses.push("No existen repositorios digitales para centralizar archivos.")
+
+    if (chk.l2_cuadro && chk.l2_calendario) strengths.push("Cuadro de clasificación y calendarios de retención formalizados.")
+    else {
+      weaknesses.push("Falta aprobar o aplicar de forma uniforme las normas de retención y clasificación.")
+      roadmap.push("Implementar y aprobar un Cuadro de Clasificación y Calendario de Conservación.")
+    }
+
+    if (chk.l3_procesos && chk.l3_roles) strengths.push("La gestión documental está integrada y existen roles definidos.")
+    else {
+      weaknesses.push("Brecha organizativa: falta de roles claros (IT, legal, áreas de negocio).")
+      roadmap.push("Definir un comité multidisciplinario y asignar responsables de la gobernanza.")
+    }
+
+    if (chk.l4_riesgos && chk.l4_activos) strengths.push("Gobierno de la información activo; la dirección reconoce los riesgos documentales.")
+    else {
+      weaknesses.push("Baja participación directiva; los documentos no se gestionan como activos.")
+      roadmap.push("Capacitar a la alta dirección en cumplimiento archivístico y gestión de riesgos.")
+    }
+
+    if (chk.l5_cultura && chk.l5_mejora) strengths.push("Cultura documental sólida con procesos de mejora continua activos.")
+    else {
+      if (lvl >= 4) {
+        weaknesses.push("Falta de automatización para auditorías o litigios permanentes.")
+        roadmap.push("Establecer revisiones de mejora continua semestrales para anticipar riesgos regulatorios de la ASFI.")
+      }
+    }
+
+    // IA: Integrate findings-based alerts into gap analysis
+    if (hasClassificationFinding.value) {
+      weaknesses.push("⚠ IA: Se detectaron hallazgos relacionados con ausencia de políticas o clasificación documental.")
+      roadmap.push("Revisar y formalizar las políticas documentales de acuerdo con los hallazgos de IA.")
+    }
+    if (hasAccessControlFinding.value) {
+      weaknesses.push("⚠ IA: Hallazgos sobre control de acceso o cuentas privilegiadas sin gestión.")
+      roadmap.push("Implementar controles de acceso y revisión periódica de cuentas según los hallazgos.")
+    }
+    if (hasBcpFinding.value) {
+      weaknesses.push("⚠ IA: Pruebas de continuidad de negocio (BCP) inexistentes o insuficientes.")
+      roadmap.push("Diseñar y ejecutar pruebas de BCP para asegurar la resiliencia documental.")
+    }
+
+    localMaturity.value.gapAnalysis = {
+      strengths: strengths.slice(0, 5),
+      weaknesses: weaknesses.slice(0, 5),
+      roadmap: roadmap.slice(0, 5)
+    }
+  },
+  { deep: true }
+)
+
+const isSaving = ref(false)
+const hasChanges = computed(() => {
+  if (!audit.value) return false
+  // If the audit has no maturity yet, any change is new
+  if (!audit.value.maturity || !audit.value.maturity.checklist) return true
+  return JSON.stringify(localChecklist.value) !== JSON.stringify(audit.value.maturity.checklist)
+})
+
+async function saveMaturity() {
+  if (!audit.value) return
+  isSaving.value = true
+  try {
+    const updatedMaturity = {
+      ...localMaturity.value,
+      checklist: localChecklist.value
+    }
+    await store.updateAuditMaturity(auditId.value, updatedMaturity)
+  } catch (error) {
+    console.error("Error guardando madurez documental:", error)
+  } finally {
+    isSaving.value = false
+  }
+}
+
+// ─── Radar Chart SVG ────────────────────────────────────────────────────────
+const svgSize = 300
+const center = svgSize / 2
+const maxRadius = 85
+
+function getPoint(index, value) {
+  const percentage = value / 100
+  const radius = maxRadius * percentage
+  if (index === 0) return { x: center, y: center - radius }
+  if (index === 1) return { x: center + radius, y: center }
+  if (index === 2) return { x: center, y: center + radius }
+  if (index === 3) return { x: center - radius, y: center }
+  return { x: center, y: center }
+}
+
+const pointsPath = computed(() => {
+  const p0 = getPoint(0, localScores.value.policies)
+  const p1 = getPoint(1, localScores.value.processes)
+  const p2 = getPoint(2, localScores.value.traceability)
+  const p3 = getPoint(3, localScores.value.culture)
+  return `M ${p0.x} ${p0.y} L ${p1.x} ${p1.y} L ${p2.x} ${p2.y} L ${p3.x} ${p3.y} Z`
+})
+
+// HSL level color
+const levelColor = computed(() => {
+  const colors = {
+    1: 'hsl(354, 80%, 55%)',
+    2: 'hsl(28, 85%, 55%)',
+    3: 'hsl(200, 85%, 55%)',
+    4: 'hsl(262, 80%, 60%)',
+    5: 'hsl(142, 80%, 45%)'
+  }
+  return colors[localLevel.value] || 'hsl(200, 85%, 55%)'
+})
+
+const levelTextHeader = computed(() => {
+  const titles = {
+    1: 'Nivel 1: Acumulación Digital',
+    2: 'Nivel 2: Normas Básicas',
+    3: 'Nivel 3: Procesos Alineados',
+    4: 'Nivel 4: Gobierno de la Info',
+    5: 'Nivel 5: Cultura Documental'
+  }
+  return titles[localLevel.value] || ''
+})
+
+const levelDescription = computed(() => {
+  const descs = {
+    1: 'Existen repositorios electrónicos sin políticas ni responsabilidades definidas. Alto riesgo de cumplimiento y desorganización.',
+    2: 'Hay cuadro de clasificación y calendarios de retención formalizados, pero su aplicación es desigual. Dependencia del área técnica.',
+    3: 'La gestión documental está plenamente incorporada a los procedimientos clave con roles de control claros y trazabilidad real.',
+    4: 'La dirección asume los riesgos documentales. La información y los registros se gestionan activamente como un activo de valor estratégico.',
+    5: 'La mejora continua forma parte de la cultura organizacional. El sistema previene proactivamente los riesgos legales o regulatorios de la ASFI.'
+  }
+  return descs[localLevel.value] || ''
+})
+
+// Pre-fill / warnings based on findings
+const hasAccessControlFinding = computed(() => findings.value.some(f => f.title.toLowerCase().includes('acceso') || f.description.toLowerCase().includes('acceso')))
+const hasClassificationFinding = computed(() => findings.value.some(f => f.title.toLowerCase().includes('clasific') || f.description.toLowerCase().includes('clasific')))
+const hasBcpFinding = computed(() => findings.value.some(f => f.title.toLowerCase().includes('continuidad') || f.description.toLowerCase().includes('bcp') || f.title.toLowerCase().includes('bcp')))
 </script>
 
 <template>
@@ -345,6 +593,14 @@ watch(auditId, () => {
         >
           <AppIcon name="git-branch" :size="13" />
           Mapa
+        </div>
+        <div
+          class="tab"
+          :class="{ active: activeTab==='madurez', disabled: isTabLocked }"
+          @click="!isTabLocked && (activeTab='madurez')"
+        >
+          <AppIcon name="shield" :size="13" />
+          Madurez
         </div>
         <div
           class="tab"
@@ -454,6 +710,347 @@ watch(auditId, () => {
       <template v-if="activeTab === 'mapa'">
         <div class="animate-in" style="height: calc(100vh - 220px); min-height: 540px;">
           <TraceabilityGraph :audit-id="auditId" />
+        </div>
+      </template>
+
+      <!-- ── MADUREZ DOCUMENTAL ── -->
+      <template v-if="activeTab === 'madurez'">
+        <div class="animate-in" style="display:flex; flex-direction:column; gap:20px; margin-bottom: 30px;">
+          <!-- Top Executive Dashboard -->
+          <div class="maturity-dashboard-grid" style="display:grid; grid-template-columns: 1fr 340px; gap:20px;">
+            <!-- Level Card -->
+            <div class="card" style="padding: 24px; display: flex; flex-direction: column; justify-content: space-between; position: relative; overflow: hidden; background: linear-gradient(135deg, rgba(20, 24, 33, 0.6) 0%, rgba(13, 17, 23, 0.8) 100%); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 12px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); backdrop-filter: blur(10px);">
+              <!-- Glow background -->
+              <div :style="{ background: `radial-gradient(circle, ${levelColor} 0%, transparent 70%)` }" style="position: absolute; top: -100px; right: -100px; width: 250px; height: 250px; opacity: 0.12; pointer-events: none; filter: blur(30px);" />
+              
+              <div>
+                <div style="display:flex; align-items:center; gap:8px; margin-bottom: 8px;">
+                  <AppIcon name="shield" :size="16" :style="{ color: levelColor }" />
+                  <span class="mono text-xs text-muted" style="text-transform: uppercase; letter-spacing: 0.05em;">Evaluación Ejecutiva de Madurez</span>
+                </div>
+                <h2 style="font-size: 22px; font-weight: 700; margin-bottom: 12px; color: var(--text-1);">
+                  {{ levelTextHeader }}
+                </h2>
+                <p style="font-size: 13px; line-height: 1.6; color: var(--text-2); margin-bottom: 20px; max-width: 90%;">
+                  {{ levelDescription }}
+                </p>
+              </div>
+
+              <!-- Metrics Summary inside the card -->
+              <div style="display: flex; gap: 20px; align-items: center; border-top: 1px solid var(--border); padding-top: 18px; margin-top: auto;">
+                <div style="flex: 1;">
+                  <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                    <span class="mono text-xs text-muted">Progreso General de Controles</span>
+                    <span class="mono text-xs" :style="{ color: levelColor, fontWeight: 600 }">
+                      {{ Math.round((localScores.policies + localScores.processes + localScores.traceability + localScores.culture) / 4) }}%
+                    </span>
+                  </div>
+                  <div class="progress-bar" style="background: rgba(255, 255, 255, 0.05); height: 6px; border-radius: 4px;">
+                    <div class="progress-fill" :style="{ width: Math.round((localScores.policies + localScores.processes + localScores.traceability + localScores.culture) / 4) + '%', background: levelColor }" style="transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1), background 0.4s ease;" />
+                  </div>
+                </div>
+                <div style="display: flex; flex-direction: column; align-items: flex-end; flex-shrink: 0;">
+                  <span class="mono text-2xl font-bold" :style="{ color: levelColor }">M{{ localLevel }}</span>
+                  <span class="mono text-2xs text-muted" style="text-transform: uppercase;">PUNTAJE</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Radar Chart Card -->
+            <div class="card" style="padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(13, 17, 23, 0.7); border: 1px solid var(--border); border-radius: 12px;">
+              <span class="mono text-2xs text-muted" style="margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.05em;">Perfil de Madurez Multidimensional</span>
+              
+              <div style="position: relative; width: 300px; height: 300px;">
+                <svg width="300" height="300" :viewBox="`0 0 ${svgSize} ${svgSize}`" style="display: block; overflow: visible;">
+                  <!-- 5 concentric diamond rings for levels 1-5 -->
+                  <!-- Level 5 outermost ring highlighted in emerald with a separate styling -->
+                  <polygon :points="`${center},${center - maxRadius} ${center + maxRadius},${center} ${center},${center + maxRadius} ${center - maxRadius},${center}`" fill="none" stroke="rgba(34, 197, 94, 0.45)" stroke-width="1.8" />
+                  <polygon :points="`${center},${center - maxRadius * 0.8} ${center + maxRadius * 0.8},${center} ${center},${center + maxRadius * 0.8} ${center - maxRadius * 0.8},${center}`" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1" />
+                  <polygon :points="`${center},${center - maxRadius * 0.6} ${center + maxRadius * 0.6},${center} ${center},${center + maxRadius * 0.6} ${center - maxRadius * 0.6},${center}`" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="1" stroke-dasharray="3,3" />
+                  <polygon :points="`${center},${center - maxRadius * 0.4} ${center + maxRadius * 0.4},${center} ${center},${center + maxRadius * 0.4} ${center - maxRadius * 0.4},${center}`" fill="none" stroke="rgba(255,255,255,0.09)" stroke-width="1" />
+                  <polygon :points="`${center},${center - maxRadius * 0.2} ${center + maxRadius * 0.2},${center} ${center},${center + maxRadius * 0.2} ${center - maxRadius * 0.2},${center}`" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="1" />
+
+                  <!-- Cross Axes -->
+                  <line :x1="center - maxRadius" :y1="center" :x2="center + maxRadius" :y2="center" stroke="rgba(255,255,255,0.08)" stroke-width="1" />
+                  <line :x1="center" :y1="center - maxRadius" :x2="center" :y2="center + maxRadius" stroke="rgba(255,255,255,0.08)" stroke-width="1" />
+
+                  <!-- Axis level indicator labels to explicitly separate and mark levels 1 to 5 -->
+                  <text :x="center + 4" :y="center - maxRadius * 0.2 + 3" font-size="8" fill="rgba(255,255,255,0.3)" font-family="monospace">1</text>
+                  <text :x="center + 4" :y="center - maxRadius * 0.4 + 3" font-size="8" fill="rgba(255,255,255,0.3)" font-family="monospace">2</text>
+                  <text :x="center + 4" :y="center - maxRadius * 0.6 + 3" font-size="8" fill="rgba(255,255,255,0.3)" font-family="monospace">3</text>
+                  <text :x="center + 4" :y="center - maxRadius * 0.8 + 3" font-size="8" fill="rgba(255,255,255,0.3)" font-family="monospace">4</text>
+                  <text :x="center + 4" :y="center - maxRadius + 3" font-size="8.5" fill="rgba(34, 197, 94, 0.75)" font-family="monospace" font-weight="bold">5</text>
+
+                  <!-- Center glow dot -->
+                  <circle :cx="center" :cy="center" r="3" fill="var(--border)" opacity="0.3" />
+
+                  <!-- Value polygon filled with gradient -->
+                  <polygon
+                    :points="`${getPoint(0, localScores.policies).x},${getPoint(0, localScores.policies).y} ${getPoint(1, localScores.processes).x},${getPoint(1, localScores.processes).y} ${getPoint(2, localScores.traceability).x},${getPoint(2, localScores.traceability).y} ${getPoint(3, localScores.culture).x},${getPoint(3, localScores.culture).y}`"
+                    fill="url(#radarGradient)"
+                    :stroke="levelColor"
+                    stroke-width="1.8"
+                    stroke-linejoin="round"
+                    style="transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);"
+                  />
+
+                  <!-- Vertex dots -->
+                  <circle :cx="getPoint(0, localScores.policies).x" :cy="getPoint(0, localScores.policies).y" r="4" :fill="levelColor" style="transition: all 0.3s;" />
+                  <circle :cx="getPoint(1, localScores.processes).x" :cy="getPoint(1, localScores.processes).y" r="4" :fill="levelColor" style="transition: all 0.3s;" />
+                  <circle :cx="getPoint(2, localScores.traceability).x" :cy="getPoint(2, localScores.traceability).y" r="4" :fill="levelColor" style="transition: all 0.3s;" />
+                  <circle :cx="getPoint(3, localScores.culture).x" :cy="getPoint(3, localScores.culture).y" r="4" :fill="levelColor" style="transition: all 0.3s;" />
+
+                  <!-- Text Labels (positioned with generous padding to avoid clipping) -->
+                  <text :x="center" :y="center - maxRadius - 12" text-anchor="middle" font-size="10" font-weight="600" fill="var(--text-2)" font-family="monospace" letter-spacing="0.05em">POLÍTICAS</text>
+                  <text :x="center + maxRadius + 10" :y="center + 4" text-anchor="start" font-size="10" font-weight="600" fill="var(--text-2)" font-family="monospace" letter-spacing="0.05em">PROCESOS</text>
+                  <text :x="center" :y="center + maxRadius + 18" text-anchor="middle" font-size="10" font-weight="600" fill="var(--text-2)" font-family="monospace" letter-spacing="0.05em">TRAZABILIDAD</text>
+                  <text :x="center - maxRadius - 10" :y="center + 4" text-anchor="end" font-size="10" font-weight="600" fill="var(--text-2)" font-family="monospace" letter-spacing="0.05em">CULTURA</text>
+
+                  <defs>
+                    <radialGradient id="radarGradient" cx="50%" cy="50%" r="50%">
+                      <stop offset="0%" stop-color="#22d3ee" stop-opacity="0.05" />
+                      <stop offset="100%" :stop-color="levelColor" stop-opacity="0.25" />
+                    </radialGradient>
+                  </defs>
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Grid: Checklist (Left) & Gap Analysis (Right) -->
+          <div style="display:grid; grid-template-columns: 1fr 340px; gap:20px;">
+            <!-- Checklist Card -->
+            <div class="card" style="padding: 20px; display: flex; flex-direction: column; background: rgba(13, 17, 23, 0.6); border: 1px solid var(--border); border-radius: 12px;">
+              <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom: 20px; flex-wrap: wrap; gap:10px;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <AppIcon name="list" :size="13" style="color:var(--text-2)" />
+                  <span style="font-size:12px; font-weight:600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-2);">Checklist de Controles de Madurez</span>
+                </div>
+                <button 
+                  class="btn btn-primary btn-xs" 
+                  :disabled="!hasChanges || isSaving" 
+                  @click="saveMaturity"
+                  style="padding: 6px 12px; font-size:11px;"
+                >
+                  <div v-if="isSaving" class="spinner" style="width:10px; height:10px; margin-right: 5px;" />
+                  <AppIcon v-else name="check" :size="10" style="margin-right: 5px;" />
+                  {{ isSaving ? 'Guardando...' : (hasChanges ? 'Guardar evaluación' : 'Evaluación guardada') }}
+                </button>
+              </div>
+
+              <!-- Grouped list of toggles -->
+              <div style="display:flex; flex-direction:column; gap:22px;">
+                
+                <!-- Nivel 1 -->
+                <div>
+                  <div style="display:flex; align-items:center; gap:8px; border-bottom: 1px solid rgba(255,255,255,0.03); padding-bottom: 6px; margin-bottom: 10px;">
+                    <span class="pill pill-pending" style="font-size: 10px; font-weight:600; padding: 2px 6px;">L1</span>
+                    <span style="font-size: 12px; font-weight:600; color: var(--text-1);">Nivel Inicial: Acumulación Digital</span>
+                  </div>
+                  <div style="display:flex; flex-direction:column; gap:8px;">
+                    <label class="maturity-toggle-row" style="display:flex; align-items:flex-start; justify-content:space-between; gap:15px; padding: 6px 8px; border-radius: 6px; cursor: pointer; transition: background 0.2s;">
+                      <div style="flex:1;">
+                        <div style="font-size: 12px; font-weight:500; color: var(--text-1);">Repositorios Digitales</div>
+                        <div style="font-size: 10.5px; color: var(--text-3); margin-top:2px;">Existen repositorios o directorios para guardar documentos.</div>
+                      </div>
+                      <input type="checkbox" v-model="localChecklist.l1_repositorios" class="form-checkbox" style="margin-top:3px;" />
+                    </label>
+                    <label class="maturity-toggle-row" style="display:flex; align-items:flex-start; justify-content:space-between; gap:15px; padding: 6px 8px; border-radius: 6px; cursor: pointer; transition: background 0.2s;">
+                      <div style="flex:1;">
+                        <div style="display:flex; align-items:center; gap:6px;">
+                          <div style="font-size: 12px; font-weight:500; color: var(--text-1);">Ausencia de Políticas (Riesgo)</div>
+                          <span class="pill pill-extreme" style="font-size:8px; padding: 1px 4px; font-weight:600;">RIESGO</span>
+                        </div>
+                        <div style="font-size: 10.5px; color: var(--text-3); margin-top:2px;">La organización opera sin políticas documentales claras.</div>
+                      </div>
+                      <input type="checkbox" v-model="localChecklist.l1_sin_politicas" class="form-checkbox" style="margin-top:3px;" />
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Nivel 2 -->
+                <div>
+                  <div style="display:flex; align-items:center; gap:8px; border-bottom: 1px solid rgba(255,255,255,0.03); padding-bottom: 6px; margin-bottom: 10px;">
+                    <span class="pill pill-processing" style="font-size: 10px; font-weight:600; padding: 2px 6px;">L2</span>
+                    <span style="font-size: 12px; font-weight:600; color: var(--text-1);">Nivel Controlado: Normas Básicas</span>
+                  </div>
+                  <div style="display:flex; flex-direction:column; gap:8px;">
+                    <label class="maturity-toggle-row" style="display:flex; align-items:flex-start; justify-content:space-between; gap:15px; padding: 6px 8px; border-radius: 6px; cursor: pointer; transition: background 0.2s;">
+                      <div style="flex:1;">
+                        <div style="font-size: 12px; font-weight:500; color: var(--text-1);">Cuadro de Clasificación Aprobado</div>
+                        <div style="font-size: 10.5px; color: var(--text-3); margin-top:2px;">Existe una codificación para clasificar la información corporativa.</div>
+                      </div>
+                      <input type="checkbox" v-model="localChecklist.l2_cuadro" class="form-checkbox" style="margin-top:3px;" />
+                    </label>
+                    <label class="maturity-toggle-row" style="display:flex; align-items:flex-start; justify-content:space-between; gap:15px; padding: 6px 8px; border-radius: 6px; cursor: pointer; transition: background 0.2s;">
+                      <div style="flex:1;">
+                        <div style="font-size: 12px; font-weight:500; color: var(--text-1);">Calendarios de Conservación</div>
+                        <div style="font-size: 10.5px; color: var(--text-3); margin-top:2px;">Plazos y criterios archivísticos de retención vigentes.</div>
+                      </div>
+                      <input type="checkbox" v-model="localChecklist.l2_calendario" class="form-checkbox" style="margin-top:3px;" />
+                    </label>
+                    <label class="maturity-toggle-row" style="display:flex; align-items:flex-start; justify-content:space-between; gap:15px; padding: 6px 8px; border-radius: 6px; cursor: pointer; transition: background 0.2s;">
+                      <div style="flex:1;">
+                        <div style="display:flex; align-items:center; gap:6px;">
+                          <div style="font-size: 12px; font-weight:500; color: var(--text-1);">Aplicación Desigual (Riesgo)</div>
+                          <span class="pill pill-extreme" style="font-size:8px; padding: 1px 4px; font-weight:600;">RIESGO</span>
+                        </div>
+                        <div style="font-size: 10.5px; color: var(--text-3); margin-top:2px;">Las normas se aplican de forma dispar según cada unidad o área.</div>
+                      </div>
+                      <input type="checkbox" v-model="localChecklist.l2_desigual" class="form-checkbox" style="margin-top:3px;" />
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Nivel 3 -->
+                <div>
+                  <div style="display:flex; align-items:center; gap:8px; border-bottom: 1px solid rgba(255,255,255,0.03); padding-bottom: 6px; margin-bottom: 10px;">
+                    <span class="pill pill-review" style="font-size: 10px; font-weight:600; padding: 2px 6px; background: #3b82f6 !important; color:#fff;">L3</span>
+                    <span style="font-size: 12px; font-weight:600; color: var(--text-1);">Nivel Integrado: Procesos Alineados</span>
+                  </div>
+                  <div style="display:flex; flex-direction:column; gap:8px;">
+                    <label class="maturity-toggle-row" style="display:flex; align-items:flex-start; justify-content:space-between; gap:15px; padding: 6px 8px; border-radius: 6px; cursor: pointer; transition: background 0.2s;">
+                      <div style="flex:1;">
+                        <div style="font-size: 12px; font-weight:500; color: var(--text-1);">Procesos Integrados</div>
+                        <div style="font-size: 10.5px; color: var(--text-3); margin-top:2px;">Gestión de información corporativa incorporada en la operativa formal.</div>
+                      </div>
+                      <input type="checkbox" v-model="localChecklist.l3_procesos" class="form-checkbox" style="margin-top:3px;" />
+                    </label>
+                    <label class="maturity-toggle-row" style="display:flex; align-items:flex-start; justify-content:space-between; gap:15px; padding: 6px 8px; border-radius: 6px; cursor: pointer; transition: background 0.2s;">
+                      <div style="flex:1;">
+                        <div style="font-size: 12px; font-weight:500; color: var(--text-1);">Roles Multidisciplinarios Claros</div>
+                        <div style="font-size: 10.5px; color: var(--text-3); margin-top:2px;">Responsables funcionales, técnicos e informáticos designados formalmente.</div>
+                      </div>
+                      <input type="checkbox" v-model="localChecklist.l3_roles" class="form-checkbox" style="margin-top:3px;" />
+                    </label>
+                    <label class="maturity-toggle-row" style="display:flex; align-items:flex-start; justify-content:space-between; gap:15px; padding: 6px 8px; border-radius: 6px; cursor: pointer; transition: background 0.2s;">
+                      <div style="flex:1;">
+                        <div style="font-size: 12px; font-weight:500; color: var(--text-1);">Trazabilidad Real y Ciclo de Vida</div>
+                        <div style="font-size: 10.5px; color: var(--text-3); margin-top:2px;">Control total sobre la creación, modificación, y borrado de documentos.</div>
+                      </div>
+                      <input type="checkbox" v-model="localChecklist.l3_trazabilidad" class="form-checkbox" style="margin-top:3px;" />
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Nivel 4: Gobierno de la Información -->
+                <div>
+                  <div style="display:flex; align-items:center; gap:8px; border-bottom: 1px solid rgba(255,255,255,0.03); padding-bottom: 6px; margin-bottom: 10px;">
+                    <span class="pill" style="font-size: 10px; font-weight:600; padding: 2px 6px; background: #a855f7; color:#fff; border:none;">L4</span>
+                    <span style="font-size: 12px; font-weight:600; color: var(--text-1);">Nivel Estratégico: Gobierno de la Información</span>
+                  </div>
+                  <div style="display:flex; flex-direction:column; gap:8px;">
+                    <label class="maturity-toggle-row" style="display:flex; align-items:flex-start; justify-content:space-between; gap:15px; padding: 6px 8px; border-radius: 6px; cursor: pointer; transition: background 0.2s;">
+                      <div style="flex:1;">
+                        <div style="font-size: 12px; font-weight:500; color: var(--text-1);">Gobernanza de Información Activa</div>
+                        <div style="font-size: 10.5px; color: var(--text-3); margin-top:2px;">La dirección gestiona la información como activo de valor estratégico y conoce los riesgos.</div>
+                      </div>
+                      <input type="checkbox" v-model="localChecklist.l4_riesgos" class="form-checkbox" style="margin-top:3px;" />
+                    </label>
+                    <label class="maturity-toggle-row" style="display:flex; align-items:flex-start; justify-content:space-between; gap:15px; padding: 6px 8px; border-radius: 6px; cursor: pointer; transition: background 0.2s;">
+                      <div style="flex:1;">
+                        <div style="font-size: 12px; font-weight:500; color: var(--text-1);">Gestión de Activos Documentales</div>
+                        <div style="font-size: 10.5px; color: var(--text-3); margin-top:2px;">Inventario y valoración de los documentos como activos organizacionales protegidos.</div>
+                      </div>
+                      <input type="checkbox" v-model="localChecklist.l4_activos" class="form-checkbox" style="margin-top:3px;" />
+                    </label>
+                    <label class="maturity-toggle-row" style="display:flex; align-items:flex-start; justify-content:space-between; gap:15px; padding: 6px 8px; border-radius: 6px; cursor: pointer; transition: background 0.2s;">
+                      <div style="flex:1;">
+                        <div style="font-size: 12px; font-weight:500; color: var(--text-1);">Coordinación Interdepartamental</div>
+                        <div style="font-size: 10.5px; color: var(--text-3); margin-top:2px;">Coordinación formal y regular entre IT, área Jurídica, Compliance y Negocio.</div>
+                      </div>
+                      <input type="checkbox" v-model="localChecklist.l4_coordinacion" class="form-checkbox" style="margin-top:3px;" />
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Nivel 5: Cultura Documental y Mejora Continua -->
+                <div>
+                  <div style="display:flex; align-items:center; gap:8px; border-bottom: 1px solid rgba(255,255,255,0.03); padding-bottom: 6px; margin-bottom: 10px;">
+                    <span class="pill" style="font-size: 10px; font-weight:600; padding: 2px 6px; background: hsl(142, 80%, 45%); color:#fff; border:none;">L5</span>
+                    <span style="font-size: 12px; font-weight:600; color: var(--text-1);">Nivel Optimizado: Cultura Documental</span>
+                  </div>
+                  <div style="display:flex; flex-direction:column; gap:8px;">
+                    <label class="maturity-toggle-row" style="display:flex; align-items:flex-start; justify-content:space-between; gap:15px; padding: 6px 8px; border-radius: 6px; cursor: pointer; transition: background 0.2s;">
+                      <div style="flex:1;">
+                        <div style="font-size: 12px; font-weight:500; color: var(--text-1);">Cultura Documental Impregnada</div>
+                        <div style="font-size: 10.5px; color: var(--text-3); margin-top:2px;">La buena gestión documental es parte innata de las tareas de cada empleado.</div>
+                      </div>
+                      <input type="checkbox" v-model="localChecklist.l5_cultura" class="form-checkbox" style="margin-top:3px;" />
+                    </label>
+                    <label class="maturity-toggle-row" style="display:flex; align-items:flex-start; justify-content:space-between; gap:15px; padding: 6px 8px; border-radius: 6px; cursor: pointer; transition: background 0.2s;">
+                      <div style="flex:1;">
+                        <div style="font-size: 12px; font-weight:500; color: var(--text-1);">Mejora Continua y ASFI Ready</div>
+                        <div style="font-size: 10.5px; color: var(--text-3); margin-top:2px;">La organización anticipa litigios, auditorías del regulador, y riesgos normativos.</div>
+                      </div>
+                      <input type="checkbox" v-model="localChecklist.l5_mejora" class="form-checkbox" style="margin-top:3px;" />
+                    </label>
+                    <label class="maturity-toggle-row" style="display:flex; align-items:flex-start; justify-content:space-between; gap:15px; padding: 6px 8px; border-radius: 6px; cursor: pointer; transition: background 0.2s;">
+                      <div style="flex:1;">
+                        <div style="font-size: 12px; font-weight:500; color: var(--text-1);">Inspección y Anticipación Regulatoria</div>
+                        <div style="font-size: 10.5px; color: var(--text-3); margin-top:2px;">Procesos proactivos de revisión que previenen incidentes antes de inspecciones.</div>
+                      </div>
+                      <input type="checkbox" v-model="localChecklist.l5_inspeccion" class="form-checkbox" style="margin-top:3px;" />
+                    </label>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Gap Analysis -->
+            <div style="display:flex; flex-direction:column; gap:16px;">
+              
+              <!-- Puntos fuertes -->
+              <div class="card" style="padding: 16px; background: rgba(34, 197, 94, 0.03); border: 1px solid rgba(34, 197, 94, 0.15); border-radius: 12px;">
+                <div style="display:flex; align-items:center; gap:6px; margin-bottom: 10px;">
+                  <AppIcon name="check-circle" :size="13" style="color:#22c55e" />
+                  <span style="font-size:11px; font-weight:600; text-transform: uppercase; color:#22c55e;">Puntos Fuertes</span>
+                </div>
+                <div v-if="localGapAnalysis.strengths.length === 0" class="mono text-2xs text-muted">
+                  No se han identificado puntos fuertes significativos todavía.
+                </div>
+                <ul v-else style="margin:0; padding-left:14px; display:flex; flex-direction:column; gap:8px;">
+                  <li v-for="s in localGapAnalysis.strengths" :key="s" style="font-size:11px; line-height:1.5; color: var(--text-2);">
+                    {{ s }}
+                  </li>
+                </ul>
+              </div>
+
+              <!-- Debilidades / Brechas -->
+              <div class="card" style="padding: 16px; background: rgba(239, 68, 68, 0.03); border: 1px solid rgba(239, 68, 68, 0.15); border-radius: 12px;">
+                <div style="display:flex; align-items:center; gap:6px; margin-bottom: 10px;">
+                  <AppIcon name="alert-triangle" :size="13" style="color:#ef4444" />
+                  <span style="font-size:11px; font-weight:600; text-transform: uppercase; color:#ef4444;">Brechas Clave</span>
+                </div>
+                <div v-if="localGapAnalysis.weaknesses.length === 0" class="mono text-2xs" style="color: #22c55e;">
+                  ¡Sin brechas pendientes detectadas! Máxima madurez asegurada.
+                </div>
+                <ul v-else style="margin:0; padding-left:14px; display:flex; flex-direction:column; gap:8px;">
+                  <li v-for="w in localGapAnalysis.weaknesses" :key="w" style="font-size:11px; line-height:1.5; color: var(--text-2);">
+                    {{ w }}
+                  </li>
+                </ul>
+              </div>
+
+              <!-- Plan de Acción -->
+              <div class="card" style="padding: 16px; background: rgba(59, 130, 246, 0.03); border: 1px solid rgba(59, 130, 246, 0.15); border-radius: 12px;">
+                <div style="display:flex; align-items:center; gap:6px; margin-bottom: 10px;">
+                  <AppIcon name="zap" :size="13" style="color:#3b82f6" />
+                  <span style="font-size:11px; font-weight:600; text-transform: uppercase; color:#3b82f6;">Plan de Acción (Roadmap)</span>
+                </div>
+                <div v-if="localGapAnalysis.roadmap.length === 0" class="mono text-2xs text-muted">
+                  Organización optimizada; no se requiere plan de acción adicional inmediato.
+                </div>
+                <ul v-else style="margin:0; padding-left:14px; display:flex; flex-direction:column; gap:8px;">
+                  <li v-for="r in localGapAnalysis.roadmap" :key="r" style="font-size:11px; line-height:1.5; color: var(--text-2); font-weight:500;">
+                    {{ r }}
+                  </li>
+                </ul>
+              </div>
+
+            </div>
+          </div>
         </div>
       </template>
 

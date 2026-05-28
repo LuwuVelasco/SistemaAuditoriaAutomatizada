@@ -37,6 +37,17 @@ function statusDot(status) {
   const map = { 'Pendiente': '#64748b', 'Procesando': '#3b82f6', 'En revisión': '#eab308', 'Finalizada': '#22c55e' }
   return map[status] || '#64748b'
 }
+
+function maturityColor(level) {
+  const map = {
+    1: 'hsl(354, 80%, 55%)',
+    2: 'hsl(28, 85%, 55%)',
+    3: 'hsl(200, 85%, 55%)',
+    4: 'hsl(262, 80%, 60%)',
+    5: 'hsl(142, 80%, 45%)'
+  }
+  return map[level] || 'hsl(200, 85%, 55%)'
+}
 </script>
 
 <template>
@@ -90,7 +101,12 @@ function statusDot(status) {
           @click="openAudit(a.id)"
         >
           <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px;">
-            <div class="audit-card-entity">{{ a.entity }}</div>
+            <div class="audit-card-entity">
+              {{ a.entity }}
+              <span v-if="a.maturity" class="mono" :style="{ color: maturityColor(a.maturity.level), border: `1px solid ${maturityColor(a.maturity.level)}`, borderRadius: '4px', padding: '1px 5px', fontSize: '9px', fontWeight: 'bold', marginLeft: '6px', display: 'inline-block', lineHeight: '1', background: 'rgba(255,255,255,0.02)' }">
+                M{{ a.maturity.level }}
+              </span>
+            </div>
             <span class="pill" :class="STATUS_PILL_CLASS[a.status]">
               <span class="status-dot" :style="{ background: statusDot(a.status) }" />
               {{ a.status }}
@@ -148,7 +164,12 @@ function statusDot(status) {
           <tbody>
             <tr v-for="a in filtered" :key="a.id" @click="openAudit(a.id)">
               <td>
-                <div style="font-weight:500;">{{ a.entity }}</div>
+                <div style="display:flex;align-items:center;gap:4px;">
+                  <div style="font-weight:500;">{{ a.entity }}</div>
+                  <span v-if="a.maturity" class="mono" :style="{ color: maturityColor(a.maturity.level), border: `1px solid ${maturityColor(a.maturity.level)}`, borderRadius: '4px', padding: '1px 5px', fontSize: '9px', fontWeight: 'bold', display: 'inline-block', lineHeight: '1', background: 'rgba(255,255,255,0.02)' }">
+                    M{{ a.maturity.level }}
+                  </span>
+                </div>
                 <div class="mono text-xs text-muted">{{ a.period }}</div>
               </td>
               <td><span class="mono text-xs text-muted">{{ a.type }}</span></td>

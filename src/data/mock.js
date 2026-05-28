@@ -22,7 +22,23 @@ export const mockAudits = [
     frameworks: ['COBIT', 'COSO', 'RGSI'],
     documents: 8,
     createdAt: '2025-01-15',
-    ownerId: 'user-001'
+    ownerId: 'user-001',
+    maturity: {
+      level: 3,
+      scores: { policies: 70, processes: 65, traceability: 80, culture: 55 },
+      checklist: {
+        l1_repositorios: true, l1_sin_politicas: true,
+        l2_cuadro: true, l2_calendario: true, l2_desigual: true,
+        l3_procesos: true, l3_roles: true, l3_trazabilidad: true,
+        l4_riesgos: false, l4_activos: false, l4_coordinacion: false,
+        l5_cultura: false, l5_mejora: false, l5_inspeccion: false
+      },
+      gapAnalysis: {
+        strengths: ["Trazabilidad documental real implementada.", "Roles funcionales y técnicos definidos."],
+        weaknesses: ["Falta de gobernanza activa por parte de la alta dirección.", "Aplicación irregular en el área técnica."],
+        roadmap: ["Establecer comité de gobierno de información entre IT y Cumplimiento.", "Aprobar y socializar políticas a nivel directivo."]
+      }
+    }
   },
   {
     id: 'aud-002',
@@ -37,7 +53,23 @@ export const mockAudits = [
     frameworks: ['COBIT', 'COSO', 'RGSI'],
     documents: 12,
     createdAt: '2025-01-08',
-    ownerId: 'user-001'
+    ownerId: 'user-001',
+    maturity: {
+      level: 5,
+      scores: { policies: 100, processes: 95, traceability: 95, culture: 90 },
+      checklist: {
+        l1_repositorios: true, l1_sin_politicas: false,
+        l2_cuadro: true, l2_calendario: true, l2_desigual: false,
+        l3_procesos: true, l3_roles: true, l3_trazabilidad: true,
+        l4_riesgos: true, l4_activos: true, l4_coordinacion: true,
+        l5_cultura: true, l5_mejora: true, l5_inspeccion: true
+      },
+      gapAnalysis: {
+        strengths: ["Cultura documental arraigada en todas las áreas de la cooperativa.", "Cumplimiento regulatorio proactivo ante la ASFI."],
+        weaknesses: ["Pequeñas dependencias de mantenimiento en el software archivístico."],
+        roadmap: ["Continuar con las auditorías de mejora continua semestrales.", "Automatizar el archivado histórico de registros antiguos."]
+      }
+    }
   },
   {
     id: 'aud-003',
@@ -52,7 +84,23 @@ export const mockAudits = [
     frameworks: ['COBIT', 'RGSI'],
     documents: 5,
     createdAt: '2025-01-22',
-    ownerId: 'user-001'
+    ownerId: 'user-001',
+    maturity: {
+      level: 2,
+      scores: { policies: 45, processes: 30, traceability: 25, culture: 15 },
+      checklist: {
+        l1_repositorios: true, l1_sin_politicas: true,
+        l2_cuadro: true, l2_calendario: true, l2_desigual: true,
+        l3_procesos: false, l3_roles: false, l3_trazabilidad: false,
+        l4_riesgos: false, l4_activos: false, l4_coordinacion: false,
+        l5_cultura: false, l5_mejora: false, l5_inspeccion: false
+      },
+      gapAnalysis: {
+        strengths: ["Existen repositorios y un cuadro de clasificación aprobado."],
+        weaknesses: ["Brecha severa entre la norma aprobada y la práctica real diaria.", "Dependencia absoluta del área técnica."],
+        roadmap: ["Integrar la gestión documental en los procesos de negocio claves.", "Definir responsables en las áreas funcionales."]
+      }
+    }
   },
   {
     id: 'aud-004',
@@ -67,7 +115,23 @@ export const mockAudits = [
     frameworks: ['COBIT', 'COSO', 'RGSI'],
     documents: 0,
     createdAt: '2025-01-25',
-    ownerId: 'user-001'
+    ownerId: 'user-001',
+    maturity: {
+      level: 1,
+      scores: { policies: 15, processes: 10, traceability: 5, culture: 5 },
+      checklist: {
+        l1_repositorios: true, l1_sin_politicas: true,
+        l2_cuadro: false, l2_calendario: false, l2_desigual: true,
+        l3_procesos: false, l3_roles: false, l3_trazabilidad: false,
+        l4_riesgos: false, l4_activos: false, l4_coordinacion: false,
+        l5_cultura: false, l5_mejora: false, l5_inspeccion: false
+      },
+      gapAnalysis: {
+        strengths: ["Repositorios digitales existentes para almacenamiento."],
+        weaknesses: ["No existen políticas aprobadas ni cuadro de clasificación.", "Acumulación digital desordenada e irregular."],
+        roadmap: ["Iniciar el desarrollo de políticas documentales básicas.", "Definir el cuadro de clasificación y conservación archivística."]
+      }
+    }
   }
 ]
 

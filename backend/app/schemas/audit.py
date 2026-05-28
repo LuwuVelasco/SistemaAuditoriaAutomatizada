@@ -30,6 +30,7 @@ class AuditUpdate(BaseModel):
     progress: Optional[int] = Field(default=None, ge=0, le=100)
     frameworks: Optional[List[FrameworkType]] = None
     alcance: Optional[str] = Field(default=None, max_length=1000)
+    maturity: Optional[dict] = None
 
 
 class AuditOut(BaseModel):
@@ -47,5 +48,6 @@ class AuditOut(BaseModel):
     findings_count: int = Field(default=0, alias="findingsCount")
     pending_findings: int = Field(default=0, alias="pendingFindings")
     documents_count: int = Field(default=0, alias="documentsCount")
+    maturity: Optional[dict] = None
 
     model_config = {"populate_by_name": True}

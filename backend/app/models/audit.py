@@ -7,6 +7,29 @@ from pydantic import BaseModel, Field
 from app.utils.enums import AuditStatus, FrameworkType
 
 
+DEFAULT_MATURITY = {
+    "level": 1,
+    "scores": {
+        "policies": 20,
+        "processes": 10,
+        "traceability": 15,
+        "culture": 5
+    },
+    "checklist": {
+        "l1_repositorios": True, "l1_sin_politicas": True,
+        "l2_cuadro": False, "l2_calendario": False, "l2_desigual": True,
+        "l3_procesos": False, "l3_roles": False, "l3_trazabilidad": False,
+        "l4_riesgos": False, "l4_activos": False, "l4_coordinacion": False,
+        "l5_cultura": False, "l5_mejora": False, "l5_inspeccion": False
+    },
+    "gapAnalysis": {
+        "strengths": ["Existen repositorios digitales para almacenamiento de archivos."],
+        "weaknesses": ["Ausencia de políticas documentales aprobadas formalmente.", "Falta de un cuadro de clasificación archivística."],
+        "roadmap": ["Diseñar y formalizar un Cuadro de Clasificación Documental básico.", "Definir responsables funcionales y técnicos de gestión de archivos."]
+    }
+}
+
+
 class Audit(BaseModel):
     """Representa un documento audits/{auditId} en Firestore."""
 
@@ -24,6 +47,7 @@ class Audit(BaseModel):
     findings_count: int = Field(default=0, alias="findingsCount")
     pending_findings: int = Field(default=0, alias="pendingFindings")
     documents_count: int = Field(default=0, alias="documentsCount")
+    maturity: Optional[dict] = None
 
     model_config = {"populate_by_name": True}
 
@@ -45,6 +69,8 @@ class Audit(BaseModel):
         }
         if self.alcance is not None:
             d["alcance"] = self.alcance
+        if self.maturity is not None:
+            d["maturity"] = self.maturity
         return d
 
     @classmethod
@@ -64,4 +90,5 @@ class Audit(BaseModel):
             findingsCount=data.get("findingsCount", 0),
             pendingFindings=data.get("pendingFindings", 0),
             documentsCount=data.get("documentsCount", 0),
+            maturity=data.get("maturity", DEFAULT_MATURITY.copy()),
         )

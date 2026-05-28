@@ -41,6 +41,7 @@ class ReportKind(str, Enum):
     FICHAS_HALLAZGO = "fichas-hallazgo"
     FICHAS_PRUEBAS = "fichas-pruebas"
     MATRIZ_COSO = "matriz-coso"
+    INFORME_MADUREZ = "informe-madurez"
 
 
 class ReportFormat(str, Enum):

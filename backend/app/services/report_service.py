@@ -16,7 +16,7 @@ from openpyxl import Workbook
 from openpyxl.styles import Alignment, Font, PatternFill
 
 from app.core.exceptions import ForbiddenError, NotFoundError
-from app.models.audit import Audit
+from app.models.audit import Audit, DEFAULT_MATURITY
 from app.models.finding import Finding
 from app.models.report import Report
 from app.repositories.audit_repository import AuditRepository
@@ -53,6 +53,7 @@ _KIND_LABELS = {
     ReportKind.FICHAS_HALLAZGO:  "FICHAS DE HALLAZGO",
     ReportKind.FICHAS_PRUEBAS:   "FICHAS DE PRUEBAS",
     ReportKind.MATRIZ_COSO:      "MATRIZ COSO",
+    ReportKind.INFORME_MADUREZ:  "INFORME DE MADUREZ DOCUMENTAL",
 }
 
 
@@ -160,6 +161,8 @@ class ReportService:
             self._xlsx_fichas_pruebas(ws, audit, findings)
         elif kind == ReportKind.MATRIZ_COSO:
             self._xlsx_matriz_coso(ws, audit, findings)
+        elif kind == ReportKind.INFORME_MADUREZ:
+            self._xlsx_informe_madurez(ws, audit, findings)
 
         buf = io.BytesIO()
         wb.save(buf)
@@ -377,6 +380,8 @@ class ReportService:
             return self._docx_fichas_pruebas(audit, findings)
         if kind == ReportKind.FICHAS_HALLAZGO:
             return self._docx_fichas_hallazgo(audit, findings)
+        if kind == ReportKind.INFORME_MADUREZ:
+            return self._docx_informe_madurez(audit, findings)
         return self._docx_generic(kind, audit, findings)
 
     # ── DOCX: Fichas de Pruebas (basado en template 4. Pruebas.docx) ─────────
@@ -696,3 +701,225 @@ class ReportService:
         row.cells[0].text = label
         row.cells[0].paragraphs[0].runs[0].bold = True
         row.cells[1].text = value
+
+    def _xlsx_informe_madurez(self, ws, audit: Audit, findings: List[Finding]) -> None:
+        label = _KIND_LABELS[ReportKind.INFORME_MADUREZ]
+        ws["A1"] = f"{label} — {audit.entity}  |  {audit.period}"
+        ws["A1"].font = Font(bold=True, size=13, name="Calibri")
+        ws.merge_cells("A1:G1")
+
+        maturity = getattr(audit, "maturity", None) or DEFAULT_MATURITY
+        level = maturity.get("level", 1)
+        scores = maturity.get("scores", {})
+        checklist = maturity.get("checklist", {})
+        gap = maturity.get("gapAnalysis", {})
+
+        levels_map = {
+            1: "Nivel 1: Acumulación Digital (Inicial)",
+            2: "Nivel 2: Normas Básicas, Aplicación Desigual (Controlado)",
+            3: "Nivel 3: Procesos Alineados (Integrado)",
+            4: "Nivel 4: Gobierno de la Información (Estratégico)",
+            5: "Nivel 5: Cultura Documental (Optimizado)"
+        }
+        level_text = levels_map.get(level, f"Nivel {level}")
+
+        # Escribir información general
+        ws["A3"] = "EVALUACIÓN EJECUTIVA"
+        ws["A3"].font = Font(bold=True, size=11, name="Calibri", color="22D3EE")
+        ws["B3"] = level_text
+        ws["B3"].font = Font(bold=True, name="Calibri")
+
+        # Escribir puntajes por dimensión
+        ws["A5"] = "DIMENSIONES"
+        ws["A5"].font = Font(bold=True, name="Calibri")
+        ws["B5"] = "PUNTAJE (%)"
+        ws["B5"].font = Font(bold=True, name="Calibri")
+
+        dims = [
+            ("Políticas y Normativas", scores.get("policies", 0)),
+            ("Procesos y Roles", scores.get("processes", 0)),
+            ("Trazabilidad y Control", scores.get("traceability", 0)),
+            ("Cultura y Cumplimiento", scores.get("culture", 0))
+        ]
+        for row_idx, (dim_name, val) in enumerate(dims, start=6):
+            ws.cell(row=row_idx, column=1, value=dim_name).font = Font(name="Calibri")
+            ws.cell(row=row_idx, column=2, value=f"{val}%").font = Font(name="Calibri")
+
+        # Escribir checklist
+        ws["A11"] = "CHECKLIST DE EVALUACIÓN"
+        ws["A11"].font = Font(bold=True, size=11, name="Calibri", color="22D3EE")
+        ws.merge_cells("A11:C11")
+
+        headers = ["Indicador", "Nivel", "Estado"]
+        for col_idx, h in enumerate(headers, start=1):
+            cell = ws.cell(row=12, column=col_idx, value=h)
+            cell.font = Font(bold=True, name="Calibri")
+
+        checklist_items = [
+            ("l1_repositorios", "Existen repositorios electrónicos para almacenar los documentos.", "L1", "Requerido"),
+            ("l1_sin_politicas", "No hay políticas documentales formalmente aprobadas.", "L1", "Riesgo"),
+            ("l2_cuadro", "Existe un cuadro de clasificación documental aprobado.", "L2", "Requerido"),
+            ("l2_calendario", "Existen calendarios de conservación de documentos.", "L2", "Requerido"),
+            ("l2_desigual", "La aplicación de criterios archivísticos es desigual en las áreas.", "L2", "Riesgo"),
+            ("l3_procesos", "La gestión documental está integrada a los procedimientos operativos.", "L3", "Requerido"),
+            ("l3_roles", "Existen roles claros definidos (técnicos, funcionales y jurídicos).", "L3", "Requerido"),
+            ("l3_trazabilidad", "Hay trazabilidad documental real y ciclo de vida conocido.", "L3", "Requerido"),
+            ("l4_riesgos", "La dirección conoce activamente los riesgos documentales.", "L4", "Requerido"),
+            ("l4_activos", "La información y los documentos se gestionan como activos corporativos.", "L4", "Requerido"),
+            ("l4_coordinacion", "Existe coordinación efectiva entre IT, jurídico y compliance.", "L4", "Requerido"),
+            ("l5_cultura", "La gestión documental es parte intrínseca de la cultura corporativa.", "L5", "Requerido"),
+            ("l5_mejora", "Existen procesos activos de mejora continua en la gestión documental.", "L5", "Requerido"),
+            ("l5_inspeccion", "La información está permanentemente preparada para auditorías o litigios.", "L5", "Requerido")
+        ]
+
+        curr_row = 13
+        for key, desc, lvl, kind_item in checklist_items:
+            status = "CUMPLE" if checklist.get(key, False) else "NO CUMPLE"
+            if kind_item == "Riesgo":
+                status = "PRESENTE (Riesgo)" if checklist.get(key, False) else "AUSENTE (Controlado)"
+            
+            ws.cell(row=curr_row, column=1, value=desc).font = Font(name="Calibri")
+            ws.cell(row=curr_row, column=2, value=lvl).font = Font(name="Calibri")
+            
+            cell_status = ws.cell(row=curr_row, column=3, value=status)
+            cell_status.font = Font(bold=True, name="Calibri")
+            if "NO CUMPLE" in status or "PRESENTE" in status:
+                cell_status.font = Font(bold=True, color="EF4444", name="Calibri")
+            else:
+                cell_status.font = Font(bold=True, color="22C55E", name="Calibri")
+            curr_row += 1
+
+        # Análisis de brechas
+        curr_row += 2
+        ws.cell(row=curr_row, column=1, value="ANÁLISIS DE BRECHAS (GAP ANALYSIS)").font = Font(bold=True, size=11, name="Calibri", color="22D3EE")
+        ws.merge_cells(f"A{curr_row}:C{curr_row}")
+        
+        sections = [
+            ("Puntos Fuertes", gap.get("strengths", [])),
+            ("Brechas Clave / Debilidades", gap.get("weaknesses", [])),
+            ("Plan de Acción / Roadmap", gap.get("roadmap", []))
+        ]
+        
+        for title, items in sections:
+            curr_row += 1
+            ws.cell(row=curr_row, column=1, value=title.upper()).font = Font(bold=True, name="Calibri")
+            for item in items:
+                curr_row += 1
+                ws.cell(row=curr_row, column=1, value=f"• {item}").font = Font(name="Calibri")
+
+        ws.column_dimensions["A"].width = 75
+        ws.column_dimensions["B"].width = 25
+        ws.column_dimensions["C"].width = 25
+
+    def _docx_informe_madurez(self, audit: Audit, findings: List[Finding]) -> bytes:
+        doc = DocxDocument()
+        label = _KIND_LABELS[ReportKind.INFORME_MADUREZ]
+
+        title = doc.add_heading(f"{label}", 0)
+        title.runs[0].font.color.rgb = RGBColor(0x22, 0xD3, 0xEE)
+
+        meta_tbl = doc.add_table(rows=1, cols=2)
+        meta_tbl.style = "Table Grid"
+        self._docx_row(meta_tbl, "Entidad", audit.entity)
+        self._docx_row(meta_tbl, "Tipo", audit.type)
+        self._docx_row(meta_tbl, "Período", audit.period)
+        self._docx_row(meta_tbl, "Ciudad", audit.city)
+
+        maturity = getattr(audit, "maturity", None) or DEFAULT_MATURITY
+        level = maturity.get("level", 1)
+        scores = maturity.get("scores", {})
+        checklist = maturity.get("checklist", {})
+        gap = maturity.get("gapAnalysis", {})
+
+        levels_map = {
+            1: "Nivel 1: Acumulación Digital (Inicial)",
+            2: "Nivel 2: Normas Básicas, Aplicación Desigual (Controlado)",
+            3: "Nivel 3: Procesos Alineados (Integrado)",
+            4: "Nivel 4: Gobierno de la Información (Estratégico)",
+            5: "Nivel 5: Cultura Documental (Optimizado)"
+        }
+        level_text = levels_map.get(level, f"Nivel {level}")
+
+        doc.add_paragraph("")
+        self._docx_para(doc, f"NIVEL DE MADUREZ DOCUMENTAL OBTENIDO: {level_text}", bold=True)
+        doc.add_paragraph("")
+
+        # Agregar tabla de dimensiones
+        doc.add_heading("Puntuaciones por Dimensión", level=2)
+        dim_tbl = doc.add_table(rows=1, cols=2)
+        dim_tbl.style = "Table Grid"
+        self._docx_row(dim_tbl, "Dimensión", "Puntaje Obtenido (%)")
+        self._docx_row(dim_tbl, "Políticas y Normativas", f"{scores.get('policies', 0)}%")
+        self._docx_row(dim_tbl, "Procesos y Roles", f"{scores.get('processes', 0)}%")
+        self._docx_row(dim_tbl, "Trazabilidad y Control", f"{scores.get('traceability', 0)}%")
+        self._docx_row(dim_tbl, "Cultura y Cumplimiento", f"{scores.get('culture', 0)}%")
+
+        # Agregar checklist
+        doc.add_paragraph("")
+        doc.add_heading("Checklist Detallado de Autoevaluación", level=2)
+        check_tbl = doc.add_table(rows=1, cols=3)
+        check_tbl.style = "Table Grid"
+        
+        # Escribir cabecera del checklist
+        hdr_cells = check_tbl.rows[0].cells
+        hdr_cells[0].text = "Criterio de Evaluación"
+        hdr_cells[0].paragraphs[0].runs[0].bold = True
+        hdr_cells[1].text = "Nivel"
+        hdr_cells[1].paragraphs[0].runs[0].bold = True
+        hdr_cells[2].text = "Estado"
+        hdr_cells[2].paragraphs[0].runs[0].bold = True
+
+        checklist_items = [
+            ("l1_repositorios", "Existen repositorios electrónicos para almacenar los documentos.", "L1", "Requerido"),
+            ("l1_sin_politicas", "No hay políticas documentales formalmente aprobadas.", "L1", "Riesgo"),
+            ("l2_cuadro", "Existe un cuadro de clasificación documental aprobado.", "L2", "Requerido"),
+            ("l2_calendario", "Existen calendarios de conservación de documentos.", "L2", "Requerido"),
+            ("l2_desigual", "La aplicación de criterios archivísticos es desigual en las áreas.", "L2", "Riesgo"),
+            ("l3_procesos", "La gestión documental está integrada a los procedimientos operativos.", "L3", "Requerido"),
+            ("l3_roles", "Existen roles claros definidos (técnicos, funcionales y jurídicos).", "L3", "Requerido"),
+            ("l3_trazabilidad", "Hay trazabilidad documental real y ciclo de vida conocido.", "L3", "Requerido"),
+            ("l4_riesgos", "La dirección conoce activamente los riesgos documentales.", "L4", "Requerido"),
+            ("l4_activos", "La información y los documentos se gestionan como activos corporativos.", "L4", "Requerido"),
+            ("l4_coordinacion", "Existe coordinación efectiva entre IT, jurídico y compliance.", "L4", "Requerido"),
+            ("l5_cultura", "La gestión documental es parte intrínseca de la cultura corporativa.", "L5", "Requerido"),
+            ("l5_mejora", "Existen procesos activos de mejora continua en la gestión documental.", "L5", "Requerido"),
+            ("l5_inspeccion", "La información está permanentemente preparada para auditorías o litigios.", "L5", "Requerido")
+        ]
+
+        for key, desc, lvl, kind_item in checklist_items:
+            status = "CUMPLE" if checklist.get(key, False) else "NO CUMPLE"
+            if kind_item == "Riesgo":
+                status = "PRESENTE (Riesgo)" if checklist.get(key, False) else "AUSENTE (Controlado)"
+                
+            row = check_tbl.add_row()
+            row.cells[0].text = desc
+            row.cells[1].text = lvl
+            row.cells[2].text = status
+            
+            # Formatear estado con color
+            cell_run = row.cells[2].paragraphs[0].runs[0]
+            cell_run.bold = True
+            if "NO CUMPLE" in status or "PRESENTE" in status:
+                cell_run.font.color.rgb = RGBColor(0xEF, 0x44, 0x44)
+            else:
+                cell_run.font.color.rgb = RGBColor(0x22, 0xC5, 0x5E)
+
+        # Agregar brechas y plan de acción
+        doc.add_paragraph("")
+        doc.add_heading("Análisis de Brechas (Gap Analysis)", level=2)
+        
+        doc.add_heading("PUNTOS FUERTES", level=3)
+        for s in gap.get("strengths", []):
+            doc.add_paragraph(f"• {s}")
+            
+        doc.add_heading("BRECHAS CLAVE / DEBILIDADES", level=3)
+        for w in gap.get("weaknesses", []):
+            doc.add_paragraph(f"• {w}")
+            
+        doc.add_heading("PLAN DE ACCIÓN / ROADMAP SUGERIDO", level=3)
+        for r in gap.get("roadmap", []):
+            doc.add_paragraph(f"• {r}")
+
+        buf = io.BytesIO()
+        doc.save(buf)
+        return buf.getvalue()

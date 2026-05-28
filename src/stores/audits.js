@@ -213,10 +213,24 @@ export const useAuditsStore = defineStore('audits', () => {
     if (audit) { audit.progress = progress; if (status) audit.status = status }
   }
 
+  async function updateAuditMaturity(auditId, maturityData) {
+    if (USE_API) {
+      try {
+        await remote.updateAudit(auditId, { maturity: maturityData })
+      } catch (e) {
+        console.error('Error actualizando madurez en backend:', e)
+      }
+    }
+    const audit = audits.value.find(a => a.id === auditId)
+    if (audit) {
+      audit.maturity = { ...audit.maturity, ...maturityData }
+    }
+  }
+
   return {
     audits, documents, findings, loading,
     currentAuditId, currentAudit, currentDocuments, currentFindings,
-    setCurrentAudit, createAudit, addDocument, addFindings, updateFinding, getFinding, setAuditProgress,
+    setCurrentAudit, createAudit, addDocument, addFindings, updateFinding, getFinding, setAuditProgress, updateAuditMaturity,
     loadAudits,
   }
 })
@@ -239,6 +253,7 @@ function mapAudit(a) {
     documents:       a.documentsCount ?? 0,
     ownerId:         a.ownerId,
     createdAt:       (a.createdAt || '').split('T')[0],
+    maturity:        a.maturity || null,
   }
 }
 

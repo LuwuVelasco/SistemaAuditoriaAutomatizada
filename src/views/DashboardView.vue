@@ -36,6 +36,17 @@ function statusDot(status) {
   const map = { 'Pendiente': '#64748b', 'Procesando': '#3b82f6', 'En revisión': '#eab308', 'Finalizada': '#22c55e' }
   return map[status] || '#64748b'
 }
+
+function maturityColor(level) {
+  const map = {
+    1: 'hsl(354, 80%, 55%)',
+    2: 'hsl(28, 85%, 55%)',
+    3: 'hsl(200, 85%, 55%)',
+    4: 'hsl(262, 80%, 60%)',
+    5: 'hsl(142, 80%, 45%)'
+  }
+  return map[Math.round(level)] || 'hsl(200, 85%, 55%)'
+}
 </script>
 
 <template>
@@ -88,7 +99,12 @@ function statusDot(status) {
           <tbody>
             <tr v-for="a in recent" :key="a.id" @click="openAudit(a)">
               <td>
-                <div style="font-weight:500;font-size:13px;">{{ a.entity }}</div>
+                <div style="display:flex;align-items:center;gap:4px;">
+                  <div style="font-weight:500;font-size:13px;">{{ a.entity }}</div>
+                  <span v-if="a.maturity" class="mono" :style="{ color: maturityColor(a.maturity.level), border: `1px solid ${maturityColor(a.maturity.level)}`, borderRadius: '4px', padding: '1px 5px', fontSize: '9px', fontWeight: 'bold', display: 'inline-block', lineHeight: '1', background: 'rgba(255,255,255,0.02)' }">
+                    M{{ a.maturity.level }}
+                  </span>
+                </div>
                 <div class="mono text-xs text-muted">{{ a.city }} · {{ a.period }}</div>
               </td>
               <td><span class="mono text-xs text-muted">{{ a.type }}</span></td>
