@@ -12,6 +12,7 @@ import {
 import { doc, setDoc, getDoc, updateDoc } from 'firebase/firestore'
 import { auth, db } from '../firebase'
 import { mockUser } from '../data/mock'
+import { useAuditsStore } from './audits'
 
 const USE_MOCK = import.meta.env.VITE_FIREBASE_API_KEY === undefined
                  || import.meta.env.VITE_FIREBASE_API_KEY === 'your_firebase_api_key'
@@ -30,10 +31,20 @@ export const useAuthStore = defineStore('auth', () => {
   if (!USE_MOCK) {
     onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
-        const snap = await getDoc(doc(db, 'users', firebaseUser.uid))
-        if (snap.exists()) {
-          user.value = { uid: firebaseUser.uid, ...snap.data() }
-        } else {
+        try {
+          const snap = await getDoc(doc(db, 'users', firebaseUser.uid))
+          if (snap.exists()) {
+            user.value = { uid: firebaseUser.uid, ...snap.data() }
+          } else {
+            user.value = {
+              uid: firebaseUser.uid,
+              name: firebaseUser.displayName || 'Usuario',
+              email: firebaseUser.email,
+              createdAt: new Date().toISOString().split('T')[0],
+              stats: { audits: 0, approvedFindings: 0 }
+            }
+          }
+        } catch {
           user.value = {
             uid: firebaseUser.uid,
             name: firebaseUser.displayName || 'Usuario',
@@ -42,6 +53,7 @@ export const useAuthStore = defineStore('auth', () => {
             stats: { audits: 0, approvedFindings: 0 }
           }
         }
+        try { await useAuditsStore().loadAudits() } catch {}
       } else {
         user.value = null
       }

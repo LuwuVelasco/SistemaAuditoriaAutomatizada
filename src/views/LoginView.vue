@@ -10,6 +10,8 @@ const auth = useAuthStore()
 const mode = ref('login') // 'login' | 'signup'
 const loading = ref(false)
 const error = ref('')
+const showPassword = ref(false)
+const showConfirm = ref(false)
 
 const form = reactive({ name: '', email: '', password: '', confirm: '' })
 
@@ -116,12 +118,22 @@ function friendlyError(code) {
 
           <div class="form-group">
             <label class="form-label">Contraseña</label>
-            <input v-model="form.password" class="form-input" type="password" placeholder="••••••••" autocomplete="current-password" required />
+            <div class="input-wrap">
+              <input v-model="form.password" class="form-input" :type="showPassword ? 'text' : 'password'" placeholder="••••••••" autocomplete="current-password" required />
+              <button type="button" class="input-eye" @click="showPassword = !showPassword" tabindex="-1">
+                <AppIcon :name="showPassword ? 'eye-off' : 'eye'" :size="14" />
+              </button>
+            </div>
           </div>
 
           <div v-if="mode === 'signup'" class="form-group">
             <label class="form-label">Confirmar contraseña</label>
-            <input v-model="form.confirm" class="form-input" type="password" placeholder="••••••••" autocomplete="new-password" required />
+            <div class="input-wrap">
+              <input v-model="form.confirm" class="form-input" :type="showConfirm ? 'text' : 'password'" placeholder="••••••••" autocomplete="new-password" required />
+              <button type="button" class="input-eye" @click="showConfirm = !showConfirm" tabindex="-1">
+                <AppIcon :name="showConfirm ? 'eye-off' : 'eye'" :size="14" />
+              </button>
+            </div>
           </div>
 
           <div v-if="error" class="login-error">
@@ -344,6 +356,31 @@ function friendlyError(code) {
   text-decoration: underline;
   text-underline-offset: 2px;
 }
+
+.input-wrap {
+  position: relative;
+}
+
+.input-wrap .form-input {
+  padding-right: 36px;
+  width: 100%;
+}
+
+.input-eye {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--text-2);
+  cursor: pointer;
+  padding: 2px;
+  display: flex;
+  align-items: center;
+}
+
+.input-eye:hover { color: var(--text); }
 
 @media (max-width: 768px) {
   .login-root { grid-template-columns: 1fr; }

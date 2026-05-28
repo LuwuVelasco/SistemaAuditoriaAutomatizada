@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { watch } from 'vue'
 import { useAuthStore } from '../stores/auth'
 
 const routes = [
@@ -16,8 +17,18 @@ const router = createRouter({
   routes
 })
 
-router.beforeEach((to) => {
+router.beforeEach(async (to) => {
   const auth = useAuthStore()
+
+  // Esperar a que Firebase inicialice antes de verificar sesión
+  if (auth.loading) {
+    await new Promise(resolve => {
+      const stop = watch(() => auth.loading, (loading) => {
+        if (!loading) { stop(); resolve() }
+      })
+    })
+  }
+
   if (!to.meta.public && !auth.isAuthenticated) {
     return { name: 'Login' }
   }

@@ -4,7 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useAuditsStore } from '@/stores/audits'
 import AppShell from '@/components/layout/AppShell.vue'
 import AppIcon from '@/components/ui/AppIcon.vue'
-import { analyzeWithCOBIT, analyzeWithCOSO, analyzeWithRGSI, consolidateFindings } from '@/services/gemini'
+import { analyzeAudit, downloadReport, generateReports as remoteGenerateReports, getReports } from '@/api/index'
 import { STATUS_PILL_CLASS, RISK_PILL_CLASS } from '@/data/mock'
 
 const route = useRoute()
@@ -16,7 +16,7 @@ const audit = computed(() => store.audits.find(a => a.id === auditId.value))
 const docs = computed(() => store.documents[auditId.value] || [])
 const findings = computed(() => store.findings[auditId.value] || [])
 
-const activeTab = ref('documentos')
+const activeTab = ref(route.query.tab || 'documentos')
 const isDragOver = ref(false)
 
 // Analysis state
@@ -34,14 +34,31 @@ const engines = ref([
   { name: 'RGSI',  pct: 0, status: 'waiting' }
 ])
 const globalPct = computed(() => Math.round((engines.value.reduce((s, e) => s + e.pct, 0)) / 3))
+watch(activeTab, (tab) => {
+  router.replace({
+    query: {
+      ...route.query,
+      tab
+    }
+  })
+})
+watch(
+  () => route.query.tab,
+  (tab) => {
+    if (tab) activeTab.value = tab
+  }
+)
+watch(activeTab, (tab) => {
+  if (tab === 'reportes') loadReports()
+})
 
 // Reports selection
 const selectedReports = ref(['matriz-hallazgos'])
 const reportOptions = [
-  { id: 'matriz-hallazgos', label: 'Matriz de hallazgos', desc: 'Consolidada COBIT × COSO × RGSI', icon: 'layers', format: 'XLSX' },
-  { id: 'fichas-hallazgo',  label: 'Fichas de hallazgo',  desc: 'Una ficha por hallazgo aprobado', icon: 'file-text', format: 'DOCX/PDF' },
-  { id: 'fichas-pruebas',   label: 'Fichas de pruebas',   desc: 'Pruebas sustentatorias',          icon: 'database', format: 'DOCX/PDF' },
-  { id: 'matriz-coso',      label: 'Matriz COSO',          desc: 'Componentes × principios',       icon: 'grid', format: 'XLSX' }
+  { id: 'matriz-hallazgos', label: 'Matriz de hallazgos', desc: 'Consolidada COBIT × COSO × RGSI', icon: 'layers', format: 'xlsx' },
+  { id: 'fichas-hallazgo',  label: 'Fichas de hallazgo',  desc: 'Una ficha por hallazgo aprobado', icon: 'file-text', format: 'docx' },
+  { id: 'fichas-pruebas',   label: 'Fichas de pruebas',   desc: 'Pruebas sustentatorias',          icon: 'database', format: 'docx' },
+  { id: 'matriz-coso',      label: 'Matriz COSO',          desc: 'Componentes × principios',       icon: 'grid', format: 'xlsx' }
 ]
 
 const isTabLocked = computed(() => {
@@ -49,7 +66,10 @@ const isTabLocked = computed(() => {
   return ['Pendiente', 'Procesando'].includes(audit.value.status)
 })
 
-onMounted(() => { store.setCurrentAudit(auditId.value) })
+onMounted(async () => {
+  await store.setCurrentAudit(auditId.value)
+  await loadReports()
+})
 
 // ─── File upload ────────────────────────────────────────────────────────────
 function handleDrop(e) {
@@ -88,42 +108,23 @@ async function startAnalysis() {
   await simulateProgress(engines.value[2], 28, 650)
   analysisStages.value[0].status = 'done'
 
-  // Stage 2: Análisis en paralelo con marcos (llamada real a Gemini si hay API key)
+  // Stage 2: Llamada real al backend IA
   analysisStages.value[1].status = 'running'
   engines.value.forEach(e => e.status = 'running')
 
-  const sampleText = `Documento: ${readyDocs.map(d => d.name).join(', ')}.
-  Este documento describe la política de seguridad de la información de la entidad financiera.
-  Los accesos a los sistemas críticos son gestionados por el departamento de TI sin un proceso
-  formal de aprobación documentado. El Plan de Continuidad del Negocio no ha sido probado en
-  los últimos 24 meses. El inventario de activos presenta inconsistencias con el entorno real.
-  No existe una política formal de clasificación de información. Los logs de auditoría no son
-  revisados periódicamente por personal designado.`
-
-  let cobitResults = [], cosoResults = [], rgsiResults = []
-
   try {
-    const apiKey = import.meta.env.VITE_GEMINI_API_KEY
-    if (apiKey && apiKey !== 'your_gemini_api_key_here') {
-      const [r1, r2, r3] = await Promise.all([
-        analyzeWithCOBIT(sampleText).then(r => { engines.value[0].pct = 100; engines.value[0].status = 'done'; return r }),
-        analyzeWithCOSO(sampleText).then(r  => { engines.value[1].pct = 100; engines.value[1].status = 'done'; return r }),
-        analyzeWithRGSI(sampleText).then(r  => { engines.value[2].pct = 100; engines.value[2].status = 'done'; return r })
-      ])
-      cobitResults = r1; cosoResults = r2; rgsiResults = r3
-    } else {
-      // Sin API key: simular progreso
-      await Promise.all([
-        simulateProgress(engines.value[0], 100, 2000).then(() => engines.value[0].status = 'done'),
-        simulateProgress(engines.value[1], 100, 2400).then(() => engines.value[1].status = 'done'),
-        simulateProgress(engines.value[2], 100, 2200).then(() => engines.value[2].status = 'done')
-      ])
-    }
-  } catch {
+    await analyzeAudit(auditId.value)
+
+    // El backend corre en background; esperamos y refrescamos estado/resultados.
+    await waitForAnalysisCompletion()
+
+    engines.value.forEach(e => { e.pct = 100; e.status = 'done' })
+  } catch (error) {
+    console.error('Error iniciando análisis IA real:', error)
     await Promise.all([
-      simulateProgress(engines.value[0], 100, 1800).then(() => engines.value[0].status = 'done'),
-      simulateProgress(engines.value[1], 100, 2200).then(() => engines.value[1].status = 'done'),
-      simulateProgress(engines.value[2], 100, 2000).then(() => engines.value[2].status = 'done')
+      simulateProgress(engines.value[0], 100, 1200).then(() => engines.value[0].status = 'done'),
+      simulateProgress(engines.value[1], 100, 1400).then(() => engines.value[1].status = 'done'),
+      simulateProgress(engines.value[2], 100, 1300).then(() => engines.value[2].status = 'done')
     ])
   }
 
@@ -138,30 +139,8 @@ async function startAnalysis() {
   analysisStages.value[3].status = 'running'
   await delay(400)
 
-  // Agregar hallazgos consolidados si vienen de Gemini, si no usar mock
-  if (cobitResults.length + cosoResults.length + rgsiResults.length > 0) {
-    const consolidated = await consolidateFindings(cobitResults, cosoResults, rgsiResults)
-    if (consolidated.length > 0) {
-      store.addFindings(auditId.value, consolidated)
-    }
-  }
-
-  // Si no hay hallazgos aún (modo mock o sin resultados), agregar algunos de ejemplo
-  if ((store.findings[auditId.value] || []).length === 0) {
-    store.addFindings(auditId.value, [
-      {
-        title: 'Control de acceso privilegiado no documentado',
-        description: 'No se encontraron políticas formales para la gestión de cuentas privilegiadas.',
-        recommendation: 'Implementar política PAM con revisión periódica y herramientas de control.',
-        risk: 'Alto', impact: 4, probability: 3, confidence: 0.88,
-        cobitRef: { code: 'APO13.01', title: 'Establecer y mantener el SGSI', domain: 'APO' },
-        cosoRef:  { code: 'CC6.1', title: 'Control de Acceso Lógico', component: 'Actividades de Control' },
-        rgsiRef:  { code: 'Art. 12', title: 'Gestión de Accesos', section: 'Cap. III' },
-        quote: 'Sin evidencia de proceso formal de aprobación de accesos privilegiados.',
-        evidence: []
-      }
-    ])
-  }
+  await store.loadAudits()
+  await store.setCurrentAudit(auditId.value)
 
   analysisStages.value[3].status = 'done'
   await delay(800)
@@ -184,6 +163,27 @@ async function simulateProgress(engine, target, duration) {
   }
 }
 
+async function waitForAnalysisCompletion() {
+  const maxAttempts = 30
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    await delay(2000)
+    await store.loadAudits()
+    await store.setCurrentAudit(auditId.value)
+
+    const current = store.audits.find(a => a.id === auditId.value)
+    if (current && current.status !== 'Procesando') {
+      return current
+    }
+
+    engines.value.forEach((engine, index) => {
+      engine.pct = Math.min(95, 30 + (attempt + 1) * 2 + index)
+      engine.status = 'running'
+    })
+  }
+
+  return store.audits.find(a => a.id === auditId.value) || null
+}
+
 // ─── Findings helpers ────────────────────────────────────────────────────────
 function riskPillClass(risk) {
   return { Extremo: 'pill-extreme', Alto: 'pill-high', Medio: 'pill-medium', Bajo: 'pill-low', Oportunidad: 'pill-opp' }[risk] || ''
@@ -203,17 +203,96 @@ function toggleReport(id) {
 const generatedReports = ref([])
 const generatingReports = ref(false)
 
-async function generateReports() {
-  generatingReports.value = true
-  await delay(2000)
-  generatedReports.value = selectedReports.value.map(id => {
-    const r = reportOptions.find(o => o.id === id)
-    return { id, label: r.label, format: r.format, sha256: randomSha(), generatedAt: new Date().toLocaleString() }
-  })
-  generatingReports.value = false
+function latestPerKind(rawList) {
+  const byKind = {}
+  for (const r of rawList) {
+    const k = r.kind?.value ?? r.kind
+    if (!byKind[k] || (r.generatedAt || '') > (byKind[k].generatedAt || '')) {
+      byKind[k] = r
+    }
+  }
+  return Object.values(byKind).map(mapReport)
 }
 
-function randomSha() { return Math.random().toString(16).slice(2, 10) + '...' }
+async function loadReports() {
+  try {
+    const data = await getReports(auditId.value)
+    generatedReports.value = latestPerKind(data || [])
+  } catch (error) {
+    console.error('Error cargando reportes:', error)
+  }
+}
+
+async function generateReports() {
+  generatingReports.value = true
+  try {
+    const created = []
+    for (const id of selectedReports.value) {
+      const option = reportOptions.find(o => o.id === id)
+      if (!option) continue
+      const reports = await remoteGenerateReports(auditId.value, [id], option.format)
+      created.push(...(Array.isArray(reports) ? reports : [reports]))
+    }
+    // Reemplaza el slot de cada tipo generado, mantiene los demás
+    const next = [...generatedReports.value]
+    for (const r of created.map(mapReport)) {
+      const idx = next.findIndex(c => (c.kind?.value ?? c.kind) === (r.kind?.value ?? r.kind))
+      if (idx >= 0) next[idx] = r
+      else next.push(r)
+    }
+    generatedReports.value = next
+  } catch (error) {
+    console.error('Error generando reportes:', error)
+  } finally {
+    generatingReports.value = false
+  }
+}
+
+function formatBoliviaDate(iso) {
+  if (!iso) return ''
+  try {
+    return new Date(iso).toLocaleString('es-BO', {
+      timeZone: 'America/La_Paz',
+      day: '2-digit', month: 'short', year: 'numeric',
+      hour: '2-digit', minute: '2-digit',
+    })
+  } catch {
+    return iso
+  }
+}
+
+async function downloadGeneratedReport(report) {
+  try {
+    const { blob, filename } = await downloadReport(auditId.value, report.id)
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = filename || `${report.label}.${report.format.toLowerCase()}`
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
+    setTimeout(() => URL.revokeObjectURL(url), 1000)
+  } catch (error) {
+    console.error('Error descargando reporte:', error)
+  }
+}
+
+function mapReport(r) {
+  const opt = reportOptions.find(o => o.id === r.kind || o.id === r.kind?.value)
+  return {
+    id: r.id,
+    kind: r.kind,
+    label: opt?.label || r.kind,
+    format: (r.format || '').toUpperCase(),
+    sha256: r.sha256,
+    generatedAt: formatBoliviaDate(r.generatedAt),
+    supabasePath: r.supabasePath,
+  }
+}
+
+watch(auditId, () => {
+  if (activeTab.value === 'reportes') loadReports()
+})
 </script>
 
 <template>
@@ -348,9 +427,9 @@ function randomSha() { return Math.random().toString(16).slice(2, 10) + '...' }
               <div class="finding-id">{{ f.id }}</div>
               <div class="finding-title">{{ f.title }}</div>
               <div class="finding-refs">
-                <span v-if="f.cobitRef" class="ref-tag ref-cobit">{{ f.cobitRef.code }}</span>
-                <span v-if="f.cosoRef"  class="ref-tag ref-coso" >{{ f.cosoRef.code  }}</span>
-                <span v-if="f.rgsiRef"  class="ref-tag ref-rgsi" >{{ f.rgsiRef.code  }}</span>
+                <span v-for="ref in (f.cobitRefs || [])" :key="`cobit-${f.id}-${ref.code}`" class="ref-tag ref-cobit">{{ ref.code }}</span>
+                <span v-for="ref in (f.cosoRefs || [])" :key="`coso-${f.id}-${ref.code}`" class="ref-tag ref-coso">{{ ref.code }}</span>
+                <span v-for="ref in (f.rgsiRefs || [])" :key="`rgsi-${f.id}-${ref.code}`" class="ref-tag ref-rgsi">{{ ref.code }}</span>
               </div>
             </div>
             <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0;">
@@ -379,7 +458,7 @@ function randomSha() { return Math.random().toString(16).slice(2, 10) + '...' }
                 <div class="mono text-xs text-muted">{{ r.desc }}</div>
               </div>
               <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
-                <span class="pill pill-pending">{{ r.format }}</span>
+                <span class="pill pill-pending">{{ r.format.toUpperCase() }}</span>
                 <div class="checkbox" :class="{ checked: selectedReports.includes(r.id) }">
                   <AppIcon v-if="selectedReports.includes(r.id)" name="check" :size="9" style="color:#000;" />
                 </div>
@@ -411,7 +490,7 @@ function randomSha() { return Math.random().toString(16).slice(2, 10) + '...' }
               </div>
               <div class="sha-badge">SHA-256: {{ r.sha256 }}</div>
               <div class="mono text-xs text-muted" style="margin-top:4px;">{{ r.generatedAt }}</div>
-              <button class="btn btn-ghost btn-sm" style="margin-top:8px;">
+              <button class="btn btn-ghost btn-sm" style="margin-top:8px;" @click="downloadGeneratedReport(r)">
                 <AppIcon name="download" :size="12" />
                 Descargar {{ r.format }}
               </button>

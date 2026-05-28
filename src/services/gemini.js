@@ -4,7 +4,7 @@ const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY)
 
 // Los 3 motores usan el mismo modelo pero prompts distintos.
 // En producción esto pasaría a Cloud Functions para no exponer la API key.
-const model = () => genAI.getGenerativeModel({ model: 'gemini-2.0-flash' })
+const model = () => genAI.getGenerativeModel({ model: 'gemini-2.5-flash' })
 
 // ─── Engine 1: COBIT 2019 ───────────────────────────────────────────────────
 export async function analyzeWithCOBIT(documentText) {
