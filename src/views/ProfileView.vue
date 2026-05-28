@@ -53,7 +53,7 @@ async function changePassword() {
 
 async function logout() {
   await auth.logout()
-  router.push('/login')
+  router.push('/')
 }
 </script>
 

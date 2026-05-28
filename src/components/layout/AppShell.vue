@@ -24,7 +24,7 @@ function isActive(to) {
 async function logout() {
   showUserMenu.value = false
   await auth.logout()
-  router.push('/login')
+  router.push('/')
 }
 </script>
 

@@ -3,8 +3,8 @@ import { watch } from 'vue'
 import { useAuthStore } from '../stores/auth'
 
 const routes = [
+  { path: '/', name: 'Welcome', component: () => import('../views/WelcomeView.vue'), meta: { public: true } },
   { path: '/login', name: 'Login', component: () => import('../views/LoginView.vue'), meta: { public: true } },
-  { path: '/', redirect: '/inicio' },
   { path: '/inicio', name: 'Dashboard', component: () => import('../views/DashboardView.vue') },
   { path: '/auditorias', name: 'Auditorias', component: () => import('../views/AuditoriasView.vue') },
   { path: '/workspace/:auditId', name: 'Workspace', component: () => import('../views/WorkspaceView.vue') },
@@ -30,9 +30,9 @@ router.beforeEach(async (to) => {
   }
 
   if (!to.meta.public && !auth.isAuthenticated) {
-    return { name: 'Login' }
+    return { name: 'Welcome' }
   }
-  if (to.name === 'Login' && auth.isAuthenticated) {
+  if ((to.name === 'Login' || to.name === 'Welcome') && auth.isAuthenticated) {
     return { name: 'Dashboard' }
   }
 })
