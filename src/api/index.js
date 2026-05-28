@@ -17,6 +17,10 @@ export const getFindings   = (auditId)           => api.get(`/audits/${auditId}/
 export const updateFinding = (auditId, id, data) => api.patch(`/audits/${auditId}/findings/${id}`, data)
 export const deleteFinding = (auditId, id)       => api.delete(`/audits/${auditId}/findings/${id}`)
 
+// ── Graph ─────────────────────────────────────────────────────────────────────
+export const getGraph = (auditId) => api.get(`/audits/${auditId}/graph`)
+
+
 // ── Reports ───────────────────────────────────────────────────────────────────
 export const getReports = (auditId) => api.get(`/audits/${auditId}/reports`)
 export const generateReports = (auditId, kinds, format) => api.post(`/audits/${auditId}/reports`, { kinds, format })

@@ -5,6 +5,7 @@ import { useAuditsStore } from '@/stores/audits'
 import AppShell from '@/components/layout/AppShell.vue'
 import AppIcon from '@/components/ui/AppIcon.vue'
 import ChatBot from '@/components/ChatBot.vue'
+import TraceabilityGraph from '@/components/TraceabilityGraph.vue'
 import { analyzeAudit, downloadReport, generateReports as remoteGenerateReports, getReports } from '@/api/index'
 import { STATUS_PILL_CLASS, RISK_PILL_CLASS } from '@/data/mock'
 
@@ -339,6 +340,14 @@ watch(auditId, () => {
         </div>
         <div
           class="tab"
+          :class="{ active: activeTab==='mapa', disabled: isTabLocked }"
+          @click="!isTabLocked && (activeTab='mapa')"
+        >
+          <AppIcon name="git-branch" :size="13" />
+          Mapa
+        </div>
+        <div
+          class="tab"
           :class="{ active: activeTab==='reportes', disabled: isTabLocked }"
           @click="!isTabLocked && (activeTab='reportes')"
         >
@@ -438,6 +447,13 @@ watch(auditId, () => {
               <span class="pill" :class="STATUS_PILL_CLASS[f.status]">{{ f.status }}</span>
             </div>
           </div>
+        </div>
+      </template>
+
+      <!-- ── MAPA DE TRAZABILIDAD ── -->
+      <template v-if="activeTab === 'mapa'">
+        <div class="animate-in" style="height: calc(100vh - 220px); min-height: 540px;">
+          <TraceabilityGraph :audit-id="auditId" />
         </div>
       </template>
 
