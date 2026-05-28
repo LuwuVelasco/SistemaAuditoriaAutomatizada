@@ -1182,3 +1182,12 @@ blockquote.evidence {
 }
 
 .animate-in { animation: slideUp 0.22s ease both; }
+
+/* ─── Maturity toggle rows ─── */
+.maturity-toggle-row {
+  transition: background 0.2s ease;
+}
+.maturity-toggle-row:hover {
+  background: rgba(255, 255, 255, 0.03) !important;
+}
+
