@@ -44,10 +44,11 @@ class Settings(BaseSettings):
     SUPABASE_BUCKET_PDFS: str = "pdfs"
     SUPABASE_BUCKET_XLSX: str = "xlsx"
 
-    # ── Gemini (3 keys independientes) ───────────────────────────────────────
+    # ── Gemini (3 keys independientes + chat) ────────────────────────────────
     GEMINI_COSO_API_KEY: str | None = None
     GEMINI_COBIT_API_KEY: str | None = None
     GEMINI_RGSI_API_KEY: str | None = None
+    GEMINI_CHAT_API_KEY: str | None = None
     GEMINI_LOG_RESPONSES: bool = False
 
     # ── CORS ─────────────────────────────────────────────────────────────────

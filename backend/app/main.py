@@ -16,7 +16,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from loguru import logger
 
-from app.api.routes import audits, auth, dashboard, documents, findings, frameworks, reports
+from app.api.routes import audits, auth, chat, dashboard, documents, findings, frameworks, reports
 from app.core.config import settings
 from app.core.exceptions import (
     AIEngineError,
@@ -153,5 +153,6 @@ app.include_router(audits.router,     prefix=PREFIX)
 app.include_router(documents.router,  prefix=PREFIX)
 app.include_router(findings.router,   prefix=PREFIX)
 app.include_router(reports.router,    prefix=PREFIX)
+app.include_router(chat.router,       prefix=PREFIX)
 app.include_router(dashboard.router,  prefix=PREFIX)
 app.include_router(frameworks.router, prefix=PREFIX)

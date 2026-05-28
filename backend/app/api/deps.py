@@ -19,8 +19,10 @@ from app.repositories.document_repository import DocumentRepository
 from app.repositories.finding_repository import FindingRepository
 from app.repositories.framework_repository import FrameworkRepository
 from app.repositories.report_repository import ReportRepository
+from app.ai.providers.gemini_provider import get_chat_provider
 from app.services.ai_service import AIService
 from app.services.audit_service import AuditService
+from app.services.chat_service import ChatService
 from app.services.document_service import DocumentService
 from app.services.extraction_service import ExtractionService
 from app.services.finding_service import FindingService
@@ -155,6 +157,14 @@ async def get_current_user(
             createdAt="",
         )
     return User.from_firestore(doc.id, doc.to_dict())
+
+
+def get_chat_service(
+    audit_repo: AuditRepository = Depends(get_audit_repo),
+    doc_repo: DocumentRepository = Depends(get_document_repo),
+    storage: StorageService = Depends(get_storage),
+) -> ChatService:
+    return ChatService(audit_repo, doc_repo, storage, get_chat_provider())
 
 
 # ── Type aliases para inyección limpia ────────────────────────────────────────

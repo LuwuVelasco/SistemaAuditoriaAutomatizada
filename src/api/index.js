@@ -22,5 +22,9 @@ export const getReports = (auditId) => api.get(`/audits/${auditId}/reports`)
 export const generateReports = (auditId, kinds, format) => api.post(`/audits/${auditId}/reports`, { kinds, format })
 export const downloadReport = (auditId, reportId) => downloadFile(`/audits/${auditId}/reports/${reportId}/download`)
 
+// ── Chat ──────────────────────────────────────────────────────────────────────
+export const sendChatMessage = (auditId, question, history) =>
+  api.post(`/audits/${auditId}/chat`, { question, history })
+
 // ── Dashboard ─────────────────────────────────────────────────────────────────
 export const getDashboard = () => api.get('/dashboard')
