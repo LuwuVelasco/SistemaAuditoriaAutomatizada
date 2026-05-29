@@ -12,6 +12,11 @@ class ReportGenerateRequest(BaseModel):
     format: ReportFormat = ReportFormat.XLSX
 
 
+class ReportEmailRequest(BaseModel):
+    report_ids: List[str] = Field(min_length=1)
+    recipient_email: str
+
+
 class ReportOut(BaseModel):
     id: str
     audit_id: str = Field(alias="auditId")

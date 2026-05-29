@@ -51,6 +51,10 @@ class Settings(BaseSettings):
     GEMINI_CHAT_API_KEY: str | None = None
     GEMINI_LOG_RESPONSES: bool = False
 
+    # ── Email (Gmail SMTP) ───────────────────────────────────────────────────
+    EMAIL_USER: str | None = None
+    EMAIL_APP_PASSWORD: str | None = None
+
     # ── CORS ─────────────────────────────────────────────────────────────────
     ALLOWED_ORIGINS: str = "http://localhost:5173"
 
