@@ -6,7 +6,7 @@ import AppShell from '@/components/layout/AppShell.vue'
 import AppIcon from '@/components/ui/AppIcon.vue'
 import ChatBot from '@/components/ChatBot.vue'
 import TraceabilityGraph from '@/components/TraceabilityGraph.vue'
-import { analyzeAudit, downloadReport, generateReports as remoteGenerateReports, getReports } from '@/api/index'
+import { analyzeAudit, downloadReport, emailReports, generateReports as remoteGenerateReports, getReports } from '@/api/index'
 import { STATUS_PILL_CLASS, RISK_PILL_CLASS } from '@/data/mock'
 
 const route = useRoute()
@@ -205,6 +205,40 @@ function toggleReport(id) {
 
 const generatedReports = ref([])
 const generatingReports = ref(false)
+
+// ─── Email modal ─────────────────────────────────────────────────────────────
+const showEmailModal = ref(false)
+const emailRecipient = ref('')
+const emailSelectedIds = ref([])
+const sendingEmail = ref(false)
+const emailResult = ref(null) // 'ok' | 'error' | null
+
+function openEmailModal() {
+  emailSelectedIds.value = generatedReports.value.map(r => r.id)
+  emailRecipient.value = ''
+  emailResult.value = null
+  showEmailModal.value = true
+}
+
+function toggleEmailReport(id) {
+  const idx = emailSelectedIds.value.indexOf(id)
+  if (idx >= 0) emailSelectedIds.value.splice(idx, 1)
+  else emailSelectedIds.value.push(id)
+}
+
+async function sendEmail() {
+  if (!emailRecipient.value.trim() || !emailSelectedIds.value.length) return
+  sendingEmail.value = true
+  emailResult.value = null
+  try {
+    await emailReports(auditId.value, emailSelectedIds.value, emailRecipient.value.trim())
+    emailResult.value = 'ok'
+  } catch {
+    emailResult.value = 'error'
+  } finally {
+    sendingEmail.value = false
+  }
+}
 
 function latestPerKind(rawList) {
   const byKind = {}
@@ -1109,10 +1143,96 @@ const hasBcpFinding = computed(() => findings.value.some(f => f.title.toLowerCas
                 Descargar {{ r.format }}
               </button>
             </div>
+            <button
+              v-if="generatedReports.length"
+              class="btn btn-ghost btn-sm"
+              style="margin-top:8px;width:100%;justify-content:center;gap:6px;border:1px solid rgba(34,211,238,0.2);color:var(--cyan);"
+              @click="openEmailModal"
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                <polyline points="22,6 12,13 2,6"/>
+              </svg>
+              Enviar por correo
+            </button>
           </div>
         </div>
       </template>
     </div>
+
+    <!-- Email Modal -->
+    <Transition name="fade">
+      <div v-if="showEmailModal" class="overlay-backdrop" @click.self="showEmailModal = false">
+        <div class="analysis-modal" style="max-width:420px;width:100%;">
+          <div class="modal-header">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--cyan);">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+              <polyline points="22,6 12,13 2,6"/>
+            </svg>
+            <span class="modal-title">Enviar reportes por correo</span>
+            <button class="btn btn-ghost btn-icon btn-sm" style="margin-left:auto;" @click="showEmailModal = false">
+              <AppIcon name="x" :size="13" />
+            </button>
+          </div>
+
+          <div class="modal-body">
+            <!-- Selección de reportes -->
+            <div style="margin-bottom:16px;">
+              <div class="section-label" style="margin-bottom:8px;">Selecciona los reportes a adjuntar</div>
+              <div v-for="r in generatedReports" :key="r.id"
+                style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;cursor:pointer;transition:background .15s;"
+                :style="emailSelectedIds.includes(r.id) ? 'background:rgba(34,211,238,0.08);' : ''"
+                @click="toggleEmailReport(r.id)"
+              >
+                <div class="checkbox" :class="{ checked: emailSelectedIds.includes(r.id) }">
+                  <AppIcon v-if="emailSelectedIds.includes(r.id)" name="check" :size="9" style="color:#000;" />
+                </div>
+                <AppIcon name="file-text" :size="13" style="color:var(--text-2);" />
+                <span style="font-size:12px;flex:1;">{{ r.label }}</span>
+                <span class="mono text-xs text-muted">{{ r.format }}</span>
+              </div>
+            </div>
+
+            <!-- Input email -->
+            <div style="margin-bottom:16px;">
+              <div class="section-label" style="margin-bottom:6px;">Correo destino</div>
+              <input
+                v-model="emailRecipient"
+                type="email"
+                placeholder="ejemplo@correo.com"
+                class="input-field"
+                style="width:100%;box-sizing:border-box;"
+                @keydown.enter="sendEmail"
+              />
+            </div>
+
+            <!-- Result feedback -->
+            <div v-if="emailResult === 'ok'"
+              style="padding:10px 12px;border-radius:8px;background:rgba(34,211,238,0.08);border:1px solid rgba(34,211,238,0.25);font-size:12px;color:#22d3ee;margin-bottom:12px;">
+              Correo enviado correctamente.
+            </div>
+            <div v-if="emailResult === 'error'"
+              style="padding:10px 12px;border-radius:8px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.25);font-size:12px;color:#f87171;margin-bottom:12px;">
+              Error al enviar. Verifica el correo e intenta de nuevo.
+            </div>
+
+            <button
+              class="btn btn-primary"
+              style="width:100%;justify-content:center;"
+              :disabled="sendingEmail || !emailRecipient.trim() || !emailSelectedIds.length"
+              @click="sendEmail"
+            >
+              <div v-if="sendingEmail" class="spinner" style="width:12px;height:12px;border-color:rgba(0,0,0,0.2);border-top-color:#000;" />
+              <svg v-else width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                <polyline points="22,6 12,13 2,6"/>
+              </svg>
+              {{ sendingEmail ? 'Enviando…' : 'Enviar' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </Transition>
 
     <!-- Analysis Overlay -->
     <Transition name="fade">

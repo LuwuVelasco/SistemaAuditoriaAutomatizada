@@ -267,6 +267,24 @@ body {
   padding: 24px;
 }
 
+/* ─── Inputs ─── */
+.input-field {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  color: var(--text);
+  outline: none;
+  font-family: inherit;
+  transition: border-color .15s, box-shadow .15s;
+}
+.input-field::placeholder { color: var(--text-3); }
+.input-field:focus {
+  border-color: rgba(34,211,238,0.4);
+  box-shadow: 0 0 0 3px rgba(34,211,238,0.08);
+}
+
 /* ─── Buttons ─── */
 .btn {
   display: inline-flex;

@@ -2,12 +2,13 @@
 Rutas para generación y listado de reportes de auditoría.
 """
 
-from fastapi import APIRouter, Depends, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 
 from app.api.deps import CurrentUID, get_report_service
 from app.core.responses import created, ok
 from app.core.config import settings
-from app.schemas.report import ReportGenerateRequest, ReportOut
+from app.schemas.report import ReportEmailRequest, ReportGenerateRequest, ReportOut
+from app.services.email_service import send_reports_email
 from app.services.report_service import ReportService
 from app.services.storage_service import StorageService
 from app.api.deps import get_storage
@@ -63,6 +64,43 @@ async def download_report(
         media_type=content_type,
         headers={"Content-Disposition": f'attachment; filename="{filename}"'},
     )
+
+
+@router.post("/email", status_code=status.HTTP_200_OK)
+async def email_reports(
+    audit_id: str,
+    body: ReportEmailRequest,
+    uid: CurrentUID,
+    svc: ReportService = Depends(get_report_service),
+    storage: StorageService = Depends(get_storage),
+):
+    """Descarga los reportes solicitados y los envía por correo como adjuntos."""
+    if not settings.EMAIL_USER or not settings.EMAIL_APP_PASSWORD:
+        raise HTTPException(status_code=503, detail="Servicio de email no configurado.")
+
+    audit = await svc._audits.get_by_id(audit_id)
+
+    attachments = []
+    for report_id in body.report_ids:
+        report = await svc.get_by_id(audit_id, report_id, uid)
+        content = await storage.download_file(settings.SUPABASE_BUCKET_XLSX, report.supabase_path)
+        filename = report.supabase_path.rsplit("/", 1)[-1] or f"{report.kind.value}.{report.format.value}"
+        opt_labels = {
+            "matriz-hallazgos": "Matriz de hallazgos",
+            "fichas-hallazgo":  "Fichas de hallazgo",
+            "fichas-pruebas":   "Fichas de pruebas",
+            "matriz-coso":      "Matriz COSO",
+            "informe-madurez":  "Informe de Madurez",
+        }
+        label = opt_labels.get(report.kind.value, report.kind.value)
+        attachments.append({"filename": filename, "label": label, "content": content})
+
+    audit_name = audit.entity if audit else audit_id
+    try:
+        await send_reports_email(body.recipient_email, audit_name, attachments)
+    except Exception as exc:
+        raise HTTPException(status_code=502, detail=f"Error al enviar email: {exc}")
+    return ok({"sent": len(attachments)})
 
 
 def _report_out(report) -> dict:
