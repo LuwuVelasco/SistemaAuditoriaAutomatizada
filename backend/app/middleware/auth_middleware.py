@@ -22,16 +22,29 @@ class AuthMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         path = request.url.path
 
-        # Rutas públicas y prefijos de docs
-        if path in _PUBLIC_PATHS or path.startswith("/docs") or path.startswith("/redoc"):
+        # IMPORTANTE:
+        # Permitir requests preflight CORS
+        if request.method == "OPTIONS":
             return await call_next(request)
 
-        # Verificar presencia del header (no validar el token aquí)
+        # Rutas públicas y prefijos docs
+        if (
+            path in _PUBLIC_PATHS
+            or path.startswith("/docs")
+            or path.startswith("/redoc")
+        ):
+            return await call_next(request)
+
+        # Verificar presencia del header Authorization
         auth_header = request.headers.get("authorization", "")
+
         if not auth_header.startswith("Bearer "):
             return JSONResponse(
                 status_code=401,
-                content={"success": False, "error": "Token de autenticación ausente."},
+                content={
+                    "success": False,
+                    "error": "Token de autenticación ausente.",
+                },
                 headers={"WWW-Authenticate": "Bearer"},
             )
 
