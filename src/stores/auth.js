@@ -56,6 +56,7 @@ export const useAuthStore = defineStore('auth', () => {
         try { await useAuditsStore().loadAudits() } catch {}
       } else {
         user.value = null
+        useAuditsStore().reset()
       }
       loading.value = false
     })
@@ -88,6 +89,7 @@ export const useAuthStore = defineStore('auth', () => {
   async function logout() {
     if (!USE_MOCK) await signOut(auth)
     user.value = null
+    useAuditsStore().reset()
   }
 
   async function updateUserProfile(data) {

@@ -164,7 +164,7 @@ def _build_html(audit_name: str, attachments: List[dict]) -> str:
 def _send_sync(
     recipient: str,
     audit_name: str,
-    attachments: List[dict],  # [{"filename": "...", "label": "...", "content": bytes}]
+    attachments: List[dict],
 ) -> None:
     msg = MIMEMultipart("mixed")
     msg["Subject"] = f"Reportes de Auditoría — {audit_name} | COSFI"

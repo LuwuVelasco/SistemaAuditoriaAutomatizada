@@ -179,19 +179,19 @@ class ReportService:
         label = _KIND_LABELS[ReportKind.MATRIZ_HALLAZGOS]
         ws["A1"] = f"{label} — {audit.entity}  |  {audit.period}  |  {audit.city}"
         ws["A1"].font = Font(bold=True, size=13, name="Calibri")
-        ws.merge_cells("A1:N1")
+        ws.merge_cells("A1:L1")
 
         if audit.alcance:
             ws["A2"] = f"Alcance: {audit.alcance}"
             ws["A2"].font = Font(italic=True, size=10, name="Calibri")
-            ws.merge_cells("A2:N2")
+            ws.merge_cells("A2:L2")
             header_row = 3
         else:
             header_row = 2
 
         headers = [
             "ID", "Título", "Descripción", "Criterio", "Causa", "Efecto", "Conclusión",
-            "Recomendación", "Riesgo", "Impacto", "Probabilidad", "Estado", "Confianza IA", "Detectado por",
+            "Recomendación", "Riesgo", "Impacto", "Probabilidad", "Estado",
         ]
         self._write_header_row(ws, headers, row=header_row)
 
@@ -199,7 +199,7 @@ class ReportService:
             risk_str = f.risk.value if hasattr(f.risk, "value") else str(f.risk)
             risk_color = _RISK_COLORS.get(risk_str, "FFFFFF")
             row_data = [
-                f.id,
+                i - header_row,
                 f.title,
                 f.description_finding or f.description,
                 f.criteria_description or "",
@@ -211,8 +211,6 @@ class ReportService:
                 f.impact,
                 f.probability,
                 f.status.value if hasattr(f.status, "value") else str(f.status),
-                f"{f.confidence:.0%}",
-                f.detected_by or "",
             ]
             for col, val in enumerate(row_data, 1):
                 cell = ws.cell(row=i, column=col, value=val)
@@ -233,8 +231,6 @@ class ReportService:
         ws.column_dimensions["J"].width = 10
         ws.column_dimensions["K"].width = 10
         ws.column_dimensions["L"].width = 12
-        ws.column_dimensions["M"].width = 14
-        ws.column_dimensions["N"].width = 14
 
     def _xlsx_fichas_hallazgo(self, ws, audit: Audit, findings: List[Finding]) -> None:
         label = _KIND_LABELS[ReportKind.FICHAS_HALLAZGO]
@@ -518,6 +514,7 @@ class ReportService:
             ("RGSI",  "Sección",    "Artículos",    "rgsi_refs"),
         ]
 
+        ficha_num = 0
         for f in findings:
             risk_str = f.risk.value if hasattr(f.risk, "value") else str(f.risk)
 
@@ -526,6 +523,7 @@ class ReportService:
                 if not refs:
                     continue
 
+                ficha_num += 1
                 self._docx_para(doc, "")
 
                 tbl_xml = deepcopy(ref_tbl_xml)
@@ -536,8 +534,8 @@ class ReportService:
                     tbl_xml.remove(rows[5])
                     rows = tbl_xml.findall(f"{{{_W}}}tr")
 
-                # Row 1 tc[1] → Finding ID
-                self._xml_set(rows, 1, 1, f.id)
+                # Row 0 tc[1] → sequential ficha number (template has "Cod. 1" here)
+                self._xml_set(rows, 0, 1, str(ficha_num))
 
                 # Row 2: tc[0] = framework label, tc[1] = domain/component/section value
                 self._xml_set(rows, 2, 0, label2)

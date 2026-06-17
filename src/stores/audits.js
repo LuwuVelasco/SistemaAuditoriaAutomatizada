@@ -227,11 +227,18 @@ export const useAuditsStore = defineStore('audits', () => {
     }
   }
 
+  function reset() {
+    audits.value       = []
+    documents.value    = {}
+    findings.value     = {}
+    currentAuditId.value = null
+  }
+
   return {
     audits, documents, findings, loading,
     currentAuditId, currentAudit, currentDocuments, currentFindings,
     setCurrentAudit, createAudit, addDocument, addFindings, updateFinding, getFinding, setAuditProgress, updateAuditMaturity,
-    loadAudits,
+    loadAudits, reset,
   }
 })
 
